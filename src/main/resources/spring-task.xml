@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+">
+
+	<!-- <bean id="repeatingTrigger" class="org.springframework.scheduling.timer.ScheduledTimerTask">
+		启动一秒后执行
+		<property name="delay">
+			<value>1000</value>
+		</property>
+		每隔一小时执行一次
+		<property name="period">
+			<value>1000</value>
+		</property>
+		注入要监控的javaBean
+		<property name="timerTask">
+			<ref bean="task" />
+		</property>
+		类型是否为fixedRate型，默认为fixedDelay
+		<property name="fixedRate">
+			<value>true</value>
+		</property>
+	</bean>
+	<bean id="scheduler" class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<ref bean="repeatingTrigger" />
+			</list>
+		</property>
+	</bean>
+	<bean id="task" class="schedule.TaskOfPassCpWip">
+		<property name="workService">
+			<ref bean="workService" />
+		</property>
+		<property name="work">
+			<ref bean="work" />
+		</property>
+	</bean> -->
+		<!-- spring定时任务的配置 -->
+	<bean class="wzd.service.impl.tt.TtServiceImpl" id="ttService"/>
+	<bean class="wzd.service.impl.pi.WipServiceImpl" id="wipService"/>
+	<!-- 基础的配置   相关类的注入 -->
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob">
+		<property name="jobClass" value="schedule.TaskOfPassCpWip"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="ttService" value-ref="ttService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob2">
+		<property name="jobClass" value="schedule.TaskOfDataResolve"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="ttService" value-ref="ttService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob3">
+		<property name="jobClass" value="schedule.TaskOfPassWafer"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="ttService" value-ref="ttService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob4">
+		<property name="jobClass" value="schedule.TaskOfAnalysisProductNo"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="wipService" value-ref="wipService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob5">
+		<property name="jobClass" value="schedule.TaskOfUpdateProductNoOfPi"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="wipService" value-ref="wipService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob6">
+		<property name="jobClass" value="schedule.TaskOfDataResolveForPo"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="ttService" value-ref="ttService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob7">
+		<property name="jobClass" value="schedule.TaskOfPassIpn"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="ttService" value-ref="ttService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob8">
+		<property name="jobClass" value="schedule.TaskOfDataClean"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="wipService" value-ref="wipService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTimeSpringJob9">
+		<property name="jobClass" value="schedule.TaskOfCopyWipToDbOfHistory"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="wipService" value-ref="wipService"/>
+			</map>
+		</property>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.JobDetailBean" id="MyTest">
+		<property name="jobClass" value="schedule.TaskOfTest"/>  <!-- value中配置的是我自己写的UpdateTime类  name就是spring的jobClass -->
+		<property name="jobDataAsMap">            <!-- 当定时任务中需要注入别的bean的时候，就可以在这里注入，我里面输入了一个MyTime类 -->
+			<map>
+				<entry key="ttService" value-ref="ttService"/>
+			</map>
+		</property>
+	</bean>
+	<!-- 相关的时间配置 -->
+	 <bean class="org.springframework.scheduling.quartz.SimpleTriggerBean" id="MyTimesimpleTriggerBean111">
+		<property name="jobDetail" ref="MyTest"/>   <!-- 给MyTimeSpringJob配置时间信息，name的jobDetail是spring内部需要注入的名字 -->
+		 <property name="repeatInterval" value="1000"/>       <!-- 相隔1000毫秒执行一次 -->
+		  <property name="startDelay" value="5000"/>          <!-- tomcat或者jboss启动5000毫秒后开始执行任务 -->
+	</bean>
+	 <!-- 
+		 当前注释的内容配置的功能很强大，还可以配置星期几，哪一天，那一年，或者那一日的那一秒都是可以配置的
+		 当前配置的是:每个周的星期天23：59：50     这个顺序是倒序配置的
+		 value中的内容：
+		 第6位：的1代表星期天，在国外星期天才是每个周的开始！
+		第5位： *代表所有月的星期天
+		第4位：？代表也没有具体到某日的星期天
+		第3位：23代表23点，注意：采用24小时
+		第2位：59代表分钟
+		第1位：50代表秒-->
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean">
+		<property name="jobDetail" ref="MyTimeSpringJob"/>
+		 <property name="cronExpression" value="0 0/10 10-22 * * ?"/> 
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean2">
+		<property name="jobDetail" ref="MyTimeSpringJob2"/>
+		 <property name="cronExpression" value="0 35 9,10,11 * * ?"/> 
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean3">
+		<property name="jobDetail" ref="MyTimeSpringJob3"/>
+		 <property name="cronExpression" value="0 45 9 * * ?"/>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean4">
+		<property name="jobDetail" ref="MyTimeSpringJob4"/>
+		 <property name="cronExpression" value="0 20 9,10,11 * * ?"/>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean5">
+		<property name="jobDetail" ref="MyTimeSpringJob5"/>
+		<property name="cronExpression" value="0 0 12 * * ?"/>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean6">
+		<property name="jobDetail" ref="MyTimeSpringJob6"/>
+		<property name="cronExpression" value="0 55 9 * * ?"/>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean7">
+		<property name="jobDetail" ref="MyTimeSpringJob7"/>
+		<property name="cronExpression" value="0 0 8-20 * * ?"/>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean8">
+		<property name="jobDetail" ref="MyTimeSpringJob8"/>
+		<property name="cronExpression" value="0 50 23 * * ?"/>
+	</bean>
+	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean9">
+		<property name="jobDetail" ref="MyTimeSpringJob9"/>
+		<property name="cronExpression" value="0 30 9,10,11 * * ?"/>
+	</bean>
+		  
+	<!-- ****************启动定时任务***************** -->
+	<!--
+		 MyTimesimpleTriggerBean  向cxmt003传数据
+		 MyTimesimpleTriggerBean2  原始数据分解
+		 MyTimesimpleTriggerBean3  向cxmt001传数据
+		 MyTimesimpleTriggerBean4  生成ProductNo与Tpnflow  
+		 MyTimesimpleTriggerBean6  原始数据分解唯一wip,供po使用
+		 MyTimesimpleTriggerBean9  向cp_wip_history传入当日WIP数据
+		 
+		 
+		 MyTimesimpleTriggerBean7 erp工单IPN传入PI
+		 MyTimesimpleTriggerBean8  数据清理(z_wip_detail)
+		 MyTimesimpleTriggerBean5  更新Pi中的ProductNo
+	 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="MyTimesimpleTriggerBean" />
+				<ref bean="MyTimesimpleTriggerBean3"/>
+				<ref bean="MyTimesimpleTriggerBean4"/>
+				<ref bean="MyTimesimpleTriggerBean5"/>
+				<ref bean="MyTimesimpleTriggerBean9"/>
+				<ref bean="MyTimesimpleTriggerBean2"/>
+				<ref bean="MyTimesimpleTriggerBean6"/>
+				<!--
+				<ref bean="MyTimesimpleTriggerBean8"/>
+				<ref bean="MyTimesimpleTriggerBean7"/>-->
+				<!-- <ref bean="MyTimesimpleTriggerBean111"/> -->
+			</list>
+		</property>
+	</bean>
+
+</beans>
