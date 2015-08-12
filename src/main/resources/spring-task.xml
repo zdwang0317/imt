@@ -146,7 +146,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 		第1位：50代表秒-->
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean">
 		<property name="jobDetail" ref="MyTimeSpringJob"/>
-		 <property name="cronExpression" value="0 0/10 10-22 * * ?"/> 
+		 <property name="cronExpression" value="0 0/10 9-22 * * ?"/> 
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean2">
 		<property name="jobDetail" ref="MyTimeSpringJob2"/>

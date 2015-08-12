@@ -76,6 +76,12 @@
 						"url":"propage/pi/viewOfIpnRule.jsp"
 					}
 				},{
+					text: 'TPN Rule',
+					"iconCls":"icon-zd-search-po",
+					"attributes":{  
+						"url":"propage/pi/viewOfTpnRule.jsp"
+					}
+				},{
 					text: 'Wip Function',
 					"iconCls":"icon-zd-wip_function",
 					"attributes":{  
