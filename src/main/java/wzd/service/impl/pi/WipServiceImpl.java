@@ -1045,9 +1045,11 @@ public class WipServiceImpl implements IWipService {
 			String[] b = lid.split(" ");
 			StringBuilder conditions = new StringBuilder();
 			for(String str:b){
-				conditions.append(",'"+str+"'");
+//				conditions.append(",'"+str+"'");
+				conditions.append("or a.lid like '%"+str+"%'");
 			}
-			strBur1.append(" and a.lid in ("+conditions.toString().substring(1)+")");
+			strBur1.append("and "+conditions.toString().substring(3));
+//			strBur1.append(" and a.lid in ("+conditions.toString().substring(1)+")");
 			//strBur1.append(" and lid like '%"+wip.getLid()+"%'");
 		}
 		
@@ -1059,6 +1061,7 @@ public class WipServiceImpl implements IWipService {
 			wip.setPage(1);
 		}
 		strBur1.append(" limit "+wip.getRows()*(wip.getPage()-1)+","+wip.getRows());
+		int totalNum = 0;
 		try {
 			pst = conn.prepareStatement(strBur1.toString());
 			rst = pst.executeQuery();
@@ -1072,28 +1075,7 @@ public class WipServiceImpl implements IWipService {
 				u.setCpn(rst.getString("cpn"));
 				u.setPn(rst.getString("pn"));
 				nl.add(u);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		StringBuilder strBur = new StringBuilder("select count(*) total from (select count(*) from zz_turnkey_detail a " +
-				"left join t_fabside_wip b on b.id= a.id_ "+
-				"where 1=1 and a.status = 'CREATED' and b.abnormal not like '%Q' ");
-		if(UtilValidate.isNotEmpty(wip.getLid())){
-			strBur.append(" and a.lid like '%"+wip.getLid()+"%'");
-		}
-		if(UtilValidate.isNotEmpty(wip.getIpn())){
-			strBur.append(" and a.ipn like '%"+wip.getIpn()+"%'");
-		}
-		strBur.append("group by a.lid) d");
-		int totalNum = 0;
-		try {
-			pst = conn.prepareStatement(strBur.toString());
-			rst = pst.executeQuery();
-			while (rst.next()) {
-				totalNum = rst.getInt("total");
+				totalNum++;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

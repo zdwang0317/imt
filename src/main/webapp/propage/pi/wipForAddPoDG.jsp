@@ -3,7 +3,6 @@
 	$(function() {
 		$('#trunkey_createdUserName').val($('#session_user_name').val());
 		$('#pi_wip_turnkey_dg').datagrid({
-			url : 'wipAction!datagridOfWip.action',
 			fit : true,
 			fitColumns : true,
 			border : false,
@@ -35,74 +34,75 @@
 				$('#pi_wip_turnkey_detail_dg').datagrid({
 					url : 'wipAction!datagridOfWipDetail.action',
 					queryParams : {lid: rowData.lid},
-					fit : true,
-					//fitColumns : true,
-					border : false,
-					rownumbers : true,
-					checkOnSelect : false,
-					selectOnCheck : false,
-					idField : 'id_',
-					columns : [ [ {
-						field : 'id_',
-						title : 'ID',
-						checkbox : true,
-					},{
-						field : 'wid',
-						title : 'Wafer Id',
-						width : 90,
-					},{
-						field : 'lid',
-						title : 'Lot Id',
-						width : 102,
-					}] ],
-					onLoadSuccess:function(data){//当数据加载成功时触发 
-					    /* var rowData = data.rows;
-		                $.each(rowData,function(idx,val){//遍历JSON  
-		                	//加东西
-	                        $("#pi_wip_turnkey_detail_dg").datagrid("selectRow", idx);//如果数据行为已选中则选中改行  
-		                }) */
-		                $("#pi_wip_turnkey_detail_dg").datagrid("checkAll");
-					},
-					onUncheck : function(rowIndex,rowData){
-						//console.info(rowData);
-						var fieldValue = $('#cancel_ids').val();
-						if(!(fieldValue.indexOf(rowData.id) >= 0)){
-							$('#cancel_ids').val(fieldValue+rowData.id_+",");
-						}
-					},
-					onCheck : function(rowIndex,rowData){
-						var fieldValue = $('#cancel_ids').val();
-						if(fieldValue.indexOf(rowData.id_) >= 0){
-							var newStr = fieldValue.replace(rowData.id_+",","");
-							$('#cancel_ids').val(newStr);
-						}
-					},
-					onUncheckAll : function(rows){
-						var fieldValue = $('#cancel_ids').val();
-						var num = 0;
-						$.each(rows,function(idx,val){//遍历JSON  
-							if(!(fieldValue.indexOf(val.id_) >= 0)){
-								fieldValue = fieldValue+val.id_+",";
-								num++;
-							}
-		                });
-						$('#cancel_ids').val(fieldValue);
-					},
-					onCheckAll : function(rows){
-						var fieldValue = $('#cancel_ids').val();
-						var num = 0;
-						$.each(rows,function(idx,val){//遍历JSON  
-							if((fieldValue.indexOf(val.id_) >= 0)){
-								fieldValue = fieldValue.replace(val.id_+",","");
-								num++;
-							}
-		                });
-						$('#cancel_ids').val(fieldValue);
-					}
-				});
+				})
 			}
 		});
-		
+		$('#pi_wip_turnkey_detail_dg').datagrid({
+			fit : true,
+			//fitColumns : true,
+			border : false,
+			rownumbers : true,
+			checkOnSelect : false,
+			selectOnCheck : false,
+			idField : 'id_',
+			columns : [ [ {
+				field : 'id_',
+				title : 'ID',
+				checkbox : true,
+			},{
+				field : 'wid',
+				title : 'Wafer Id',
+				width : 90,
+			},{
+				field : 'lid',
+				title : 'Lot Id',
+				width : 102,
+			}] ],
+			onLoadSuccess:function(data){//当数据加载成功时触发 
+			    /* var rowData = data.rows;
+                $.each(rowData,function(idx,val){//遍历JSON  
+                	//加东西
+                    $("#pi_wip_turnkey_detail_dg").datagrid("selectRow", idx);//如果数据行为已选中则选中改行  
+                }) */
+                $("#pi_wip_turnkey_detail_dg").datagrid("checkAll");
+			},
+			onUncheck : function(rowIndex,rowData){
+				//console.info(rowData);
+				var fieldValue = $('#cancel_ids').val();
+				if(!(fieldValue.indexOf(rowData.id) >= 0)){
+					$('#cancel_ids').val(fieldValue+rowData.id_+",");
+				}
+			},
+			onCheck : function(rowIndex,rowData){
+				var fieldValue = $('#cancel_ids').val();
+				if(fieldValue.indexOf(rowData.id_) >= 0){
+					var newStr = fieldValue.replace(rowData.id_+",","");
+					$('#cancel_ids').val(newStr);
+				}
+			},
+			onUncheckAll : function(rows){
+				var fieldValue = $('#cancel_ids').val();
+				var num = 0;
+				$.each(rows,function(idx,val){//遍历JSON  
+					if(!(fieldValue.indexOf(val.id_) >= 0)){
+						fieldValue = fieldValue+val.id_+",";
+						num++;
+					}
+                });
+				$('#cancel_ids').val(fieldValue);
+			},
+			onCheckAll : function(rows){
+				var fieldValue = $('#cancel_ids').val();
+				var num = 0;
+				$.each(rows,function(idx,val){//遍历JSON  
+					if((fieldValue.indexOf(val.id_) >= 0)){
+						fieldValue = fieldValue.replace(val.id_+",","");
+						num++;
+					}
+                });
+				$('#cancel_ids').val(fieldValue);
+			}
+		});
 		var pager = $('#pi_wip_turnkey_dg').datagrid('getPager');    // 得到datagrid的pager对象  
 		pager.pagination({    
 		    buttons:[{
@@ -119,7 +119,11 @@
 	});
 	
 	function pi_wip_turnkey_searchForm_searchFun() {
-		$('#pi_wip_turnkey_dg').datagrid('load', serializeObject($('#pi_wip_turnkey_searchForm')));
+		$('#pi_wip_turnkey_dg').datagrid({
+			url : 'wipAction!datagridOfWip.action',
+			queryParams : serializeObject($('#pi_wip_turnkey_searchForm'))
+		})
+		/* $('#pi_wip_turnkey_dg').datagrid('load', serializeObject($('#pi_wip_turnkey_searchForm'))); */
 		$('#pi_wip_turnkey_dg').datagrid('unselectAll');
 		$('#ipn_ids').val('');
 		$('#cancel_ids').val('');
@@ -129,7 +133,6 @@
 	function pi_wip_show_dialog() {
 		//$('#pi_wip_po_form').form('clear');
 		var rows = $('#pi_wip_turnkey_dg').datagrid('getSelections');
-		console.info(rows.length);
 		var ids = [];
 		if (rows.length > 0) {
 			for ( var i = 0; i < rows.length; i++) {
