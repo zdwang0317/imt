@@ -75,7 +75,7 @@ $(function() {
 						description : d[i].description
 					}); 
 				}
-				if(type=="IPN_EIGHT"){
+				if(type=="TPN_SEVEN"){
 					$('#tpn_rule_eight').datagrid('appendRow',{
 						name: d[i].name,
 						description : d[i].description
