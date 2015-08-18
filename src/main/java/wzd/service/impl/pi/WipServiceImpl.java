@@ -1036,7 +1036,7 @@ public class WipServiceImpl implements IWipService {
 		Connection conn = connUtil.getMysqlConnection();
 		StringBuilder strBur1 = new StringBuilder("select sum(a.qty) q,id_,a.lid,a.wid,a.ipn,a.cpn,a.pn from zz_turnkey_detail a " +
 				"left join t_fabside_wip b on b.id= a.id_ "+
-				"where 1=1 and a.status = 'CREATED' and b.abnormal not like '%Q'");
+				"where 1=1 and a.status = 'CREATED' and b.abnormal not like '%Q' and b.abnormal not like '%srcap%'");
 		if(UtilValidate.isNotEmpty(wip.getPn())){
 			strBur1.append(" and a.pn like '%"+wip.getPn()+"%'");
 		}

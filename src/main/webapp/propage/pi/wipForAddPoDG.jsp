@@ -123,6 +123,19 @@
 			url : 'wipAction!datagridOfWip.action',
 			queryParams : serializeObject($('#pi_wip_turnkey_searchForm'))
 		})
+		var pager = $('#pi_wip_turnkey_dg').datagrid('getPager');    // 得到datagrid的pager对象  
+		pager.pagination({    
+		    buttons:[{
+		    	text: '添加工单',
+		        iconCls:'icon-add',    
+		        handler:function(){
+		        	pi_wip_show_dialog();
+		        }    
+		    }],    
+		    onBeforeRefresh:function(){    
+		        return true;    
+		    }
+		});
 		/* $('#pi_wip_turnkey_dg').datagrid('load', serializeObject($('#pi_wip_turnkey_searchForm'))); */
 		$('#pi_wip_turnkey_dg').datagrid('unselectAll');
 		$('#ipn_ids').val('');
