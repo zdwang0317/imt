@@ -1048,7 +1048,7 @@ public class WipServiceImpl implements IWipService {
 //				conditions.append(",'"+str+"'");
 				conditions.append("or a.lid like '%"+str+"%'");
 			}
-			strBur1.append("and "+conditions.toString().substring(3));
+			strBur1.append("and ("+conditions.toString().substring(3)+")");
 //			strBur1.append(" and a.lid in ("+conditions.toString().substring(1)+")");
 			//strBur1.append(" and lid like '%"+wip.getLid()+"%'");
 		}
