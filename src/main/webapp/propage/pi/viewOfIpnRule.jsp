@@ -10,26 +10,41 @@ $(function() {
         ]]
     });
     $('#ipn_rule_three').datagrid({
+    	border : false,
+		rownumbers : true,
+		fit : true,
     	columns:[[{field:'name',title:'值',width : 100,},
     	          {field:'description',title:'描述',width : 500,},
         ]]
     });
     $('#ipn_rule_four').datagrid({
+    	border : false,
+		rownumbers : true,
+		fit : true,
     	columns:[[{field:'name',title:'值',width : 100,},
     	          {field:'description',title:'描述',width : 500,},
         ]]
     });
     $('#ipn_rule_five').datagrid({
+    	border : false,
+		rownumbers : true,
+		fit : true,
     	columns:[[{field:'name',title:'值',width : 100,},
     	          {field:'description',title:'描述',width : 500,},
         ]]
     });
     $('#ipn_rule_six').datagrid({
+    	border : false,
+		rownumbers : true,
+		fit : true,
     	columns:[[{field:'name',title:'值',width : 100,},
     	          {field:'description',title:'描述',width : 500,},
         ]]
     });
     $('#ipn_rule_eight').datagrid({
+    	border : false,
+		rownumbers : true,
+		fit : true,
     	columns:[[{field:'name',title:'值',width : 100,},
     	          {field:'description',title:'描述',width : 500,},
         ]]
@@ -99,7 +114,7 @@ $(function() {
 	<table id="ipn_rule_six"></table>
 </div> -->
 
-<div class="easyui-accordion" style="" data-options="fit:true">
+<div class="easyui-accordion" style="" data-options="fit:true,border:false">
 	<div title="CP IPN 前三码" data-options="iconCls:''" >
 		<table id="ipn_rule_one"></table>
 	</div>

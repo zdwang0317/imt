@@ -76,10 +76,16 @@
 						"url":"propage/pi/viewOfIpnRule.jsp"
 					}
 				},{
-					text: 'TPN Rule',
+					text: 'TPN Rule-Nor',
 					"iconCls":"icon-zd-search-po",
 					"attributes":{  
 						"url":"propage/pi/viewOfTpnRule.jsp"
+					}
+				},{
+					text: 'TPN Rule-MCU',
+					"iconCls":"icon-zd-search-po",
+					"attributes":{  
+						"url":"propage/pi/viewOfMcuTpnRule.jsp"
 					}
 				},{
 					text: 'Wip Function',
