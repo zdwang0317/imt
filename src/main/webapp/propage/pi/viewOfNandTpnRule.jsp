@@ -6,9 +6,10 @@ $(function() {
 		rownumbers : true,
 		fit : true,
 		columns:[[{field:'name',title:'值',width : 100,},
-		          {field:'value',title:'Die1',width : 500,},
-		          {field:'description',title:'Die2 v05/Die3',width : 500,},
-    	          {field:'status',title:'CP Flow infor.',width : 500,},
+		          {field:'field1',title:'Die1',width : 100,},
+		          {field:'field2',title:'Die2 v05',width : 100,},
+		          {field:'field3',title:'Die3',width : 100,},
+		          {field:'field4',title:'CP Flow infor.',width : 100,}
         ]]
     });
     $('#tpn_nand_rule_three').datagrid({
@@ -66,11 +67,13 @@ $(function() {
 			for(var i=0;i<d.length;i++){
 				var type = d[i].type;
 				if(type=="TPNNAND_ONE"){
+					console.info(d[i]);
 					$('#tpn_nand_rule_one').datagrid('appendRow',{
 						name: d[i].name,
-						value : d[i].value,
-						description : d[i].description,
-						status : d[i].status
+						field1 : d[i].field1,
+						field2 : d[i].field2,
+						field3 : d[i].field3,
+						field4 : d[i].field4
 					}); 
 				}
 				if(type=="TPN_THREE"){
