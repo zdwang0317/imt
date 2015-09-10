@@ -6,7 +6,9 @@ $(function() {
 		rownumbers : true,
 		fit : true,
 		columns:[[{field:'name',title:'值',width : 100,},
-    	          {field:'description',title:'描述',width : 500,},
+		          {field:'value',title:'Die1',width : 500,},
+		          {field:'description',title:'Die2 v05/Die3',width : 500,},
+    	          {field:'status',title:'CP Flow infor.',width : 500,},
         ]]
     });
     $('#tpn_nand_rule_three').datagrid({
@@ -66,7 +68,9 @@ $(function() {
 				if(type=="TPNNAND_ONE"){
 					$('#tpn_nand_rule_one').datagrid('appendRow',{
 						name: d[i].name,
-						description : d[i].description
+						value : d[i].value,
+						description : d[i].description,
+						status : d[i].status
 					}); 
 				}
 				if(type=="TPN_THREE"){
