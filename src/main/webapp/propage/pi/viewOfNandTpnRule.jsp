@@ -69,13 +69,13 @@ $(function() {
 						description : d[i].description
 					}); 
 				}
-				if(type=="IPN_THREE"){
+				if(type=="TPN_THREE"){
 					$('#tpn_nand_rule_three').datagrid('appendRow',{
 						name: d[i].name,
 						description : d[i].description
 					}); 
 				}
-				if(type=="IPN_FOUR"){
+				if(type=="TPN_FOUR"){
 					$('#tpn_nand_rule_four').datagrid('appendRow',{
 						name: d[i].name,
 						description : d[i].description
@@ -112,7 +112,7 @@ $(function() {
 </script>
 
 <div class="easyui-accordion" style="" data-options="fit:true,border:false">
-	<div title="Prod ID(FT-TPN第四五码)" data-options="iconCls:''" >
+	<div title="Prod ID(FT-TPN第四六码)" data-options="iconCls:''" >
 		<table id="tpn_nand_rule_one"></table>
 	</div>
 	<div title="Product Series(FT-TPN第七码) " data-options="iconCls:''" >

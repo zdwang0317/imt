@@ -69,13 +69,13 @@ $(function() {
 						description : d[i].description
 					}); 
 				}
-				if(type=="IPN_THREE"){
+				if(type=="TPN_THREE"){
 					$('#tpn_rule_three').datagrid('appendRow',{
 						name: d[i].name,
 						description : d[i].description
 					}); 
 				}
-				if(type=="IPN_FOUR"){
+				if(type=="TPN_FOUR"){
 					$('#tpn_rule_four').datagrid('appendRow',{
 						name: d[i].name,
 						description : d[i].description

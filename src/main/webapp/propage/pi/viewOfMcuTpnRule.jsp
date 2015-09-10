@@ -158,7 +158,7 @@ $(function() {
 	<div title="Package(FT-TPN第九码)" data-options="iconCls:''" >
 		<table id="tpnmcu_rule_seven"></table>
 	</div>
-	<div title="Package(FT-TPN第十码)" data-options="iconCls:''" >
+	<div title="Test Side(FT-TPN第十码)" data-options="iconCls:''" >
 		<table id="tpnmcu_rule_eight"></table>
 	</div>
 	<div title="Test Tool(FT-TPN倒数第五码)" data-options="iconCls:''" >
