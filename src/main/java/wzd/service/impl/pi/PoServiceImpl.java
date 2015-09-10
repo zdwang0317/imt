@@ -96,7 +96,7 @@ public class PoServiceImpl implements IPoService {
 		int id = save(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),null);
 		List<TturnkeyDetail> listOfTurnkeyDetail = getListFromIds(option.getIpn_ids(),option.getCancel_ids());
 		int seqId = 1;
-		List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"'");
+		List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
 		String cpTestFlow = listOfOptionContent.get(0).getDescription();
 		String cpSite = null;
 		String ipn_five = option.getIpn_five();

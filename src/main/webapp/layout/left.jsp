@@ -88,6 +88,12 @@
 						"url":"propage/pi/viewOfMcuTpnRule.jsp"
 					}
 				},{
+					text: 'TPN Rule-SPI Nand',
+					"iconCls":"icon-zd-search-po",
+					"attributes":{  
+						"url":"propage/pi/viewOfNandTpnRule.jsp"
+					}
+				},{
 					text: 'Wip Function',
 					"iconCls":"icon-zd-wip_function",
 					"attributes":{  

@@ -622,7 +622,7 @@ public class WipServiceImpl implements IWipService {
 		ConnUtil connUtil = new ConnUtil();
 		Connection conn = connUtil.getMysqlConnection();
 		String sqlOfQuery = "select productNo,lid,wid from z_wip_detail where erpDate = ? and tpnflow in('PAS1','PAD','PAS2','UV','WAT','QC','INV1') order by productNo,lid";
-		String sqlOfUpdate = "update t_fabside_wip set latestPn = 'Y',productId = ? where lotid = ? and waferid in (%s)";//此处改成调用WebService
+		String sqlOfUpdate = "update t_fabside_wip set latestPn = 'Y',productId = ? where lotid = ? and waferid in (%s) and latestPn<>'Y'";//此处改成调用WebService
 		try {
 			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sqlOfQuery);
