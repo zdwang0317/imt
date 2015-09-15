@@ -936,7 +936,7 @@ public class PoServiceImpl implements IPoService {
 			}else{
 				int oid = save(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn);
 				int seqId = 1;
-				List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"'");
+				List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
 				String cpTestFlow = "";
 				if(UtilValidate.isNotEmpty(listOfOptionContent)){
 					cpTestFlow = listOfOptionContent.get(0).getDescription();
