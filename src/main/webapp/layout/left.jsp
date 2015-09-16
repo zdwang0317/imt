@@ -70,7 +70,7 @@
 						"url":"propage/pi/lotToHoldDG.jsp"
 					}
 				},{
-					text: 'IPN Rule',
+					text: 'CP IPN Rule',
 					"iconCls":"icon-zd-search-po",
 					"attributes":{  
 						"url":"propage/pi/viewOfIpnRule.jsp"

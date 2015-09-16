@@ -976,6 +976,10 @@ public class TtServiceImpl implements ITtService {
 						} else {
 							list = WaferIdFormat.getWaferIdFromChipmos(list,wid);
 						}
+					}else if (firm.equals("hlmc")) {
+						if(UtilValidate.isNotEmpty(wid)){
+							list = WaferIdFormat.getWaferIdFromHlmc(wid);
+						}
 					}
 					for (String s : list) {
 						if (s.length() == 1) {
