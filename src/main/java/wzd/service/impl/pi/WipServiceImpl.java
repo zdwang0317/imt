@@ -5,6 +5,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,7 @@ import wzd.util.ConnUtil;
 import wzd.util.PiUtil;
 import wzd.util.TableOfMysqlUtil;
 import wzd.util.UtilValidate;
+import wzd.util.WaferIdFormat;
 
 @Service("wipService")
 public class WipServiceImpl implements IWipService {
@@ -1931,6 +1933,69 @@ public class WipServiceImpl implements IWipService {
 		}
 		logger.info("AnalysisProductNoForSqlByNewRule End!");
 		return returnNum;
+	}
+	@Override
+	public String addWip(WipDetailUnique wip) {
+		// TODO Auto-generated method stub
+		int insertNumber = 0;
+		String lid = wip.getLid();
+		String parentLid = "";
+		if(lid.contains(".")){
+			parentLid = lid.substring(0,lid.indexOf("."));
+		}else{
+			parentLid = lid;
+		}
+		String wid = wip.getWid();
+		List<String> wids = WaferIdFormat.getWaferIdList(wid);
+		if(UtilValidate.isNotEmpty(wids)){
+			ConnUtil connUtil = new ConnUtil();
+			Connection conn = connUtil.getMysqlConnection();
+			
+			PreparedStatement pst = null;
+			PreparedStatement pst2 = null;
+			ResultSet rst = null;
+			try {
+				conn.setAutoCommit(false);
+				pst2 = conn.prepareStatement("insert into zz_turnkey_detail(cpn,ipn,lid,pn,qty,status,wid,parent_lid,id_) values(?,?,?,?,?,?,?,?,?)");
+				for(String str : wids){
+					boolean ifExists = false;
+					String id = parentLid+"_"+str;
+					pst = conn.prepareStatement("select id_ from zz_turnkey_detail where id_='"+id+"'");
+					rst = pst.executeQuery();
+					while(rst.next()){
+						ifExists = true;
+						break;
+					}
+					if(ifExists){
+						continue;
+					}else{
+						pst2.setString(1, wip.getCpn());
+						pst2.setString(2, wip.getIpn());
+						pst2.setString(3, lid);
+						pst2.setString(4, wip.getPn());
+						pst2.setInt(5, 1);
+						pst2.setString(6, "CREATED");
+						pst2.setString(7, str);
+						pst2.setString(8, parentLid);
+						pst2.setString(9, id);
+						pst2.addBatch();
+						insertNumber++;
+					}
+				}
+				if(insertNumber>0){
+					pst2.executeBatch();
+					conn.commit();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				ConnUtil.close(rst, pst);
+				ConnUtil.close(null, pst2);
+				ConnUtil.closeConn(conn);
+			}
+		}
+		return String.valueOf(insertNumber);
 	}
 	
 }

@@ -77,10 +77,16 @@
 						
 			        }    
 			    },{
-			    	text: 'Import Data For Update Tpn',
+			    	text: 'Update Tpn',
 			        iconCls:'icon-zd-excel-download',    
 			        handler:function(){
 			        	$('#upload_wip_data_dialog').dialog('open');
+			        }    
+			    },{
+			    	text: 'Add Wip',
+			        iconCls:'icon-add',    
+			        handler:function(){
+			        	$('#add_wip_data_dialog').dialog('open');
 			        }    
 			    }]
 			});
@@ -276,5 +282,43 @@
 			<form id="upload_data_for_update_tpn" method="post" enctype="multipart/form-data">
 				<!-- <input type="file" name="lotfile" id="lotfile" multiple="multiple" /> -->
 				<input class="easyui-filebox" name="lotfile" id="lotfile" data-options="required : true" style="width:100%"/>
+			</form>
+		</div>
+		<div id="add_wip_data_dialog" class="easyui-dialog" data-options="title: 'Add Wip',
+								width: 400,
+								closed: true,
+								height: 320,
+								cache: false,
+								modal: true,
+								buttons : [ {
+									text : '添加',
+									//iconCls : 'icon-add',
+									handler : function() {
+										if($('#add_wip').form('validate')){
+											$.messager.progress();
+											$('#add_wip').form('submit', {
+												url : 'wipDetailUniqueAction!addWip.action',
+												datatype : 'json',
+												success : function(r) {
+													$('#add_wip_data_dialog').dialog('close');
+													$.messager.progress('close');
+													$.messager.show({
+														title : '提示',
+														msg : '添加成功'
+													});
+												}
+											});
+										}
+									}
+								} ]
+								" style="padding:10px;">
+			<form id="add_wip" method="post">
+				<table>
+					<tr><td>Lot Id</td><td><input name="lid" class="easyui-textbox" data-options="required:true" style="margin-left:0px"/></td></tr>
+					<tr><td>Wafer Id</td><td><input name="wid" class="easyui-textbox" data-options="required:true" style="margin-left:0px"/>例：1-3,5,6,11-16</td></tr>
+					<tr><td>CPN</td><td><input name="cpn" class="easyui-textbox" style="margin-left:0px"/></td></tr>
+					<tr><td>IPN</td><td><input name="ipn" class="easyui-textbox" style="margin-left:0px"/></td></tr>
+					<tr><td>Part No</td><td><input name="pn" class="easyui-textbox" data-options="required:true" style="margin-left:0px"/></td></tr>
+				</table>
 			</form>
 		</div>

@@ -42,4 +42,5 @@ public interface IWipService {
 	void CopyDataOfWipToDbOfHistoryDaily();
 	int UploadDataForUpdateTpn(Map<String,String> mapOfUpdateData);
 	List<WipCompare> getWipCompareData(Wip wip);
+	String addWip(WipDetailUnique wip);
 }

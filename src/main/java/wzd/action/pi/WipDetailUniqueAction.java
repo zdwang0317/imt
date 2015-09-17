@@ -50,6 +50,10 @@ public class WipDetailUniqueAction extends BaseAction implements ModelDriven<Wip
 		super.writeJson(wipService.datagridOfWipDetailUniqueByJdbc(wipDetailUnique));
 	}
 	
+	public void addWip() {
+//		super.writeJson(wipService.datagridOfWipDetailUnique(wipDetailUnique));
+		super.writeJson(wipService.addWip(wipDetailUnique));
+	}
 	public void excelToUniqueWip(){
 		List<TturnkeyDetail> list = wipService.getListOfTwipDetail(wipDetailUnique);
 		ActionContext ctx = ActionContext.getContext();       
