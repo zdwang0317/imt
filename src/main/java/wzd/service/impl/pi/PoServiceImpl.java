@@ -943,7 +943,8 @@ public class PoServiceImpl implements IPoService {
 				}
 				String cpSite = null;
 				String ipn_five = option.getIpn_five();
-				if(ipn_five.equals("A")||ipn_five.equals("B")||ipn_five.equals("C")){
+				List<ToptionContent> listOfOptionContent2 = optionContentDao.find("from ToptionContent t where t.name='"+ipn_five+"' and t.type ='IPN_FIVE'");
+				/*if(ipn_five.equals("A")||ipn_five.equals("B")||ipn_five.equals("C")){
 					cpSite = "KLT";
 				}else if(ipn_five.equals("D")||ipn_five.equals("E")){
 					cpSite = "SH";
@@ -951,6 +952,10 @@ public class PoServiceImpl implements IPoService {
 					cpSite = "XMC";
 				}else if(ipn_five.equals("G")){
 					cpSite = "CHIPMOS";
+				}*/
+				if(UtilValidate.isNotEmpty(listOfOptionContent2)){
+					String cpTester = listOfOptionContent2.get(0).getDescription();
+					cpSite = cpTester.split("-")[1];
 				}
 				createProductOrder(ipn,cpTestFlow, cpSite, oid, listOfTurnkeyDetail, seqId, option);
 				updateStatusForTurnkeyDetail(listOfTurnkeyDetail);
