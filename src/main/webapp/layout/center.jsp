@@ -240,6 +240,22 @@ $(function() {
 			    	<p>0 35 9 * * ? TaskOfDataResolveForPo</p> 
 			    	<p>0 30 9,10,11,12 * * ? TaskOfCopyWipToDbOfHistory</p>  
 			    </div>
+			    <div id="p4" style="padding:5px;">
+			    	WIP导入过滤规则
+			    	boolean toAdd = true;
+					if("smic".equals(factoryName)){
+						String locationOfSmic = nw.getLocation();
+						if((!"B1".equals(locationOfSmic))&&(!"S1".equals(locationOfSmic))&&(!"FAB7".equals(locationOfSmic))&&(!"CP".equals(locationOfSmic))&&(!"FAB8".equals(locationOfSmic))){
+							toAdd = false;
+						}
+					}
+					if("csmc".equals(factoryName)){
+						String stageOfCsmc = nw.getStage();
+						if(null==stageOfCsmc||"".equals(stageOfCsmc)){
+							toAdd = false;
+						}
+					}
+			    </div>
 			</div>
 		</div>
 		    
