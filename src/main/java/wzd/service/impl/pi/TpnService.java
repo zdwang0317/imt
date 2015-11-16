@@ -348,10 +348,28 @@ public class TpnService implements ITpnService{
 		StringBuffer sb = new StringBuffer();
 		String returnSb = "";
 		if(UtilValidate.isNotEmpty(ruleTypeId)){
-			String hql2 = "from TtpnRuleItem t where 1=1 and t.ruleId="+tpnRule.getRuleId()+" order by t.remLayer DESC";
+			/*String hql2 = "from TtpnRuleItem t left join Ttpn b on t.tpn=b.tpn and ruleTypeId="+ruleTypeId+" where 1=1 and t.ruleId="+tpnRule.getRuleId()+" order by b.tpnOrder DESC";
 			List<TtpnRuleItem> ruleItem = tpnRuleItemDao.find(hql2);
 			for (TtpnRuleItem t : ruleItem) {
 				sb.append("," + t.getTpn());
+			}*/
+			ConnUtil connUtil = new ConnUtil();
+			Connection conn = connUtil.getMysqlConnection();
+			PreparedStatement pst = null;
+			ResultSet rst = null;
+			String sql = "select a.tpn from z_tpn_rule_item a left join z_tpn b on b.tpn=a.tpn and b.ruleTypeId='"+ruleTypeId+"' where a.ruleId='"+tpnRule.getRuleId()+"' order by b.tpnOrder";
+			try {
+				pst = conn.prepareStatement(sql);
+				rst = pst.executeQuery();
+				while(rst.next()){
+					sb.append("," + rst.getString("tpn"));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				ConnUtil.close(rst,pst);
+				ConnUtil.closeConn(conn);
 			}
 			List<Ttpn> l = tpnDao.find("from Ttpn t where t.status = 'VALID' and t.ruleTypeId='CP' order by t.tpnOrder");
 			for (Ttpn t : l) {
