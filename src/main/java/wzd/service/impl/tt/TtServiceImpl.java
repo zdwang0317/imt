@@ -877,7 +877,10 @@ public class TtServiceImpl implements ITtService {
 				String wid = rst.getString("wid");
 				if(UtilValidate.isNotEmpty(wid)){
 					String lid = rst.getString("lid");
-//					logger.info(iii+"deal lid is "+lid);
+					/*if(lid.equals("AYCGR")){
+						System.out.println("com ein");
+					}
+					logger.info("deal lid is "+lid+"_"+ wid);*/
 					String pn = rst.getString("pn");
 					String cpn = rst.getString("cpn");
 					String tpnFlow = rst.getString("tpnFlow");
@@ -888,7 +891,10 @@ public class TtServiceImpl implements ITtService {
 					if(ipn.length()>40){
 						ipn = ipn.substring(0,40);
 					}
-					String parent_lid = lid.split("\\.")[0];
+					String parent_lid = lid;
+					if(lid.contains(".")){
+						parent_lid = lid.split("\\.")[0];
+					}
 					list = WaferIdFormat.getWaferIdList(wid);
 					for (String s : list) {
 						if (s.length() == 1) {
@@ -909,8 +915,10 @@ public class TtServiceImpl implements ITtService {
 							if(!pn.equals(dbHas.get("pn"))){
 								hasUpdate = true;
 							}
-							if(!tpnFlow.equals(dbHas.get("tpnFlow"))){
-								hasUpdate = true;
+							if(UtilValidate.isNotEmpty(tpnFlow)){
+								if(!tpnFlow.equals(dbHas.get("tpnFlow"))){
+									hasUpdate = true;
+								}
 							}
 							if(!lid.equals(dbHas.get("lid"))){
 								hasUpdate = true;
@@ -951,10 +959,10 @@ public class TtServiceImpl implements ITtService {
 				List<String> list = new ArrayList<String>();
 				String wid = rst.getString("wid");
 				if(UtilValidate.isNotEmpty(wid)){
-					logger.info("~~~~"+rst.getString("lid")+"_"+wid);
-					if(rst.getString("lid").equals("PP3699")){
+//					logger.info("~~~~"+rst.getString("lid")+"_"+wid);
+					/*if(rst.getString("lid").equals("PP3699")){
 						System.out.println("come in");
-					}
+					}*/
 					String lid = rst.getString("lid");
 					String pn = rst.getString("pn");
 					String cpn = rst.getString("cpn");
