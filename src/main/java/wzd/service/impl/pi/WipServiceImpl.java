@@ -1761,7 +1761,6 @@ public class WipServiceImpl implements IWipService {
 			pst2 = connOfPi.prepareStatement("update cp_wip set productNo=?,tpnFlow=? where id =?");
 			while(rst.next()){
 				String productNo = mapOfPn.get(rst.getString("lid")+rst.getString("wid"));
-				logger.info("Product No is_"+productNo);
 				if(UtilValidate.isEmpty(productNo)){
 					String pn = rst.getString("pn");
 					if(UtilValidate.isNotEmpty(pn)){

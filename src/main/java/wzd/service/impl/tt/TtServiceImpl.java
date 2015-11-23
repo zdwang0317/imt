@@ -868,7 +868,7 @@ public class TtServiceImpl implements ITtService {
 			logger.info("2");
 			Date date = new Date();
 			SimpleDateFormat sf2 = new SimpleDateFormat("yy/MM/dd");
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow from cp_wip where erpDate = ? and firm ='klt'");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow from cp_wip where erpDate = ? and firm ='klt' and qty>0");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			conn.setAutoCommit(false);
