@@ -804,7 +804,7 @@ public class WipServiceImpl implements IWipService {
 					//String tpnflow = PiUtil.getTpnFLow(productNo,t,mapOfTpn,mapOfFactory,String.valueOf(mapOfNm.get(productNo)));
 					// FAB
 					// if location is not null and location doesn't contain TESTING and CP
-					if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP")))||firm.equals("hlmc")) {
+					if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP")))||firm.equals("hlmc")||firm.equals("umc")) {
 						boolean checkSmicLocation = true;
 						if(firm.equals("smic")&&((!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
 							checkSmicLocation = false;

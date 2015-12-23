@@ -215,6 +215,7 @@
 									<option value="smic">smic</option>
 									<option value="xmc">xmc</option>
 									<option value="hlmc">hlmc</option>
+									<option value="umc">umc</option>
 								</select>
 							</td>
 							<td colspan="7"></td>
