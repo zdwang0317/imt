@@ -246,7 +246,7 @@ public class TtServiceImpl implements ITtService {
 									.getWaferIdFromChipmos(list,
 											wid);
 						}
-					} else if (firm.equals("hlmc")) {
+					} else if (firm.equals("hlmc")||firm.equals("umc")) {
 						list = WaferIdFormat.getWaferIdFromHlmc(wid);
 					}
 					for (String s : list) {
