@@ -1690,7 +1690,7 @@ public class WipServiceImpl implements IWipService {
 		/*
 		 * prepare history productNo
 		 */
-		Map<String,String> mapOfPn = new HashMap<String,String>();
+		/*Map<String,String> mapOfPn = new HashMap<String,String>();
 		try {
 			pst3 = conn.prepareStatement("select productNo,lid,wid from z_wip_detail where  tpnflow in('PAS1','PAD','PAS2','UV','WAT','QC','INV1') group by productNo,lid,wid");
 			rst3 = pst3.executeQuery();
@@ -1700,8 +1700,7 @@ public class WipServiceImpl implements IWipService {
 		} catch (SQLException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
-		}
-		
+		}*/
 		List<TtpnStage> listOfSh = new ArrayList<TtpnStage>();
 		List<TtpnStage> listOfWh = new ArrayList<TtpnStage>();
 		List<TtpnStage> listOfKlt = new ArrayList<TtpnStage>();
@@ -1766,7 +1765,7 @@ public class WipServiceImpl implements IWipService {
 				String firm = rst.getString("firm");
 				String remLayer = rst.getString("remLayer");
 				//下面的wid为cp_wip表的 需要改
-				String productNo = mapOfPn.get(rst.getString("lid")+rst.getString("wid"));
+				String productNo = "";//mapOfPn.get(rst.getString("lid")+rst.getString("wid"));
 				if(UtilValidate.isEmpty(productNo)){
 					String pn = rst.getString("pn");
 					if(UtilValidate.isNotEmpty(pn)){

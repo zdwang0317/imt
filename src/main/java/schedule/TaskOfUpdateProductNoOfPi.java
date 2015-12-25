@@ -22,7 +22,8 @@ public class TaskOfUpdateProductNoOfPi extends QuartzJobBean{
 	protected void executeInternal(JobExecutionContext arg0)
 			throws JobExecutionException {
 		// TODO Auto-generated method stub
-		wipService.updateProductNoOfPi();
+//		wipService.updateProductNoOfPi();
+		wipService.updateProductNoOfPi2();
 	}
 
 }
