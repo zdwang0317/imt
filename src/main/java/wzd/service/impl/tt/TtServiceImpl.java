@@ -1038,9 +1038,7 @@ public class TtServiceImpl implements ITtService {
 //								logger.info("batch after");
 							}
 						}
-						
 					}
-					logger.info("~~~~end");
 				}
 			}
 			logger.info("Data Resolve To Table of zz_turnkey_detail Execute Update Start");

@@ -1760,28 +1760,43 @@ public class WipServiceImpl implements IWipService {
 			}
 			pst2 = connOfPi.prepareStatement("update cp_wip set productNo=?,tpnFlow=? where id =?");
 			while(rst.next()){
+				String tpnflow = null;
+				String stage = rst.getString("stage");
+				String location = rst.getString("location");
+				String firm = rst.getString("firm");
+				String remLayer = rst.getString("remLayer");
+				//下面的wid为cp_wip表的 需要改
 				String productNo = mapOfPn.get(rst.getString("lid")+rst.getString("wid"));
 				if(UtilValidate.isEmpty(productNo)){
 					String pn = rst.getString("pn");
 					if(UtilValidate.isNotEmpty(pn)){
-						productNo = PiUtil.filterByProductNo(rst.getString("pn"));
+						if("umc".equals(firm)){
+							productNo = rst.getString("pn");
+						}else{
+							productNo = PiUtil.filterByProductNo(rst.getString("pn"));
+						}
 						//special pn like 'W041X'
 						if(UtilValidate.isEmpty(productNo)){
 							productNo =PiUtil.filterByProductNoIncludeW(rst.getString("pn"));
 						}
 					}
 				}
-				String tpnflow = null;
-				String stage = rst.getString("stage");
-				String location = rst.getString("location");
-				String firm = rst.getString("firm");
-				String remLayer = rst.getString("remLayer");
 				if (UtilValidate.isNotEmpty(productNo)) {
 					//tpnflow logic
 					//String tpnflow = PiUtil.getTpnFLow(productNo,t,mapOfTpn,mapOfFactory,String.valueOf(mapOfNm.get(productNo)));
 					// FAB
 					// if location is not null and location doesn't contain TESTING and CP
-					if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP")))||firm.equals("hlmc")) {
+					if(firm.equals("umc")){
+						String pn = productNo;
+						remLayer = remLayer.trim().substring(1);
+						remLayer = String.valueOf(Integer.parseInt(remLayer.split("/")[1])-Integer.parseInt(remLayer.split("/")[0]));
+						if("0".equals(remLayer)){
+							tpnflow = "OQC";
+						}else {
+							String keyOfMap = pn + (int) Double.parseDouble(remLayer);
+							tpnflow = (String)mapOfTpnNewRule.get(keyOfMap);
+						}
+					}else if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP")))||firm.equals("hlmc")) {
 						boolean checkSmicLocation = true;
 						if(firm.equals("smic")&&((!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
 							checkSmicLocation = false;
