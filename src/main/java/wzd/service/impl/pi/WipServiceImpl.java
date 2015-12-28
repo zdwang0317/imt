@@ -613,6 +613,7 @@ public class WipServiceImpl implements IWipService {
 	 * 每天WIP数据进来后更新t_fabside_wip表中的productId
 	 * @see wzd.service.IWipService#updateProductNoOfPi()
 	 */
+	@Deprecated
 	@Override
 	public void updateProductNoOfPi() {
 		// TODO Auto-generated method stub
@@ -960,8 +961,9 @@ public class WipServiceImpl implements IWipService {
 		SimpleDateFormat sf2 = new SimpleDateFormat("yy/MM/dd");
 		ConnUtil connUtil = new ConnUtil();
 		Connection conn = connUtil.getMysqlConnection();
-		String sqlOfQuery = "select productNo,lid,wid from z_wip_detail where erpDate = ? and tpnflow in('PAS1','PAD','PAS2','UV','WAT','QC','INV1') order by productNo,lid";
-		String sqlOfUpdate = "update t_fabside_wip set latestPn = 'Y',productId = ? where lotid = ? and waferid = ?";
+		String sqlOfQuery = "select pn,lid,wid from z_wip_detail where erpDate = ? and tpnflow in('PAS1','PAD','PAS2','UV','WAT','QC','INV1') order by productNo,lid";
+//		String sqlOfUpdate = "update t_fabside_wip set latestPn = 'Y',productId = ? where lotid = ? and waferid = ?";
+		String sqlOfUpdate = "update t_fabside_wip set latestPn = 'Y',productId = ? where id=?";
 		try {
 			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sqlOfQuery);
@@ -971,14 +973,14 @@ public class WipServiceImpl implements IWipService {
 			while (rst.next()) {
 				String lid = rst.getString("lid");
 				String wid = rst.getString("wid");
-				String pn = rst.getString("productNo");
+				String pn = rst.getString("pn");
 				pst.setString(1, pn);
 				if(lid.contains(".")){
-					pst.setString(2, lid.substring(0, lid.indexOf(".")));
+					pst.setString(2, lid.substring(0, lid.indexOf("."))+"_"+wid);
 				}else{
-					pst.setString(2, lid);
+					pst.setString(2, lid+"_"+wid);
 				}
-				pst.setString(3, wid);
+//				pst.setString(3, wid);
 				pst.addBatch();
 			}
 			//logger.info(String.format(sqlOfUpdate, preparePlaceHolders(ids.size())));
@@ -1927,7 +1929,7 @@ public class WipServiceImpl implements IWipService {
 					pst2.setString(1, productNo);
 					pst2.setString(2, tpnflow);
 					pst2.setInt(3, id);
-					logger.info("id:"+id+"_p:"+productNo+"_t:"+tpnflow);
+//					logger.info("id:"+id+"_p:"+productNo+"_t:"+tpnflow);
 					pst2.addBatch();
 					returnNum++;
 				}
