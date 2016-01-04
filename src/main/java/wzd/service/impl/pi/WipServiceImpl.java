@@ -1497,13 +1497,13 @@ public class WipServiceImpl implements IWipService {
 			ConnUtil connUtil = new ConnUtil();
 			Connection conn = connUtil.getMysqlConnection();
 //			String sql = "select a.cpn,a.ipn,a.lid,a.pn,a.status,a.wid,a.ipn_new,a.tpn,b.status pistatus,a.tpnFLow,b.abnormal from zz_turnkey_detail a left join t_fabside_wip b on a.lid = b.lotid and a.wid = b.waferid where 1=1";
-			String sql = "select a.cpn,a.ipn,a.lid,a.pn,a.status,a.wid,a.ipn_new,a.tpn,b.status pistatus,a.tpnFLow,b.abnormal from zz_turnkey_detail a left join t_fabside_wip b on b.Id = concat(parent_lid,'_',wid) where 1=1";
+			String sql = "select a.cpn,a.ipn,a.lid,a.pn,a.status,a.wid,a.ipn_new,a.tpn,b.status pistatus,a.tpnFLow,b.abnormal,b.probeCount,b.erpProgram,b.erpProgramTime from zz_turnkey_detail a left join t_fabside_wip b on b.Id = a.id_ where 1=1";
 			sql = addWhereOfWipDetailUniqueByJdbc(wip, sql);
 			if(wip.getPage()==0){
 				wip.setPage(1);
 			}
 			sql += " order by a.lid,a.wid limit "+(wip.getPage() - 1) * wip.getRows()+","+wip.getRows();
-			String totalHql = "select count(*) as rows from zz_turnkey_detail a left join t_fabside_wip b on b.Id = concat(parent_lid,'_',wid) where 1=1 " + addWhereOfWipDetailUniqueByJdbc(wip, "");
+			String totalHql = "select count(*) as rows from zz_turnkey_detail a left join t_fabside_wip b on b.Id = a.id_ where 1=1 " + addWhereOfWipDetailUniqueByJdbc(wip, "");
 			try {
 				pst = conn.prepareStatement(sql);
 				rst = pst.executeQuery();
@@ -1520,6 +1520,9 @@ public class WipServiceImpl implements IWipService {
 					obj.setTpnFlow(rst.getString("tpnFlow"));
 					obj.setPiStatus(rst.getString("pistatus"));
 					obj.setWaferType(rst.getString("abnormal"));
+					obj.setProbeCount(rst.getString("probeCount"));
+					obj.setErpProgram(rst.getString("erpProgram"));
+					obj.setErpProgramTime(rst.getString("erpProgramTime"));
 					nl.add(obj);
 				}
 				pst = conn.prepareStatement(totalHql);

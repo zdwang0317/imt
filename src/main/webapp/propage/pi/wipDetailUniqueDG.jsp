@@ -57,6 +57,7 @@
 			console.info(para);
 		},
 		onLoadSuccess : function(data){
+			console.info(data);
 			var pager = $('#pi_wip_unique_dg').datagrid('getPager');    // 得到datagrid的pager对象  
 			pager.pagination({    
 			    buttons:[{
@@ -98,13 +99,16 @@
 				<th data-options="field:'wid',width:40">Wafer</th>
 				<th data-options="field:'pn',width:100">PartNo</th>
 				<th data-options="field:'cpn',width:100">CPN</th>
-				<th data-options="field:'ipn',width:150">IPN(Old)</th>
-				<th data-options="field:'ipn_new',width:150">IPN(New)</th>
-				<th data-options="field:'tpn',width:150">TPN(New)</th>
-				<th data-options="field:'tpnFlow',width:150">Wip Flow</th>
+				<th data-options="field:'ipn',width:120">IPN(Old)</th>
+				<th data-options="field:'ipn_new',width:120">IPN(New)</th>
+				<th data-options="field:'tpn',width:120">TPN(New)</th>
+				<th data-options="field:'tpnFlow',width:60">Wip Flow</th>
 				<th data-options="field:'status',width:100">Status</th>
 				<th data-options="field:'waferType',width:100">Wafer Type</th>
 				<th data-options="field:'piStatus',width:100">Pi_Status</th>
+				<th data-options="field:'probeCount',width:100">Probe_count</th>
+				<th data-options="field:'erpProgram',width:100">final_CP_PGM</th>
+				<th data-options="field:'erpProgramTime',width:100">final_CP_yield</th>
 			</tr>
 		</thead>
 	</table>

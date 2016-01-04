@@ -20,6 +20,11 @@ public class WipDetailUnique{
 	private String piStatus;
 	private String waferType;
 	private String total;
+	
+	private String probeCount;
+	private String erpProgram;
+	private String erpProgramTime;
+	
 	public int getId() {
 		return id;
 	}
@@ -115,6 +120,24 @@ public class WipDetailUnique{
 	}
 	public void setTotal(String total) {
 		this.total = total;
+	}
+	public String getProbeCount() {
+		return probeCount;
+	}
+	public void setProbeCount(String probeCount) {
+		this.probeCount = probeCount;
+	}
+	public String getErpProgram() {
+		return erpProgram;
+	}
+	public void setErpProgram(String erpProgram) {
+		this.erpProgram = erpProgram;
+	}
+	public String getErpProgramTime() {
+		return erpProgramTime;
+	}
+	public void setErpProgramTime(String erpProgramTime) {
+		this.erpProgramTime = erpProgramTime;
 	}
 	
 	
