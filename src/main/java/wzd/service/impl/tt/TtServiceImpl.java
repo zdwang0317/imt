@@ -1326,7 +1326,12 @@ public class TtServiceImpl implements ITtService {
 					String yield = " ";
 					String sqlOfYield = "select lotid,waferid,yield from t_fabside_yield where lotid=? and waferid= ? and stage='CP2' and lotid is not null and lotid!=' ' order by starttime desc limit 0,1";
 					pst4 = connOfPi.prepareStatement(sqlOfYield);
-					pst4.setString(1, rst2.getString("lotid").substring(0, 6));
+					String lotid = rst2.getString("lotid");
+					if(lotid.contains(".")){
+						pst4.setString(1, rst2.getString("lotid").substring(0, lotid.indexOf(".")));
+					}else{
+						pst4.setString(1, lotid);
+					}
 					pst4.setString(2, rst2.getString("waferid"));
 					rst4 = pst4.executeQuery();
 					while (rst4.next()) {
