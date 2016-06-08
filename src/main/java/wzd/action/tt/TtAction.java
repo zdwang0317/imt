@@ -57,7 +57,7 @@ public class TtAction extends BaseAction implements ModelDriven<Tt> {
 
 	public synchronized void passCpWip() {
 		Json j = new Json();
-		int updateRows = ttService.passCpWip();
+		int updateRows = ttService.passCpWipLatest();
 		j.setObj(updateRows);
 		j.setMsg("更新行数：" + updateRows);
 		j.setSuccess(true);

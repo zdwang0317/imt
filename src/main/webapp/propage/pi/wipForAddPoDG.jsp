@@ -425,11 +425,10 @@
 					<select name="fabSite" class="easyui-combobox">
 					 	<option value="XMC">XMC</option>
 						<option value="SMIC">SMIC</option>
-						<option value="GIGA">GIGA</option>
-						<option value="CSMC">CSMC</option>
-						<option value="SMIC-SOG">SMIC-SOG</option>
-						<option value="XMC-SOG">XMC-SOG</option>
-						<option value="HLMC-SOG">HLMC-SOG</option>
+						<option value="GIGA_HK">GIGA_HK</option>
+						<option value="GIGA_BJ">GIGA_BJ</option>
+						<option value="GIGA_SH">GIGA_SH</option>
+						<option value="GIGA_HF">GIGA_HF</option>
 					</select>
 				</td>
 			</tr>

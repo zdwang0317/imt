@@ -1,10 +1,11 @@
 package wzd.service.impl.tt;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -984,7 +985,7 @@ public class TtServiceImpl implements ITtService {
 						} else {
 							list = WaferIdFormat.getWaferIdFromChipmos(list,wid);
 						}
-					}else if (firm.equals("hlmc")) {
+					}else if (firm.equals("hlmc")|| firm.equals("umc")) {
 						if(UtilValidate.isNotEmpty(wid)){
 							list = WaferIdFormat.getWaferIdFromHlmc(wid);
 						}
@@ -1297,7 +1298,7 @@ public class TtServiceImpl implements ITtService {
 			// 查询PI系统中CP可出货记录
 //			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where ((status in('Inkless map available','OP ship','OP to do') and abnormal='M') or (status in('Inkless map available','OP ship') and abnormal<>'M' and abnormal not like '%T%') or (status ='ERP to do') or (status ='Mapping to do')) and ipn is null and lotid is not null";
 //			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where status ='ERP to do' and ipn is null and lotid is not null";
-			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
+			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real,erpProgramTime,kgdRemarks from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
 			String sqlOfQty = "select count(*) qty from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
 			// 更新Pi系统
 			List<String> updateWipId = new ArrayList<String>();
@@ -1313,8 +1314,8 @@ public class TtServiceImpl implements ITtService {
 				String insertSql = "insert into tc_cpi_file"
 						+ "(tc_cpi01,tc_cpi02,tc_cpi03,tc_cpi05,tc_cpi06,tc_cpi07,"
 						+ "tc_cpi10,tc_cpi11,tc_cpi09,tc_cpi12,tc_cpi04,tc_cpi08,tc_cpi13,"
-						+ "tc_cpi14,tc_cpi15,tc_cpi16,tc_cpi17) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+						+ "tc_cpi14,tc_cpi15,tc_cpi16,tc_cpi17,tc_cpi18) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				while (rst2.next()) {
 					updateWipId.add(rst2.getString("id"));
 					Map<String,Object> newMap = new HashMap<String,Object>();
@@ -1380,10 +1381,20 @@ public class TtServiceImpl implements ITtService {
 						cpn = " ";
 					}
 					newMap.put("cpn", cpn);
+					Timestamp time = rst2.getTimestamp("erpProgramTime");
+					String time_ = time.toString();
+					String[] times = time_.split(" ");
+					newMap.put("date", times[0]);
+					newMap.put("time", times[1].substring(0,8));
 					newMap.put("grade", rst2.getString("grade"));
 					newMap.put("yield", yield);
 					newMap.put("tpnId", rst2.getString("tpnId"));
 					newMap.put("erpProgram", rst2.getString("erpProgram"));
+					String kgdRemarks = rst2.getString("kgdRemarks");
+					if(UtilValidate.isEmpty(kgdRemarks)){
+						kgdRemarks = " ";
+					}
+					newMap.put("kgdRemarks", kgdRemarks);
 					listOfMap.add(newMap);
 					returnNum++;
 				}
@@ -1405,7 +1416,11 @@ public class TtServiceImpl implements ITtService {
 							pst2.setString(4, (String)submap.get("lid"));
 							pst2.setString(5, (String)submap.get("waferid"));
 							pst2.setInt(6, 1);
-							pst2.setDate(7, new java.sql.Date(date.getTime()));
+							String dd = (String)submap.get("date");
+							SimpleDateFormat sdf_ = new SimpleDateFormat("yyyy-MM-dd");
+							Date d = sdf_.parse(dd);
+							pst2.setDate(7, new java.sql.Date(d.getTime()));
+//							pst2.setString(8, (String)submap.get("time"));
 							pst2.setString(8, "00:00:00");
 							pst2.setString(9, "N");
 							pst2.setString(10, "N");
@@ -1413,9 +1428,10 @@ public class TtServiceImpl implements ITtService {
 							pst2.setDouble(12, 0);
 							pst2.setString(13, (String)submap.get("grade"));
 							pst2.setString(14, (String)submap.get("yield"));
-							pst2.setString(15, " ");
+							pst2.setString(15, (String)submap.get("kgdRemarks"));
 							pst2.setString(16, (String)submap.get("tpnId"));
 							pst2.setString(17, (String)submap.get("erpProgram"));
+							pst2.setString(18, (String)submap.get("kgdRemarks"));
 							pst2.addBatch();
 						}
 						pst2.executeBatch();
@@ -1439,6 +1455,9 @@ public class TtServiceImpl implements ITtService {
 				ConnUtil.close(rst4, pst4);
 				ConnUtil.closeConn(connOfPi);
 				ConnUtil.closeConn(currentConn);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} finally {
 				ConnUtil.close(rst2, pst2);
 				ConnUtil.close(rst4, pst4);
