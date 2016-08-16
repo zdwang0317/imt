@@ -70,6 +70,9 @@ public class PoAction extends BaseAction implements ModelDriven<OptionContent> {
 		super.writeJson(poService.passOptionsByStr(optionContent.getIpn_ipn()));
 	}
 	
+	public void PassNandOptionsByStr(){
+		super.writeJson(poService.passNandOptions());
+	}
 	
 
 	

@@ -1275,6 +1275,61 @@ public class PoServiceImpl implements IPoService {
 		}
 		return noPermissionWid.toString();
 	}
+	@Override
+	public Map<String, List<Map<String,String>>> passNandOptions() {
+		// TODO Auto-generated method stub
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		ResultSet rst = null;
+		List<Map<String,String>> k1 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k2 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k3 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k4 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k5 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k6 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k7 = new ArrayList<Map<String,String>>();
+		try {
+			pst = conn.prepareStatement("select key3,value,code from t_paramete where key1='Para_NAND'");
+			rst = pst.executeQuery();
+			while(rst.next()){
+				String key3 = rst.getString("key3");
+				Map<String,String> map = new HashMap<String, String>();
+				map.put("name", rst.getString("value"));
+				map.put("description", rst.getString("code"));
+				if(key3.equals("Prod ID")){
+					k1.add(map);
+				}else if(key3.equals("Mask Version")){
+					k2.add(map);
+				}else if(key3.equals("Process Version")){
+					k3.add(map);
+				}else if(key3.equals("Prod Series")){
+					k4.add(map);
+				}else if(key3.equals("Prod Density")){
+					k5.add(map);
+				}else if(key3.equals("Tester")){
+					k6.add(map);
+				}else if(key3.equals("Test Flow")){
+					k7.add(map);
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnUtil.close(rst, pst);
+			ConnUtil.closeConn(conn);
+		}
+		Map<String, List<Map<String,String>>> rt = new HashMap<String, List<Map<String,String>>>();
+		rt.put("k1", k1);
+		rt.put("k2", k2);
+		rt.put("k3", k3);
+		rt.put("k4", k4);
+		rt.put("k5", k5);
+		rt.put("k6", k6);
+		rt.put("k7", k7);
+		return rt;
+	}
 	
 	
 }

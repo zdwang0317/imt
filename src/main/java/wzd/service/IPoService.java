@@ -26,5 +26,6 @@ public interface IPoService {
 	void deletePoItemDetailsFromFidByChange(TurnkeyOrder turnkeyOrder);
 	DataGrid datagridOfChangeList(TurnkeyOrder turnkeyOrder);
 	Map<String,List<ToptionContent>> passOptionsByStr(String ipn_ipn);
+	Map<String,List<Map<String,String>>> passNandOptions();
 	void completedProductOrderAndInvokeWebService(TurnkeyOrder turnkeyOrder);
 }

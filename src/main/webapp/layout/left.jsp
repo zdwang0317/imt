@@ -52,6 +52,12 @@
 						"url":"propage/pi/wipForAddPoDG.jsp"
 					}
 				},{
+					text: 'Nand WO Add ',
+					"iconCls":"icon-zd-add-po",
+					"attributes":{  
+						"url":"propage/pi/wipForAddNandPoDG.jsp"
+					}
+				},{
 					text: 'WO Edit',
 					"iconCls":"icon-zd-edit-po",
 					"attributes":{  

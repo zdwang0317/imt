@@ -231,7 +231,7 @@ public class TtServiceImpl implements ITtService {
 				String firm = rst.getString("firm");
 				if (UtilValidate.isNotEmpty(wid)) {
 					List<String> list = new ArrayList<String>();
-					if (firm.equals("smic") || firm.equals("xmc")) {
+					if (firm.equals("smic")) {
 						list = WaferIdFormat
 								.getWaferIdFromSmic(wid);
 					} else if (firm.equals("klt")
@@ -247,7 +247,7 @@ public class TtServiceImpl implements ITtService {
 									.getWaferIdFromChipmos(list,
 											wid);
 						}
-					} else if (firm.equals("hlmc")||firm.equals("umc")) {
+					} else if (firm.equals("hlmc")||firm.equals("umc")|| firm.equals("xmc")) {
 						list = WaferIdFormat.getWaferIdFromHlmc(wid);
 					}
 					for (String s : list) {
@@ -974,7 +974,7 @@ public class TtServiceImpl implements ITtService {
 						ipn = rst.getString("ipn");
 					}
 					String parent_lid = lid.split("\\.")[0];
-					if (firm.equals("smic") || firm.equals("xmc")) {
+					if (firm.equals("smic") ) {
 						list = WaferIdFormat.getWaferIdFromSmic(wid);
 					} else if (firm.equals("csmc")) {
 						list = WaferIdFormat.getWaferIdList(wid);
@@ -985,7 +985,7 @@ public class TtServiceImpl implements ITtService {
 						} else {
 							list = WaferIdFormat.getWaferIdFromChipmos(list,wid);
 						}
-					}else if (firm.equals("hlmc")|| firm.equals("umc")) {
+					}else if (firm.equals("hlmc")|| firm.equals("umc")|| firm.equals("xmc")) {
 						if(UtilValidate.isNotEmpty(wid)){
 							list = WaferIdFormat.getWaferIdFromHlmc(wid);
 						}

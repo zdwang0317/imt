@@ -1447,22 +1447,35 @@ public class WipServiceImpl implements IWipService {
 			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sqlOfUpdate);
 			for(Map.Entry<String, String> entry: mapOfUpdateData.entrySet()) {
-//				boolean canUpdate = true;
-				 String keyValue = entry.getKey();
-				 String[] lidAndWid = keyValue.split("_");
-/*				 String lid = lidAndWid[0];
-				 if(lid.contains(".")){
-					 lid = lid.substring(0, lid.indexOf("."));
-				 }
-				 pst2 = conn.prepareStatement("select abnormal from t_fabside_wip where id='"+lid+"_"+lidAndWid[1]+"' and abnormal like '%S%'");
+				boolean canUpdate = true;
+				boolean hasFabSide = false;
+				String keyValue = entry.getKey();
+				String[] lidAndWid = keyValue.split("_");
+
+				String lid = lidAndWid[0];
+				if (lid.contains(".")) {
+					lid = lid.substring(0, lid.indexOf("."));
+				}
+				pst2 = conn.prepareStatement("select status,abnormal from t_fabside_wip where id='"
+								+ lid + "_" + lidAndWid[1] + "'");
 				rst2 = pst2.executeQuery();
-				while(rst2.next()){
-					canUpdate = false;
-				}*/
-				 pst.setString(1, entry.getValue());
-				 pst.setString(2, lidAndWid[0]);
-				 pst.setString(3, lidAndWid[1]);
-				 pst.addBatch();
+				while (rst2.next()) {
+					hasFabSide = true;
+					String status = rst2.getString("status");
+					String waferType = rst2.getString("abnormal");
+					if(waferType.contains("S")){
+						canUpdate = false;
+					}
+					if(status.equals("ERP to do")||status.equals("Finish")||status.equals("Mapping to do")){
+						canUpdate = false;
+					}
+				}
+				if(canUpdate&&hasFabSide){
+					pst.setString(1, entry.getValue());
+					pst.setString(2, lidAndWid[0]);
+					pst.setString(3, lidAndWid[1]);
+					pst.addBatch();
+				}
 			}
 			//logger.info(String.format(sqlOfUpdate, preparePlaceHolders(ids.size())));
 			logger.info("execute update tpn start!");
