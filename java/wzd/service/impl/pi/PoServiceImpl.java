@@ -1295,7 +1295,7 @@ public class PoServiceImpl implements IPoService {
 			while(rst.next()){
 				String key3 = rst.getString("key3");
 				Map<String,String> map = new HashMap<String, String>();
-				map.put("name", rst.getString("code"));
+				map.put("name", rst.getString("value"));
 				map.put("description", rst.getString("code"));
 				if(key3.equals("Prod ID")){
 					k1.add(map);
@@ -1329,95 +1329,6 @@ public class PoServiceImpl implements IPoService {
 		rt.put("k6", k6);
 		rt.put("k7", k7);
 		return rt;
-	}
-	
-	@Override
-	public String createNandProductOrderAndValidateIpn(OptionContent option) {
-		// TODO Auto-generated method stub
-		String serialNumber = "PO" + DateUtil.dateToString(new Date(), "yyyyMMddHHmmss");
-	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_seven();
-	    String tpn = option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_seven();
-	    int i = 1;
-	    tpn = checkIpnHasATpn(tpn);
-	    if (UtilValidate.isEmpty(tpn)) {
-	      i = 0;
-	    }
-	    if (i == 0)
-	      return "创建失败：末找到匹配的TPN";
-	    if (i == 1) {
-	      List listOfTurnkeyDetail = getListFromIds(option.getIpn_ids(), option.getCancel_ids());
-	      String hasQType = getStatusOfWaferType(listOfTurnkeyDetail, option.getIpn_one());
-	      if (UtilValidate.isNotEmpty(hasQType)) {
-	        return "创建失败：Wafer Type 规则不符:" + hasQType.substring(1);
-	      }
-	      int oid = save(serialNumber, ipn, option.getCpn_name(), option.getCreatedUserName(), option.getFabSite(), tpn);
-	      int seqId = 1;
-	      String cpTestFlow = "";
-	      String cpSite = null;
-	      createProductOrder(ipn, cpTestFlow, cpSite, oid, listOfTurnkeyDetail, seqId, option);
-	      updateStatusForTurnkeyDetail(listOfTurnkeyDetail);
-	    }
-	    return "创建成功：工单流水号为" + serialNumber;
-	}
-	@Override
-	public DataGrid getNewRuleHeader(OptionContent optionContent) {
-		// TODO Auto-generated method stub
-		DataGrid dg = new DataGrid();
-	    ConnUtil connUtil = new ConnUtil();
-	    Connection conn = connUtil.getMysqlConnection();
-	    PreparedStatement pst = null;
-	    ResultSet rst = null;
-	    List k1 = new ArrayList();
-	    try {
-	      pst = conn.prepareStatement("select key3,title from t_code where function='" + optionContent.getKey1() + "' and category='" + optionContent.getKey2() + "' and groupNo=1 order by no");
-	      rst = pst.executeQuery();
-	      while (rst.next()) {
-	        Map map = new HashMap();
-	        String key3 = rst.getString("key3");
-	        if (UtilValidate.isEmpty(key3)) {
-	          key3 = rst.getString("title");
-	        }
-	        map.put("title", key3);
-	        k1.add(map);
-	      }
-	    }
-	    catch (SQLException e) {
-	      e.printStackTrace();
-	    } finally {
-	      ConnUtil.close(rst, pst);
-	      ConnUtil.closeConn(conn);
-	    }
-	    dg.setRows(k1);
-	    return dg;
-	}
-	@Override
-	public DataGrid getNewRuleValue(OptionContent option) {
-		// TODO Auto-generated method stub
-		DataGrid dg = new DataGrid();
-	    ConnUtil connUtil = new ConnUtil();
-	    Connection conn = connUtil.getMysqlConnection();
-	    PreparedStatement pst = null;
-	    ResultSet rst = null;
-	    List k1 = new ArrayList();
-	    try {
-	      pst = conn.prepareStatement("select value,code,field1 from t_paramete where key1='" + option.getKey1() + "' and key2='" + option.getKey2() + "' and key3='" + option.getKey3() + "' order by code");
-	      rst = pst.executeQuery();
-	      while (rst.next()) {
-	        Map map = new HashMap();
-	        map.put("name", rst.getString("code"));
-	        map.put("description", rst.getString("value"));
-	        map.put("field1", rst.getString("field1"));
-	        k1.add(map);
-	      }
-	    }
-	    catch (SQLException e) {
-	      e.printStackTrace();
-	    } finally {
-	      ConnUtil.close(rst, pst);
-	      ConnUtil.closeConn(conn);
-	    }
-	    dg.setRows(k1);
-	    return dg;
 	}
 	
 	

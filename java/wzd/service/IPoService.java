@@ -28,7 +28,4 @@ public interface IPoService {
 	Map<String,List<ToptionContent>> passOptionsByStr(String ipn_ipn);
 	Map<String,List<Map<String,String>>> passNandOptions();
 	void completedProductOrderAndInvokeWebService(TurnkeyOrder turnkeyOrder);
-	String createNandProductOrderAndValidateIpn(OptionContent optionContent);
-	DataGrid getNewRuleHeader(OptionContent paramOptionContent);
-	DataGrid getNewRuleValue(OptionContent paramOptionContent);
 }

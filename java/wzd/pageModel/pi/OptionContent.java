@@ -15,12 +15,6 @@ public class OptionContent {
 	private String ipn_ipn;
 	private String cancel_ids;
 	private String createdUserName;
-	private String key1;
-	private String key2;
-	private String key3;
-	private String ipn_zero;
-	private String ipn_zero_;
-	private String ipn_zero__;
 	
 	public String getIpn_one() {
 		return ipn_one;
@@ -105,42 +99,6 @@ public class OptionContent {
 	}
 	public void setFabSite(String fabSite) {
 		this.fabSite = fabSite;
-	}
-	public String getKey1() {
-		return key1;
-	}
-	public void setKey1(String key1) {
-		this.key1 = key1;
-	}
-	public String getKey2() {
-		return key2;
-	}
-	public void setKey2(String key2) {
-		this.key2 = key2;
-	}
-	public String getKey3() {
-		return key3;
-	}
-	public void setKey3(String key3) {
-		this.key3 = key3;
-	}
-	public String getIpn_zero() {
-		return ipn_zero;
-	}
-	public void setIpn_zero(String ipn_zero) {
-		this.ipn_zero = ipn_zero;
-	}
-	public String getIpn_zero_() {
-		return ipn_zero_;
-	}
-	public void setIpn_zero_(String ipn_zero_) {
-		this.ipn_zero_ = ipn_zero_;
-	}
-	public String getIpn_zero__() {
-		return ipn_zero__;
-	}
-	public void setIpn_zero__(String ipn_zero__) {
-		this.ipn_zero__ = ipn_zero__;
 	}
 	
 	

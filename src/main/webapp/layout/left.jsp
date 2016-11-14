@@ -52,7 +52,7 @@
 						"url":"propage/pi/wipForAddPoDG.jsp"
 					}
 				},{
-					text: 'Nand WO Add ',
+					text: 'Nand WO Add',
 					"iconCls":"icon-zd-add-po",
 					"attributes":{  
 						"url":"propage/pi/wipForAddNandPoDG.jsp"
@@ -76,6 +76,12 @@
 						"url":"propage/pi/lotToHoldDG.jsp"
 					}
 				},{
+					text: 'PN Naming Rule',
+					"iconCls":"icon-zd-search-po",
+					"attributes":{  
+						"url":"propage/pi/viewNewRule.jsp"
+					}
+				}/* ,{
 					text: 'CP IPN Rule',
 					"iconCls":"icon-zd-search-po",
 					"attributes":{  
@@ -99,7 +105,7 @@
 					"attributes":{  
 						"url":"propage/pi/viewOfNandTpnRule.jsp"
 					}
-				},{
+				} */,{
 					text: 'Wip Function',
 					"iconCls":"icon-zd-wip_function",
 					"attributes":{  
