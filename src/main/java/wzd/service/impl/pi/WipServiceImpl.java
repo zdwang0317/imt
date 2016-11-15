@@ -1796,6 +1796,11 @@ public class WipServiceImpl implements IWipService {
 						if(UtilValidate.isEmpty(productNo)){
 							productNo =PiUtil.filterByProductNoIncludeW(rst.getString("pn"));
 						}
+						//special pn like 'A' or 'R'
+						if(UtilValidate.isEmpty(productNo)){
+							productNo =PiUtil.filterByProductNoFirstAOrR(rst.getString("pn"));
+						}
+						
 					}
 				}
 				if (UtilValidate.isNotEmpty(productNo)) {
@@ -1815,11 +1820,14 @@ public class WipServiceImpl implements IWipService {
 						}
 					}else if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP")))||firm.equals("hlmc")) {
 						boolean checkSmicLocation = true;
-						if(firm.equals("smic")&&((!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
+						if(firm.equals("smic")&&((!location.equals("WH"))&&(!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
 							checkSmicLocation = false;
 						}
 						// 如果remLayer不为空
 						if (UtilValidate.isNotEmpty(rst.getString("remlayer"))&&checkSmicLocation) {
+							if(location.equals("WH")&&!stage.toUpperCase().equals("SUBCON")){
+								continue;
+							}
 							String pn = "";
 							if (productNo.length() > 4) {
 								pn = productNo.substring(0, 4); 
@@ -1848,7 +1856,7 @@ public class WipServiceImpl implements IWipService {
 										tpnflow = "QC";
 									}else if(stage.contains(" ")||stage.contains("INVENTORY")||stage.contains("INV")||stage.contains("QC-PACK")||
 											stage.contains("QC1-PACK")||stage.contains("QC-INSP")||stage.contains("QC1-INSP")||stage.contains("CRYSTAL-STRIP")||
-											stage.contains("OUT-INSP")||stage.contains("OUT-INSP1")){
+											stage.contains("OUT-INSP")||stage.contains("OUT-INSP1")||stage.contains("FG")){
 										tpnflow = "INV1";
 									}
 								}

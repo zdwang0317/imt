@@ -45,6 +45,15 @@ public class PiUtil {
 		return returnStr;
 	}
 	
+	public static String filterByProductNoFirstAOrR(String productNo){
+		String returnStr = null;
+		String first_ = productNo.toUpperCase().substring(0, 1);
+		if(first_.equals("A")||first_.equals("R")){
+			returnStr = productNo;
+		}
+		return returnStr;
+	}
+	
 	public static String processSpecialStage(String stage){
 		String tpnflow = null;
 		if(stage.equals("BAKE")){
