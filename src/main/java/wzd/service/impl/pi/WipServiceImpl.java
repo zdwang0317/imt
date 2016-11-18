@@ -1825,7 +1825,7 @@ public class WipServiceImpl implements IWipService {
 						}
 						// 如果remLayer不为空
 						if (UtilValidate.isNotEmpty(rst.getString("remlayer"))&&checkSmicLocation) {
-							if(location.equals("WH")&&!stage.toUpperCase().equals("SUBCON")){
+							if(UtilValidate.isNotEmpty(location)&&location.equals("WH")&&!stage.toUpperCase().equals("SUBCON")){
 								continue;
 							}
 							String pn = "";
