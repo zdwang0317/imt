@@ -145,8 +145,8 @@ public class WipAction extends BaseAction implements ModelDriven<Wip>{
 			response.setHeader("Connection", "close");
 			response.setHeader("Content-Type", "application/vnd.ms-excel");
 			String title = "wip";
-	        String[] hearders = new String[] {"Lot Id", "PartNo", "CPN", "IPN","Qty","Wafer Id","Stage","Status","RemLayer","HoldDate","HoldRemark","Location","Firm","Product No","TPN FLOW"};//表头数组
-	        String[] fields = new String[] {"lid", "pn", "cpn", "ipn","qty","wid","stage","status","remLayer","holdDate","holdRemark","location","firm","productNo","tpnFlow"};//People对象属性数组
+	        String[] hearders = new String[] {"Lot Id", "PartNo", "CPN", "IPN","Qty","Wafer Id","Stage","Status","RemLayer","HoldDate","HoldRemark","Location","Firm","Product No","TPN FLOW","Recived Date"};//表头数组
+	        String[] fields = new String[] {"lid", "pn", "cpn", "ipn","qty","wid","stage","status","remLayer","holdDate","holdRemark","location","firm","productNo","tpnFlow","startDate"};//People对象属性数组
 	        TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders),fields);
 	        JsGridReportBase report = new JsGridReportBase(request, response);
 	        report.exportToExcel(title, "admin", td,"");

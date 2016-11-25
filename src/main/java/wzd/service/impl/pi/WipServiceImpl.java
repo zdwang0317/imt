@@ -1856,7 +1856,7 @@ public class WipServiceImpl implements IWipService {
 										tpnflow = "QC";
 									}else if(stage.contains(" ")||stage.contains("INVENTORY")||stage.contains("INV")||stage.contains("QC-PACK")||
 											stage.contains("QC1-PACK")||stage.contains("QC-INSP")||stage.contains("QC1-INSP")||stage.contains("CRYSTAL-STRIP")||
-											stage.contains("OUT-INSP")||stage.contains("OUT-INSP1")||stage.contains("FG")){
+											stage.contains("OUT-INSP")||stage.contains("OUT-INSP1")||stage.contains("FG")||stage.contains("SUBCON")){
 										tpnflow = "INV1";
 									}
 								}
