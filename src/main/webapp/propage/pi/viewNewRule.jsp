@@ -22,8 +22,12 @@ function fillTableValue(title,index){
     	border : true,
 		fit : false,
     	columns:[[{field:'name',title:'值'},
-    	          {field:'description',title:'描述'},
-    	          {field:'field1',title:'field1'},
+    	          {field:'description',title:'描述',width:150},	
+    	          {field:'field1',title:'field1',width:100},
+    	          {field:'field2',title:'field2',width:100},
+    	          {field:'field3',title:'field3',width:100},
+    	          {field:'field4',title:'field4',width:100},
+    	          {field:'field5',title:'field5',width:100},
         ]],
         onLoadSuccess:function(data){
         }

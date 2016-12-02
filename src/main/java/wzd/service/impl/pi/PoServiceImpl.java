@@ -1400,13 +1400,17 @@ public class PoServiceImpl implements IPoService {
 	    ResultSet rst = null;
 	    List k1 = new ArrayList();
 	    try {
-	      pst = conn.prepareStatement("select value,code,field1 from t_paramete where key1='" + option.getKey1() + "' and key2='" + option.getKey2() + "' and key3='" + option.getKey3() + "' order by code");
+	      pst = conn.prepareStatement("select value,code,field1,field2,field3,field4,field5 from t_paramete where key1='" + option.getKey1() + "' and key2='" + option.getKey2() + "' and key3='" + option.getKey3() + "' order by code");
 	      rst = pst.executeQuery();
 	      while (rst.next()) {
 	        Map map = new HashMap();
 	        map.put("name", rst.getString("code"));
 	        map.put("description", rst.getString("value"));
 	        map.put("field1", rst.getString("field1"));
+	        map.put("field2", rst.getString("field2"));
+	        map.put("field3", rst.getString("field3"));
+	        map.put("field4", rst.getString("field4"));
+	        map.put("field5", rst.getString("field5"));
 	        k1.add(map);
 	      }
 	    }
