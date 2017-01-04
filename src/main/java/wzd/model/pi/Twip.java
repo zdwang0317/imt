@@ -35,6 +35,7 @@ public class Twip implements java.io.Serializable{
 	private String tpnFlow;
 	private String productNo;
 	private String resolved;
+	private String ifCp;
 	// Constructors
 
 	/** default constructor */
@@ -228,6 +229,14 @@ public class Twip implements java.io.Serializable{
 
 	public void setResolved(String resolved) {
 		this.resolved = resolved;
+	}
+
+	public String getIfCp() {
+		return ifCp;
+	}
+
+	public void setIfCp(String ifCp) {
+		this.ifCp = ifCp;
 	}
 	
 	
