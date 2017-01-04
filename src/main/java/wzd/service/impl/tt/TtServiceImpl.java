@@ -846,7 +846,7 @@ public class TtServiceImpl implements ITtService {
 		try {
 			//准备ADD 数据
 			pstForAdd = conn.prepareStatement("insert into zz_turnkey_detail(wid,pn,lid,ipn,status,cpn,parent_lid,tpnFLow,id_) values(?,?,?,?,?,?,?,?,?)");
-			pstForUpdate = conn.prepareStatement("update zz_turnkey_detail set ipn=?,lid=?,tpnFLow=?,pn=? where id_=?");
+			pstForUpdate = conn.prepareStatement("update zz_turnkey_detail set ipn=?,lid=?,tpnFLow=?,pn=?,id=? where id_=?");
 			//准备No-Repeat 数据
 			pst = conn.prepareStatement("select parent_lid,wid,ipn,id,lid,tpnFlow,status,pn from zz_turnkey_detail");
 			rst = pst.executeQuery();
@@ -869,7 +869,7 @@ public class TtServiceImpl implements ITtService {
 			logger.info("2");
 			Date date = new Date();
 			SimpleDateFormat sf2 = new SimpleDateFormat("yy/MM/dd");
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow from cp_wip where erpDate = ? and firm ='klt' and qty>0");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow,ifCp from cp_wip where erpDate = ? and firm ='klt' and qty>0");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			conn.setAutoCommit(false);
@@ -878,6 +878,7 @@ public class TtServiceImpl implements ITtService {
 				String wid = rst.getString("wid");
 				if(UtilValidate.isNotEmpty(wid)){
 					String lid = rst.getString("lid");
+					String ifCp = rst.getString("ifCp");
 					/*if(lid.equals("AYCGR")){
 						System.out.println("com ein");
 					}
@@ -931,6 +932,11 @@ public class TtServiceImpl implements ITtService {
 								pstForUpdate.setString(3, tpnFlow);
 								pstForUpdate.setString(4, pn);
 								pstForUpdate.setString(5, parent_lid+"_"+s);
+								if(ifCp.equals("Y")){
+									pstForUpdate.setInt(6, 0);
+								}else{
+									pstForUpdate.setInt(6, Integer.parseInt(dbHas.get("id")));
+								}
 								pstForUpdate.addBatch();
 							}
 						}else{
@@ -964,6 +970,7 @@ public class TtServiceImpl implements ITtService {
 					/*if(rst.getString("lid").equals("PP3699")){
 						System.out.println("come in");
 					}*/
+					String ifCp = rst.getString("ifCp");
 					String lid = rst.getString("lid");
 					String pn = rst.getString("pn");
 					String cpn = rst.getString("cpn");
@@ -1021,6 +1028,11 @@ public class TtServiceImpl implements ITtService {
 									pstForUpdate.setString(3, tpnFlow);
 									pstForUpdate.setString(4, pn);
 									pstForUpdate.setString(5, parent_lid+"_"+s);
+									if(ifCp.equals("Y")){
+										pstForUpdate.setInt(6, 0);
+									}else{
+										pstForUpdate.setInt(6, Integer.parseInt(dbHas.get("id")));
+									}
 									pstForUpdate.addBatch();
 								}
 							}else{

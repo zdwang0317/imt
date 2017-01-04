@@ -1209,7 +1209,7 @@ public class PoServiceImpl implements IPoService {
 		PreparedStatement pst = null;
 		try {
 			conn.setAutoCommit(false);
-			pst = conn.prepareStatement("update zz_turnkey_order set status='COMPLETED' where id ='"+turnkeyOrder.getId()+"'");
+			pst = conn.prepareStatement("update zz_turnkey_order set status='COMPLETED',id=1 where id ='"+turnkeyOrder.getId()+"'");
 			pst.executeUpdate();
 			Object[] objs = new Object[3];
 			objs[0] = turnkeyOrder.getIpn();

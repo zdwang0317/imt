@@ -1775,7 +1775,8 @@ public class WipServiceImpl implements IWipService {
 //				mapOfTpn.put(rst2.getString("pn") + rst2.getString("remLayer"),rst2.getString("tpn"));
 				mapOfTpn.put(rst2.getString("pn") + String.valueOf(rst2.getInt("remLayer")),rst2.getString("tpn"));
 			}
-			pst2 = connOfPi.prepareStatement("update cp_wip set productNo=?,tpnFlow=? where id =?");
+			pst2 = connOfPi.prepareStatement("update cp_wip set productNo=?,tpnFlow=?,ifCp=? where id =?");
+			String ifCp = "N";
 			while(rst.next()){
 				String tpnflow = null;
 				String stage = rst.getString("stage");
@@ -1883,6 +1884,7 @@ public class WipServiceImpl implements IWipService {
 //						logger.info("____________2:"+"_stage:"+t.getStage()+"_location:"+t.getLocation()+"_firm:"+t.getFirm());
 						//logger.info("Entering application.");
 						//Confirm WIP Factory 
+						ifCp = "Y";
 						String firmName = null;
 						if(UtilValidate.isNotEmpty(firm)){
 							if(firm.equals("chipmos")){
@@ -1952,7 +1954,8 @@ public class WipServiceImpl implements IWipService {
 					int id = rst.getInt("id");
 					pst2.setString(1, productNo);
 					pst2.setString(2, tpnflow);
-					pst2.setInt(3, id);
+					pst2.setString(3, ifCp);
+					pst2.setInt(4, id);
 //					logger.info("id:"+id+"_p:"+productNo+"_t:"+tpnflow);
 					pst2.addBatch();
 					returnNum++;
