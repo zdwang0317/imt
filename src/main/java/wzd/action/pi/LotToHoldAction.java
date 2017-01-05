@@ -291,5 +291,54 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 		j.setSuccess(true);
 		super.writeJson(j);
 	}
+	
+	public void ReplaceBaoFeiWip() throws IOException{
+		String fileName = lotToHold.getLotfileFileName();
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try {
+			fis = new FileInputStream(new File(lotToHold.getLotfile()));
+			fos = new FileOutputStream("d:/"+fileName);
+			int len;
+	        byte[] buffer = new byte[1024];
+			while ((len = fis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+	        }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			fis.close();
+			fos.close();
+		}
+		File file = new File("d:/"+fileName);
+		FileInputStream fin = new FileInputStream(file);
+		//excel 2007
+		XSSFWorkbook xwb = new XSSFWorkbook(fin);
+		XSSFSheet sheet = xwb.getSheetAt(0);
+		XSSFRow row;   
+		// 循环输出表格中的内容
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+			row = sheet.getRow(i);
+			Map<String,Object> record = new HashMap<String,Object>();
+			String id = row.getCell(0).toString().trim().replace(".0", "");
+			String type = row.getCell(1).toString().trim();
+			String qty = row.getCell(2).toString().trim().replace(".0", "");
+			record.put("id", id);
+			record.put("type", type);
+			record.put("qty", qty);
+			list.add(record);
+		}
+		file.delete();
+		int rows = wipService.ReplaceBaoFeiWip(list);
+		Json j = new Json();
+		j.setMsg("更新完成!更新行数："+rows);
+		j.setSuccess(true);
+		super.writeJson(j);
+	}
 }
 /**/

@@ -1209,7 +1209,7 @@ public class PoServiceImpl implements IPoService {
 		PreparedStatement pst = null;
 		try {
 			conn.setAutoCommit(false);
-			pst = conn.prepareStatement("update zz_turnkey_order set status='COMPLETED',id=1 where id ='"+turnkeyOrder.getId()+"'");
+			pst = conn.prepareStatement("update zz_turnkey_order set status='COMPLETED' where id ='"+turnkeyOrder.getId()+"'");
 			pst.executeUpdate();
 			Object[] objs = new Object[3];
 			objs[0] = turnkeyOrder.getIpn();
@@ -1231,7 +1231,7 @@ public class PoServiceImpl implements IPoService {
 			for(TturnkeyOrderItemDetail obj:listOfItemDetail){
 				strs.append(",'"+obj.getFid_()+"'");
 			}
-			pst = conn.prepareStatement("update zz_turnkey_detail set ipn_new ='"+turnkeyOrder.getIpn()+"',tpn='"+turnkeyOrder.getTpn()+"' where id_ in("+strs.toString().substring(1)+")");
+			pst = conn.prepareStatement("update zz_turnkey_detail set id=1,ipn_new ='"+turnkeyOrder.getIpn()+"',tpn='"+turnkeyOrder.getTpn()+"' where id_ in("+strs.toString().substring(1)+")");
 			pst.executeUpdate();
 			conn.commit();
 			/*//发MAIL

@@ -2039,5 +2039,34 @@ public class WipServiceImpl implements IWipService {
 		}
 		return String.valueOf(insertNumber);
 	}
+	@Override
+	public int ReplaceBaoFeiWip(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		ResultSet rst = null;
+		int[] i = {};
+		try {
+			pst = conn.prepareStatement("insert into zz_wip_baofei(type,id,qty) values(?,?,?)");
+			conn.setAutoCommit(false);
+			for(Map<String,Object> row : list){
+				pst.setString(1, (String)row.get("type"));
+				pst.setString(2, (String)row.get("id"));
+				int o = Integer.parseInt((String)row.get("qty"));
+				pst.setInt(3, o);
+				pst.addBatch();
+			}
+			i= pst.executeBatch();
+			conn.commit();
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			ConnUtil.close(rst, pst);
+			ConnUtil.closeConn(conn);
+		}
+		return i.length;
+	}
 	
 }

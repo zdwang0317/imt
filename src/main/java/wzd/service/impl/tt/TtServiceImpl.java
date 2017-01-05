@@ -938,6 +938,14 @@ public class TtServiceImpl implements ITtService {
 									pstForUpdate.setInt(6, Integer.parseInt(dbHas.get("id")));
 								}
 								pstForUpdate.addBatch();
+							}else if(dbHas.get("status").equals("COMPLETED")&&Integer.parseInt(dbHas.get("id"))==1&&ifCp.equals("Y")){
+								pstForUpdate.setString(1, ipn);
+								pstForUpdate.setString(2, lid);
+								pstForUpdate.setString(3, tpnFlow);
+								pstForUpdate.setString(4, pn);
+								pstForUpdate.setString(5, parent_lid+"_"+s);
+								pstForUpdate.setInt(6, 0);
+								pstForUpdate.addBatch();
 							}
 						}else{
 							//添加
@@ -1033,6 +1041,14 @@ public class TtServiceImpl implements ITtService {
 									}else{
 										pstForUpdate.setInt(6, Integer.parseInt(dbHas.get("id")));
 									}
+									pstForUpdate.addBatch();
+								}else if(dbHas.get("status").equals("COMPLETED")&&Integer.parseInt(dbHas.get("id"))==1&&ifCp.equals("Y")){
+									pstForUpdate.setString(1, ipn);
+									pstForUpdate.setString(2, lid);
+									pstForUpdate.setString(3, tpnFlow);
+									pstForUpdate.setString(4, pn);
+									pstForUpdate.setString(5, parent_lid+"_"+s);
+									pstForUpdate.setInt(6, 0);
 									pstForUpdate.addBatch();
 								}
 							}else{

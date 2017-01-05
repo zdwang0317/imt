@@ -43,4 +43,5 @@ public interface IWipService {
 	int UploadDataForUpdateTpn(Map<String,String> mapOfUpdateData);
 	List<WipCompare> getWipCompareData(Wip wip);
 	String addWip(WipDetailUnique wip);
+	int ReplaceBaoFeiWip(List<Map<String, Object>> list);
 }
