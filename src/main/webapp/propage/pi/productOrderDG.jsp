@@ -23,12 +23,6 @@ var wipForAddPoDGItem = 0;
 			              {field : 'status',title : '状态',width : 137,}] ],
 			toolbar: '#pi_po_dg_toolbar',
 			onSelect : function(rowIndex,rowData){
-				//第一次条件查询后可导出Report
-				if(rowData.status=='COMPLETED'){
-					$('#excel-download-po').linkbutton('enable');
-				}else{
-					$('#excel-download-po').linkbutton('disable');
-				}
 				//判断单据如果为本人则可以进行删除审核等操作
 				var loginName = $('#session_user_name').val();
 				if(rowData.createdUserName==loginName){
@@ -210,7 +204,6 @@ var wipForAddPoDGItem = 0;
 	function pi_wip_detail_searchForm_searchFun() {
 		$('#pi_po_dg').datagrid('load', serializeObject($('#pi_po_searchForm')));
 		$('#pi_po_item_dg').datagrid('loadData', {rows: [] });
-		$('#excel-download-po').linkbutton('disable');
 	}
 	
 	function pi_po_download(){
@@ -372,7 +365,6 @@ var wipForAddPoDGItem = 0;
 		$('#turnkey_order_item_delete').linkbutton('disable');
 		$('#turnkey_order_item_add').linkbutton('disable');
 		$('#turnkey_order_item_update').linkbutton('disable');
-		$('#excel-download-po').linkbutton('disable');
 	}
 	function pi_po_wip_showItemAddDialog() {
 		$('#work_order_id').val($('#pi_po_dg').datagrid('getSelected').id);
@@ -600,7 +592,7 @@ var wipForAddPoDGItem = 0;
 			<table style='margin-top:-4px;margin-bottom:-4px'>
 				<tr>
 					<td>
-						<a href="#" id="excel-download-po" class="easyui-linkbutton" data-options="disabled:true" iconCls="icon-zd-excel-download" plain="true" onclick="javascript:pi_po_download();">导出</a> 
+						<a href="#" id="excel-download-po" class="easyui-linkbutton" iconCls="icon-zd-excel-download" plain="true" onclick="javascript:pi_po_download();">导出</a> 
 						<a href="#" id="turnkey_order_delete" class="easyui-linkbutton" data-options="disabled:true" iconCls="icon-remove" plain="true" onclick="javascript:pi_po_delete();">删除</a> 
 						<!-- <a href="#" id="turnkey_order_cancel" class="easyui-linkbutton" data-options="disabled:true" iconCls="icon-undo" plain="true" onclick="javascript:pi_po_cancel();">取消审核</a> --> 
 						<a href="#" id="turnkey_order_complete" class="easyui-linkbutton" data-options="disabled:true" iconCls="icon-ok" plain="true" onclick="pi_po_completed();">审核</a>

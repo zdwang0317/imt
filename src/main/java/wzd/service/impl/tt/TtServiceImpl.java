@@ -931,20 +931,20 @@ public class TtServiceImpl implements ITtService {
 								pstForUpdate.setString(2, lid);
 								pstForUpdate.setString(3, tpnFlow);
 								pstForUpdate.setString(4, pn);
-								pstForUpdate.setString(5, parent_lid+"_"+s);
 								if(ifCp.equals("Y")){
-									pstForUpdate.setInt(6, 0);
+									pstForUpdate.setInt(5, 0);
 								}else{
-									pstForUpdate.setInt(6, Integer.parseInt(dbHas.get("id")));
+									pstForUpdate.setInt(5, Integer.parseInt(dbHas.get("id")));
 								}
+								pstForUpdate.setString(6, parent_lid+"_"+s);
 								pstForUpdate.addBatch();
 							}else if(dbHas.get("status").equals("COMPLETED")&&Integer.parseInt(dbHas.get("id"))==1&&ifCp.equals("Y")){
 								pstForUpdate.setString(1, ipn);
 								pstForUpdate.setString(2, lid);
 								pstForUpdate.setString(3, tpnFlow);
 								pstForUpdate.setString(4, pn);
-								pstForUpdate.setString(5, parent_lid+"_"+s);
-								pstForUpdate.setInt(6, 0);
+								pstForUpdate.setInt(5, 0);
+								pstForUpdate.setString(6, parent_lid+"_"+s);
 								pstForUpdate.addBatch();
 							}
 						}else{
@@ -967,7 +967,7 @@ public class TtServiceImpl implements ITtService {
 			}
 			logger.info("3");
 			//非KLT WIP
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,stage,tpnFlow from cp_wip where erpDate = ? and firm !='klt'");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,stage,tpnFlow,ifCp from cp_wip where erpDate = ? and firm !='klt'");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			while(rst.next()){
@@ -1035,20 +1035,20 @@ public class TtServiceImpl implements ITtService {
 									pstForUpdate.setString(2, lid);
 									pstForUpdate.setString(3, tpnFlow);
 									pstForUpdate.setString(4, pn);
-									pstForUpdate.setString(5, parent_lid+"_"+s);
 									if(ifCp.equals("Y")){
-										pstForUpdate.setInt(6, 0);
+										pstForUpdate.setInt(5, 0);
 									}else{
-										pstForUpdate.setInt(6, Integer.parseInt(dbHas.get("id")));
+										pstForUpdate.setInt(5, Integer.parseInt(dbHas.get("id")));
 									}
+									pstForUpdate.setString(6, parent_lid+"_"+s);
 									pstForUpdate.addBatch();
 								}else if(dbHas.get("status").equals("COMPLETED")&&Integer.parseInt(dbHas.get("id"))==1&&ifCp.equals("Y")){
 									pstForUpdate.setString(1, ipn);
 									pstForUpdate.setString(2, lid);
 									pstForUpdate.setString(3, tpnFlow);
 									pstForUpdate.setString(4, pn);
-									pstForUpdate.setString(5, parent_lid+"_"+s);
-									pstForUpdate.setInt(6, 0);
+									pstForUpdate.setInt(5, 0);
+									pstForUpdate.setString(6, parent_lid+"_"+s);
 									pstForUpdate.addBatch();
 								}
 							}else{
@@ -1429,9 +1429,9 @@ public class TtServiceImpl implements ITtService {
 				if(UtilValidate.isNotEmpty(listOfMap)){
 					List<String> listOfDb = new ArrayList<String>();
 					listOfDb.add("dsbj");
-					listOfDb.add("dshk");
+					/*listOfDb.add("dshk");
 					listOfDb.add("dssh");
-					listOfDb.add("dshf");
+					listOfDb.add("dshf");*/
 					for(String db : listOfDb){
 						currentConn = connUtil.getOracleConnection(db,db);
 						currentConn.setAutoCommit(false);

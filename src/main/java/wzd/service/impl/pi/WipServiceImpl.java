@@ -1226,7 +1226,7 @@ public class WipServiceImpl implements IWipService {
 				hql += " and b.status = '"+wip.getPiStatus()+"'";
 			}
 		}else{
-			hql += " and (b.status<>'Finish' or b.status is null)";
+			hql += " and (b.status not in('Finish','ERP to do','Scrap/RMA') or b.status is null)";
 		}
 		return hql;
 	}
@@ -1778,6 +1778,7 @@ public class WipServiceImpl implements IWipService {
 			pst2 = connOfPi.prepareStatement("update cp_wip set productNo=?,tpnFlow=?,ifCp=? where id =?");
 			String ifCp = "N";
 			while(rst.next()){
+				ifCp = "N";
 				String tpnflow = null;
 				String stage = rst.getString("stage");
 				String location = rst.getString("location");
@@ -2048,14 +2049,19 @@ public class WipServiceImpl implements IWipService {
 		ResultSet rst = null;
 		int[] i = {};
 		try {
-			pst = conn.prepareStatement("insert into zz_wip_baofei(type,id,qty) values(?,?,?)");
 			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("delete from zz_wip_baofei");
+			pst.executeUpdate();
+			pst = conn.prepareStatement("insert into zz_wip_baofei(type,id,qty) values(?,?,?)");
 			for(Map<String,Object> row : list){
-				pst.setString(1, (String)row.get("type"));
-				pst.setString(2, (String)row.get("id"));
-				int o = Integer.parseInt((String)row.get("qty"));
-				pst.setInt(3, o);
-				pst.addBatch();
+				String id = (String)row.get("id");
+				if(UtilValidate.isNotEmpty(id)){
+					pst.setString(1, (String)row.get("type"));
+					pst.setString(2, (String)row.get("id"));
+					int o = Integer.parseInt((String)row.get("qty"));
+					pst.setInt(3, o);
+					pst.addBatch();
+				}
 			}
 			i= pst.executeBatch();
 			conn.commit();
