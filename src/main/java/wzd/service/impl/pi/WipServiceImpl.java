@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,7 @@ import wzd.model.pi.TtpnStage;
 import wzd.model.pi.TturnkeyDetail;
 import wzd.model.pi.TturnkeyOrderItemDetail;
 import wzd.model.pi.Twip;
+import wzd.model.pi.TwipCycleTime;
 import wzd.model.pi.TwipDetail;
 import wzd.pageModel.DataGrid;
 import wzd.pageModel.pi.Series;
@@ -51,6 +54,7 @@ public class WipServiceImpl implements IWipService {
 	private IBaseDao<TprodContent> prodDao;
 	private IBaseDao<TturnkeyDetail> turnkeyDetailDao;
 	private IBaseDao<TturnkeyOrderItemDetail> turnkeyOrderItemDetail;
+	private IBaseDao<TwipCycleTime> wipCycleTime;
 	@Autowired
 	public void setTurnkeyOrderItemDetail(
 			IBaseDao<TturnkeyOrderItemDetail> turnkeyOrderItemDetail) {
@@ -1226,7 +1230,7 @@ public class WipServiceImpl implements IWipService {
 				hql += " and b.status = '"+wip.getPiStatus()+"'";
 			}
 		}else{
-			hql += " and (b.status not in('Finish','ERP to do','Scrap/RMA') or b.status is null)";
+			hql += " and (b.status not in('Finish','ERP to do','Mapping to do','Scrap/RMA') or b.status is null)";
 		}
 		return hql;
 	}
@@ -1343,6 +1347,10 @@ public class WipServiceImpl implements IWipService {
 			pst.setString(2, erpDate);
 			rst = pst.executeQuery();
 			while(rst.next()){
+				String qty = rst.getString("qty");
+				if(UtilValidate.isEmpty(qty)||"0".equals(qty)){
+					continue;
+				}
 				pst2.setInt(1, rst.getInt("id"));
 				pst2.setString(2, rst.getString("pn"));
 				pst2.setString(3, rst.getString("cpn"));
@@ -1433,8 +1441,9 @@ public class WipServiceImpl implements IWipService {
 		return hql;
 	}
 	@Override
-	public int UploadDataForUpdateTpn(Map<String, String> mapOfUpdateData) {
+	public Map<String,String> UploadDataForUpdateTpn(Map<String, String> mapOfUpdateData) {
 		// TODO Auto-generated method stub
+		Map<String,String> returnKey = new HashMap<String,String>();
 		PreparedStatement pst = null;
 		ResultSet rst = null;
 		PreparedStatement pst2 = null;
@@ -1475,6 +1484,8 @@ public class WipServiceImpl implements IWipService {
 					pst.setString(2, lidAndWid[0]);
 					pst.setString(3, lidAndWid[1]);
 					pst.addBatch();
+				}else{
+					returnKey.put(lid+"_"+lidAndWid[1], "Y");
 				}
 			}
 			//logger.info(String.format(sqlOfUpdate, preparePlaceHolders(ids.size())));
@@ -1496,7 +1507,7 @@ public class WipServiceImpl implements IWipService {
 			ConnUtil.close(rst2, pst2);
 			ConnUtil.closeConn(conn);
 		}
-		return rs;
+		return returnKey;
 	}
 	@Override
 	public DataGrid datagridOfWipDetailUniqueByJdbc(WipDetailUnique wip) {
@@ -1817,12 +1828,12 @@ public class WipServiceImpl implements IWipService {
 						if("0".equals(remLayer)){
 							tpnflow = "OQC";
 						}else {
-							String keyOfMap = pn + (int) Double.parseDouble(remLayer);
+							String keyOfMap = pn.substring(0, pn.length()-1) + (int) Double.parseDouble(remLayer);
 							tpnflow = (String)mapOfTpnNewRule.get(keyOfMap);
 						}
-					}else if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP")))||firm.equals("hlmc")) {
+					}else if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP"))&&(!location.contains("SJ-CP")))||firm.equals("hlmc")) {
 						boolean checkSmicLocation = true;
-						if(firm.equals("smic")&&((!location.equals("WH"))&&(!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
+						if(firm.equals("smic")&&((!location.equals("WH"))&&(!location.equals("B2"))&&(!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
 							checkSmicLocation = false;
 						}
 						// 如果remLayer不为空
@@ -1901,6 +1912,8 @@ public class WipServiceImpl implements IWipService {
 										firmName = "WH_TESTING";
 									}
 								}
+							}else if(firm.equals("sjsemi")){
+								firmName = "SH_TESTING";
 							}
 						}
 //						logger.info("firmName is "+firmName);
@@ -2046,24 +2059,84 @@ public class WipServiceImpl implements IWipService {
 		ConnUtil connUtil = new ConnUtil();
 		Connection conn = connUtil.getMysqlConnection();
 		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
 		ResultSet rst = null;
 		int[] i = {};
 		try {
 			conn.setAutoCommit(false);
-			pst = conn.prepareStatement("delete from zz_wip_baofei");
-			pst.executeUpdate();
-			pst = conn.prepareStatement("insert into zz_wip_baofei(type,id,qty) values(?,?,?)");
+			pst = conn.prepareStatement("select id,type,qty from zz_wip_baofei");
+			ResultSet rst2 = pst.executeQuery();
+			Map<String, Object> mapOfTpnNewRule = new HashMap<String, Object>();
+			while (rst2.next()) {
+				mapOfTpnNewRule.put(rst2.getString("id") + rst2.getString("type"),rst2.getString("qty"));
+			}
+			pst2 = conn.prepareStatement("update zz_wip_baofei set qty=?,cp=? where id =? and type=?");
+			pst = conn.prepareStatement("insert into zz_wip_baofei(type,id,qty,cp) values(?,?,?,?)");
 			for(Map<String,Object> row : list){
 				String id = (String)row.get("id");
 				if(UtilValidate.isNotEmpty(id)){
-					pst.setString(1, (String)row.get("type"));
-					pst.setString(2, (String)row.get("id"));
-					int o = Integer.parseInt((String)row.get("qty"));
-					pst.setInt(3, o);
+					String type = (String)row.get("type");
+					String cp = (String)row.get("cp");
+					if(UtilValidate.isEmpty(cp)){
+						cp="";
+					}
+					String qty = (String)mapOfTpnNewRule.get(id+type);
+					if(UtilValidate.isNotEmpty(qty)){
+						pst2.setInt(1, Integer.parseInt((String)row.get("qty")));
+						pst2.setString(2, cp);
+						pst2.setString(3, id);
+						pst2.setString(4, type);
+						pst2.addBatch();
+					}else{
+						pst.setString(1, type);
+						pst.setString(2, id);
+						int o = Integer.parseInt((String)row.get("qty"));
+						pst.setInt(3, o);
+						pst.setString(4, cp);
+						pst.addBatch();
+					}
+				}
+			}
+			pst2.executeBatch();
+			i = pst.executeBatch();
+			conn.commit();
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			ConnUtil.close(rst, pst);
+			ConnUtil.close(rst, pst2);
+			ConnUtil.closeConn(conn);
+		}
+		return i.length;
+	}
+	@Override
+	public int CreateGongHuo(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		ResultSet rst = null;
+		int[] i = {};
+		try {
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("insert into zz_wip_gonghuo(id,month,field1,field2,field3,field4,field5,field6) values(?,?,?,?,?,?,?,?)");
+			for(Map<String,Object> row : list){
+				String id = (String)row.get("id");
+				if(UtilValidate.isNotEmpty(id)){
+					pst.setString(1, id);
+					pst.setString(2, (String)row.get("month"));
+					pst.setInt(3, Integer.parseInt((String)row.get("field1")));
+					pst.setInt(4, Integer.parseInt((String)row.get("field2")));
+					pst.setInt(5, Integer.parseInt((String)row.get("field3")));
+					pst.setInt(6, Integer.parseInt((String)row.get("field4")));
+					pst.setInt(7, Integer.parseInt((String)row.get("field5")));
+					pst.setInt(8, Integer.parseInt((String)row.get("field6")));
 					pst.addBatch();
 				}
 			}
-			i= pst.executeBatch();
+			pst.executeBatch();
+			i = pst.executeBatch();
 			conn.commit();
 		}catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -2074,5 +2147,99 @@ public class WipServiceImpl implements IWipService {
 		}
 		return i.length;
 	}
+	@Override
+	public void dataResolveForWipFlow() {
+		// TODO Auto-generated method stub
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
+		PreparedStatement pst3 = null;
+		ResultSet rst = null;
+		SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd");
+		SimpleDateFormat sf2 = new SimpleDateFormat("yyyy-MM-dd");
+		String nowDate = sf.format(new Date());
+		try {
+			pst2 = conn.prepareStatement("insert into zz_turnkey_detail_wipflow(id_,field1,field2,days) values(?,?,?,?)");
+			pst3 = conn.prepareStatement("update zz_turnkey_detail_wipflow set field2=?,days=? where id_=?");
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("select * from zz_turnkey_detail_wipflow");
+			rst = pst.executeQuery();
+			Map<String, Object> dbMap = new HashMap<String, Object>();
+			while (rst.next()) {
+				Map<String, Object> subMap = new HashMap<String, Object>();
+				subMap.put("field1", rst.getString("field1"));
+				subMap.put("field2", rst.getString("field2"));
+				subMap.put("days", rst.getString("days"));
+				dbMap.put(rst.getString("id_"),subMap);
+			}
+			pst = conn.prepareStatement("select lid,wid,tpnflow from z_wip_detail where erpdate='"+nowDate+"' and tpnflow in('INV1','INV2')");
+			rst = pst.executeQuery();
+			while (rst.next()) {
+				String lid = rst.getString("lid");
+				String wid = rst.getString("wid");
+				String tpnflow = rst.getString("tpnflow");
+				String parent_lid = lid.split("\\.")[0];
+				Map<String, Object> subMap = (Map)dbMap.get(parent_lid+"_"+wid);
+				if(null!=subMap&&subMap.size()>0){
+					String field1 = (String)subMap.get("field1");
+					String field2 = (String)subMap.get("field2");
+					if(tpnflow.equals("INV2")){
+						pst3.setString(1, sf2.format(new Date()));
+						if(UtilValidate.isEmpty(field1)){
+							pst3.setString(2, "");
+						}else{
+							int days = daysBetween(field1,field2);
+							pst3.setString(2, days+"");
+						}
+						pst3.setString(3, parent_lid+"_"+wid);
+						pst3.addBatch();
+					}else{
+						continue;
+					}
+				}else{
+					pst2.setString(1, parent_lid+"_"+wid);
+					if(tpnflow.equals("INV1")){
+						pst2.setString(2, sf2.format(new Date()));
+					}else{
+						pst2.setString(2, "");
+					}
+					if(tpnflow.equals("INV2")){
+						pst2.setString(3, sf2.format(new Date()));
+					}else{
+						pst2.setString(3, "");
+					}
+					pst2.setString(4, "");
+					pst2.addBatch();
+				}
+			}
+			pst2.executeBatch();
+			pst3.executeBatch();
+			conn.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			ConnUtil.close(rst, pst);
+			ConnUtil.close(null, pst2);
+			ConnUtil.close(null, pst3);
+			ConnUtil.closeConn(conn);
+		}
+		
+	}
+	
+	public static int daysBetween(String smdate,String bdate) throws ParseException{
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");  
+        Calendar cal = Calendar.getInstance();    
+        cal.setTime(sdf.parse(smdate));    
+        long time1 = cal.getTimeInMillis();                 
+        cal.setTime(sdf.parse(bdate));    
+        long time2 = cal.getTimeInMillis();         
+        long between_days=(time2-time1)/(1000*3600*24);  
+       return Integer.parseInt(String.valueOf(between_days));  
+    }  
 	
 }

@@ -95,6 +95,12 @@
 			        handler:function(){
 			        	$('#replace_baofei_wip_data_dialog').dialog('open');
 			        }    
+			    },{
+			    	text: '供货量',
+			        iconCls:'icon-zd-excel-download',    
+			        handler:function(){
+			        	$('#replace_gonghuo_data_dialog').dialog('open');
+			        }    
 			    }]
 			});
 		}
@@ -324,6 +330,40 @@
 								} ]
 								" style="padding:10px;">
 			<form id="replace_baofei_data" method="post" enctype="multipart/form-data">
+				<!-- <input type="file" name="lotfile" id="lotfile" multiple="multiple" /> -->
+				<input class="easyui-filebox" name="lotfile" id="lotfile" data-options="required : true" style="width:100%"/>
+			</form>
+		</div>
+		<div id="replace_gonghuo_data_dialog" class="easyui-dialog" data-options="title: 'Upload File',
+								width: 300,
+								closed: true,
+								height: 120,
+								cache: false,
+								modal: true,
+								buttons : [ {
+									text : '上传',
+									//iconCls : 'icon-add',
+									handler : function() {
+										if($('#replace_gonghuo_data').form('validate')){
+											$.messager.progress();
+											$('#replace_gonghuo_data').form('submit', {
+												url : 'lotToHoldAction!uploadGonghuoData.action',
+												datatype : 'json',
+												success : function(r) {
+													var obj = jQuery.parseJSON(r);
+													$('#replace_gonghuo_data_dialog').dialog('close');
+													$.messager.progress('close');
+													$.messager.show({
+														title : '提示',
+														msg : obj.msg
+													});
+												}
+											});
+										}
+									}
+								} ]
+								" style="padding:10px;">
+			<form id="replace_gonghuo_data" method="post" enctype="multipart/form-data">
 				<!-- <input type="file" name="lotfile" id="lotfile" multiple="multiple" /> -->
 				<input class="easyui-filebox" name="lotfile" id="lotfile" data-options="required : true" style="width:100%"/>
 			</form>

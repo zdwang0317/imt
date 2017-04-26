@@ -88,6 +88,16 @@ public class WipAction extends BaseAction implements ModelDriven<Wip>{
 		super.writeJson(j);
 	}
 	
+	public void dataResolveWipflow() {
+		Json j = new Json();
+//		int updateRows = wipService.analysisProductNoForSql();
+		wipService.dataResolveForWipFlow();
+		j.setObj(1);
+		j.setMsg("更新");
+		j.setSuccess(true);
+		super.writeJson(j);
+	}
+	
 	public void updateProductNoOfPi() {
 		Json j = new Json();
 		wipService.updateProductNoOfPi();
@@ -202,7 +212,5 @@ public class WipAction extends BaseAction implements ModelDriven<Wip>{
 	public void getContentOfCpn(){
 		super.writeJson(wipService.getContentOfCpn(wip.getPn()));
 	}
-	
-
 	
 }

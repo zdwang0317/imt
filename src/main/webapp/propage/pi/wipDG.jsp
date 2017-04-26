@@ -210,12 +210,14 @@
 								<select id="pi_wip_searchForm_site" name="firm" class="easyui-combobox" style="width:100px">
 									<option></option>
 									<option value="chipmos">chipmos</option>
+									<option value="chipmosSH">chipmosSH</option>
 									<option value="csmc">csmc</option>
 									<option value="klt">klt</option> 
 									<option value="smic">smic</option>
 									<option value="xmc">xmc</option>
 									<option value="hlmc">hlmc</option>
 									<option value="umc">umc</option>
+									<option value="sjsemi">sjsemi</option>
 								</select>
 							</td>
 							<td colspan="7"></td>

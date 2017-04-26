@@ -936,14 +936,15 @@ public class PoServiceImpl implements IPoService {
 			}else{
 				int oid = save(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn);
 				int seqId = 1;
-				List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
+				/*List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
 				String cpTestFlow = "";
 				if(UtilValidate.isNotEmpty(listOfOptionContent)){
 					cpTestFlow = listOfOptionContent.get(0).getDescription();
-				}
+				}*/
+				String cpTestFlow = this.getCpValue("NOR", "Test Flow", option.getIpn_six());
 				String cpSite = null;
 				String ipn_five = option.getIpn_five();
-				List<ToptionContent> listOfOptionContent2 = optionContentDao.find("from ToptionContent t where t.name='"+ipn_five+"' and t.type ='IPN_FIVE'");
+//				List<ToptionContent> listOfOptionContent2 = optionContentDao.find("from ToptionContent t where t.name='"+ipn_five+"' and t.type ='IPN_FIVE'");
 				/*if(ipn_five.equals("A")||ipn_five.equals("B")||ipn_five.equals("C")){
 					cpSite = "KLT";
 				}else if(ipn_five.equals("D")||ipn_five.equals("E")){
@@ -953,9 +954,11 @@ public class PoServiceImpl implements IPoService {
 				}else if(ipn_five.equals("G")){
 					cpSite = "CHIPMOS";
 				}*/
-				if(UtilValidate.isNotEmpty(listOfOptionContent2)){
-					String cpTester = listOfOptionContent2.get(0).getDescription();
-					cpSite = cpTester.split("-")[1];
+				cpSite = this.getCpValue("NOR", "Tester", ipn_five);
+				if(UtilValidate.isNotEmpty(cpSite)){
+					if(cpSite.contains("-")){
+						cpSite = cpSite.split("-")[1];
+					}
 				}
 				createProductOrder(ipn,cpTestFlow, cpSite, oid, listOfTurnkeyDetail, seqId, option);
 				updateStatusForTurnkeyDetail(listOfTurnkeyDetail);
@@ -1345,17 +1348,50 @@ public class PoServiceImpl implements IPoService {
 	    if (i == 0)
 	      return "创建失败：末找到匹配的TPN";
 	    if (i == 1) {
-	      List listOfTurnkeyDetail = getListFromIds(option.getIpn_ids(), option.getCancel_ids());
-	      String hasQType = getStatusOfWaferType(listOfTurnkeyDetail, option.getIpn_one());
-	      if (UtilValidate.isNotEmpty(hasQType)) {
-	        return "创建失败：Wafer Type 规则不符:" + hasQType.substring(1);
-	      }
-	      int oid = save(serialNumber, ipn, option.getCpn_name(), option.getCreatedUserName(), option.getFabSite(), tpn);
-	      int seqId = 1;
-	      String cpTestFlow = "";
-	      String cpSite = null;
-	      createProductOrder(ipn, cpTestFlow, cpSite, oid, listOfTurnkeyDetail, seqId, option);
-	      updateStatusForTurnkeyDetail(listOfTurnkeyDetail);
+			List listOfTurnkeyDetail = getListFromIds(option.getIpn_ids(),
+					option.getCancel_ids());
+			String hasQType = getStatusOfWaferType(listOfTurnkeyDetail,
+					option.getIpn_one());
+			if (UtilValidate.isNotEmpty(hasQType)) {
+				return "创建失败：Wafer Type 规则不符:" + hasQType.substring(1);
+			}
+			int oid = save(serialNumber, ipn, option.getCpn_name(),
+					option.getCreatedUserName(), option.getFabSite(), tpn);
+			int seqId = 1;
+			String cpTestFlow = "";
+			String cpSite = null;
+			ConnUtil connUtil = new ConnUtil();
+		    Connection conn = connUtil.getMysqlConnection();
+		    PreparedStatement pst = null;
+		    ResultSet rst = null;
+			try {
+				pst = conn.prepareStatement("select key3,value from t_paramete where key1='Para_NAND' and code='"+ option.getIpn_five() + "' and key3='Tester' and key2='CP'");
+				rst = pst.executeQuery();
+				while (rst.next()) {
+					String key3 = rst.getString("value");
+					if (UtilValidate.isNotEmpty(key3)) {
+						cpSite = key3.split("-")[1];
+						break;
+					}
+				}
+				pst = conn.prepareStatement("select key3,value from t_paramete where key1='Para_NAND' and code='"+ option.getIpn_six() + "' and key3='Test Flow' and key2='CP'");
+				rst = pst.executeQuery();
+				while (rst.next()) {
+					String key3 = rst.getString("value");
+					if (UtilValidate.isNotEmpty(key3)) {
+						cpTestFlow = key3;
+						break;
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				ConnUtil.close(rst, pst);
+				ConnUtil.closeConn(conn);
+			}
+			createProductOrder(ipn, cpTestFlow, cpSite, oid, listOfTurnkeyDetail, seqId, option);
+			updateStatusForTurnkeyDetail(listOfTurnkeyDetail);
 	    }
 	    return "创建成功：工单流水号为" + serialNumber;
 	}
@@ -1422,6 +1458,29 @@ public class PoServiceImpl implements IPoService {
 	    }
 	    dg.setRows(k1);
 	    return dg;
+	}
+	
+	private String getCpValue(String key1,String key3,String code) {
+		// TODO Auto-generated method stub
+		String returnValue = "";
+	    ConnUtil connUtil = new ConnUtil();
+	    Connection conn = connUtil.getMysqlConnection();
+	    PreparedStatement pst = null;
+	    ResultSet rst = null;
+	    try {
+	      pst = conn.prepareStatement("select value from t_paramete where key2 = 'CP' and key1='"+key1+"' and key3='"+key3+"' and code='"+code+ "'");
+	      rst = pst.executeQuery();
+	      while (rst.next()) {
+	    	returnValue = rst.getString("value");
+	      }
+	    }
+	    catch (SQLException e) {
+	      e.printStackTrace();
+	    } finally {
+	      ConnUtil.close(rst, pst);
+	      ConnUtil.closeConn(conn);
+	    }
+	    return returnValue;
 	}
 	
 	

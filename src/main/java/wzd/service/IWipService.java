@@ -7,6 +7,7 @@ import wzd.model.pi.ToptionContent;
 import wzd.model.pi.TprodContent;
 import wzd.model.pi.TturnkeyDetail;
 import wzd.model.pi.Twip;
+import wzd.model.pi.TwipCycleTime;
 import wzd.model.pi.TwipDetail;
 import wzd.pageModel.DataGrid;
 import wzd.pageModel.pi.Series;
@@ -40,8 +41,10 @@ public interface IWipService {
 	void CopyDataOfWipToDbOfHistory();
 	void dataClean();
 	void CopyDataOfWipToDbOfHistoryDaily();
-	int UploadDataForUpdateTpn(Map<String,String> mapOfUpdateData);
+	Map<String,String> UploadDataForUpdateTpn(Map<String,String> mapOfUpdateData);
 	List<WipCompare> getWipCompareData(Wip wip);
 	String addWip(WipDetailUnique wip);
 	int ReplaceBaoFeiWip(List<Map<String, Object>> list);
+	int CreateGongHuo(List<Map<String, Object>> list);
+	void dataResolveForWipFlow();
 }

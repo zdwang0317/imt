@@ -222,7 +222,7 @@ public class TtServiceImpl implements ITtService {
 			// pst.setString(1, "13/08/25");
 			rst = pst.executeQuery();
 			conn.setAutoCommit(false);
-			pst = conn.prepareStatement("insert into z_wip_detail(pid,wid,erpDate,pn,firm,lid,location,sendDate,ipn,status,cpn,productNo,tpnFlow,stage) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			pst = conn.prepareStatement("insert into z_wip_detail(pid,wid,erpDate,pn,firm,lid,location,sendDate,ipn,status,cpn,productNo,tpnFlow,stage,wipStatus) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			int i = 0;
 			while (rst.next()) {
 				updateWipId.add(rst.getString("id"));
@@ -237,7 +237,7 @@ public class TtServiceImpl implements ITtService {
 					} else if (firm.equals("klt")
 							|| firm.equals("csmc")) {
 						list = WaferIdFormat.getWaferIdList(wid);
-					} else if (firm.equals("chipmos")) {
+					} else if (firm.contains("chipmos")) {
 						String stage = rst.getString("stage");
 						if (stage.equals("STOCK")) {
 							list = WaferIdFormat
@@ -290,6 +290,7 @@ public class TtServiceImpl implements ITtService {
 						}
 						pst.setString(13, tpnFlow);
 						pst.setString(14, rst.getString("stage"));
+						pst.setString(15, rst.getString("status"));
 						// 把一个SQL命令加入命令列表
 						pst.addBatch();
 					}
@@ -869,7 +870,7 @@ public class TtServiceImpl implements ITtService {
 			logger.info("2");
 			Date date = new Date();
 			SimpleDateFormat sf2 = new SimpleDateFormat("yy/MM/dd");
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow,ifCp from cp_wip where erpDate = ? and firm ='klt' and qty>0");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow,ifCp from cp_wip where erpDate = ? and firm ='klt' and qty>0 and tpnflow is not null");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			conn.setAutoCommit(false);
@@ -878,6 +879,7 @@ public class TtServiceImpl implements ITtService {
 				String wid = rst.getString("wid");
 				if(UtilValidate.isNotEmpty(wid)){
 					String lid = rst.getString("lid");
+					logger.info("lid_"+lid);
 					String ifCp = rst.getString("ifCp");
 					/*if(lid.equals("AYCGR")){
 						System.out.println("com ein");
@@ -931,7 +933,7 @@ public class TtServiceImpl implements ITtService {
 								pstForUpdate.setString(2, lid);
 								pstForUpdate.setString(3, tpnFlow);
 								pstForUpdate.setString(4, pn);
-								if(ifCp.equals("Y")){
+								if(UtilValidate.isNotEmpty(ifCp)&&ifCp.equals("Y")){
 									pstForUpdate.setInt(5, 0);
 								}else{
 									pstForUpdate.setInt(5, Integer.parseInt(dbHas.get("id")));
@@ -963,11 +965,10 @@ public class TtServiceImpl implements ITtService {
 						}
 					}
 				}
-				
 			}
 			logger.info("3");
 			//非KLT WIP
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,stage,tpnFlow,ifCp from cp_wip where erpDate = ? and firm !='klt'");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,stage,tpnFlow,ifCp from cp_wip where erpDate = ? and firm !='klt' and tpnflow is not null");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			while(rst.next()){

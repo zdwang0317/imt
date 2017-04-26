@@ -265,29 +265,36 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 				}
 			}
 		}
-		file.delete();
-		int rows = wipService.UploadDataForUpdateTpn(mapOfUpdateData);
+//		file.delete();
+		Map<String,String> rows = wipService.UploadDataForUpdateTpn(mapOfUpdateData);
 		for(Map.Entry<String,List<Map<String,String>>> entry: mapOfInvokeService.entrySet()) {
 			Object[] objs = new Object[3];
 			objs[0] = entry.getKey().split("_")[0];
 			objs[1] = entry.getKey().split("_")[1];
 			List<Map<String,String>> listForUpdate = new ArrayList<Map<String,String>>();
 			for (Map<String,String> obj : entry.getValue()) {
-				Map<String, String> mapForUpdate = new HashMap<String, String>();
-				mapForUpdate.put("productId", "");
-				mapForUpdate.put("lotId", WaferIdFormat.getMainLot(obj.get("lid")));
-				mapForUpdate.put("waferId", obj.get("wid"));
-				listForUpdate.add(mapForUpdate);
+				String lid = WaferIdFormat.getMainLot(obj.get("lid"));
+				String wid = obj.get("wid");
+				String canNotUpdate = rows.get(lid+"_"+wid);
+				if(UtilValidate.isEmpty(canNotUpdate)){
+					Map<String, String> mapForUpdate = new HashMap<String, String>();
+					mapForUpdate.put("productId", "");
+					mapForUpdate.put("lotId", WaferIdFormat.getMainLot(obj.get("lid")));
+					mapForUpdate.put("waferId", obj.get("wid"));
+					listForUpdate.add(mapForUpdate);
+				}
 			}
-			objs[2] = listForUpdate;
-			String result = WebServiceUtil
-					.invokeWebService(
-							"http://192.168.15.24:8080/productInformation/services/WebService",
-							"setTpnIpn", objs);
+			if(listForUpdate.size()>0){
+				objs[2] = listForUpdate;
+				String result = WebServiceUtil
+						.invokeWebService(
+								"http://192.168.15.24:8080/productInformation/services/WebService",
+								"setTpnIpn", objs);
+			}
 		}
 		
 		Json j = new Json();
-		j.setMsg("更新完成!更新行数："+rows);
+		j.setMsg("更新完成!");
 		j.setSuccess(true);
 		super.writeJson(j);
 	}
@@ -328,13 +335,78 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 			String id = row.getCell(0).toString().trim().replace(".0", "");
 			String type = row.getCell(1).toString().trim();
 			String qty = row.getCell(2).toString().trim().replace(".0", "");
+			Object cell3 = row.getCell(3);
+			String cp = "";
+			if(null != cell3){
+				cp = cell3.toString().trim();
+			}
 			record.put("id", id);
 			record.put("type", type);
 			record.put("qty", qty);
+			record.put("cp", cp);
 			list.add(record);
 		}
 		file.delete();
 		int rows = wipService.ReplaceBaoFeiWip(list);
+		Json j = new Json();
+		j.setMsg("更新完成!更新行数："+rows);
+		j.setSuccess(true);
+		super.writeJson(j);
+	}
+	
+	public void uploadGonghuoData() throws IOException{
+		String fileName = lotToHold.getLotfileFileName();
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try {
+			fis = new FileInputStream(new File(lotToHold.getLotfile()));
+			fos = new FileOutputStream("d:/"+fileName);
+			int len;
+	        byte[] buffer = new byte[1024];
+			while ((len = fis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+	        }
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			fis.close();
+			fos.close();
+		}
+		File file = new File("d:/"+fileName);
+		FileInputStream fin = new FileInputStream(file);
+		//excel 2007
+		XSSFWorkbook xwb = new XSSFWorkbook(fin);
+		XSSFSheet sheet = xwb.getSheetAt(0);
+		XSSFRow row;   
+		// 循环输出表格中的内容
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+			row = sheet.getRow(i);
+			Map<String,Object> record = new HashMap<String,Object>();
+			String id = row.getCell(0).toString().trim().replace(".0", "");
+			String month = row.getCell(1).toString().trim().replace(".0", "");
+			String field1 = row.getCell(2).toString().trim().replace(".0", "");
+			String field2 = row.getCell(3).toString().trim().replace(".0", "");
+			String field3 = row.getCell(4).toString().trim().replace(".0", "");
+			String field4 = row.getCell(5).toString().trim().replace(".0", "");
+			String field5 = row.getCell(6).toString().trim().replace(".0", "");
+			String field6 = row.getCell(7).toString().trim().replace(".0", "");
+			record.put("id", id);
+			record.put("month", month);
+			record.put("field1", field1);
+			record.put("field2", field2);
+			record.put("field3", field3);
+			record.put("field4", field4);
+			record.put("field5", field5);
+			record.put("field6", field6);
+			list.add(record);
+		}
+		file.delete();
+		int rows = wipService.CreateGongHuo(list);
 		Json j = new Json();
 		j.setMsg("更新完成!更新行数："+rows);
 		j.setSuccess(true);
