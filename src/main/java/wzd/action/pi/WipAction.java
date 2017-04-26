@@ -98,6 +98,15 @@ public class WipAction extends BaseAction implements ModelDriven<Wip>{
 		super.writeJson(j);
 	}
 	
+	public void dataResolveTurnkeyDetail() {
+		Json j = new Json();
+		wipService.dataResolveForTurnkeyDetailFlowdate();
+		j.setObj(1);
+		j.setMsg("更新");
+		j.setSuccess(true);
+		super.writeJson(j);
+	}
+	
 	public void updateProductNoOfPi() {
 		Json j = new Json();
 		wipService.updateProductNoOfPi();

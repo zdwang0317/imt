@@ -2231,6 +2231,61 @@ public class WipServiceImpl implements IWipService {
 		
 	}
 	
+	@Override
+	public void dataResolveForTurnkeyDetailFlowdate() {
+		// TODO Auto-generated method stub
+		logger.info("dataResolveForTurnkeyDetailFlowdate Start!");
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
+		ResultSet rst = null;
+		SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd");
+		SimpleDateFormat sf2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String nowDate = sf.format(new Date());
+		String nowDatetime = sf2.format(new Date());
+		try {
+			pst2 = conn.prepareStatement("update zz_turnkey_detail set flow_date=? where id_=?");
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("select id_,tpnFlow from zz_turnkey_detail");
+			rst = pst.executeQuery();
+			Map<String, Object> dbMap = new HashMap<String, Object>();
+			while (rst.next()) {
+				Map<String, Object> subMap = new HashMap<String, Object>();
+				subMap.put("id_", rst.getString("id_"));
+				subMap.put("tpnFlow", rst.getString("tpnFlow"));
+				subMap.put("flow_date", rst.getString("flow_date"));
+				dbMap.put(rst.getString("id_"),subMap);
+			}
+			pst = conn.prepareStatement("select lid,wid,tpnflow from z_wip_detail where erpdate='"+nowDate+"' and tpnflow is not null");
+			rst = pst.executeQuery();
+			while (rst.next()) {
+				String lid = rst.getString("lid");
+				String wid = rst.getString("wid");
+				String tpnflow = rst.getString("tpnflow");
+				String parent_lid = lid.split("\\.")[0];
+				Map<String, Object> subMap = (Map)dbMap.get(parent_lid+"_"+wid);
+				if(null!=subMap&&subMap.size()>0){
+					String now_tpnFlow = (String)subMap.get("tpnFlow");
+					if(!tpnflow.equals(now_tpnFlow)){
+						pst2.setString(1, nowDatetime);
+						pst2.setString(2, parent_lid+"_"+wid);
+					}
+				}
+			}
+			pst2.executeBatch();
+			conn.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			ConnUtil.close(rst, pst);
+			ConnUtil.close(null, pst2);
+			ConnUtil.closeConn(conn);
+		}
+		logger.info("dataResolveForTurnkeyDetailFlowdate End!");
+	}  
+
 	public static int daysBetween(String smdate,String bdate) throws ParseException{
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");  
         Calendar cal = Calendar.getInstance();    
@@ -2240,6 +2295,5 @@ public class WipServiceImpl implements IWipService {
         long time2 = cal.getTimeInMillis();         
         long between_days=(time2-time1)/(1000*3600*24);  
        return Integer.parseInt(String.valueOf(between_days));  
-    }  
-	
+    }
 }

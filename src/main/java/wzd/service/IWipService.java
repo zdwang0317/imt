@@ -47,4 +47,5 @@ public interface IWipService {
 	int ReplaceBaoFeiWip(List<Map<String, Object>> list);
 	int CreateGongHuo(List<Map<String, Object>> list);
 	void dataResolveForWipFlow();
+	void dataResolveForTurnkeyDetailFlowdate();
 }

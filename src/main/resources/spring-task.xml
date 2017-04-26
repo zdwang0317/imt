@@ -205,6 +205,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 				<ref bean="MyTimesimpleTriggerBean9"/>
 				<ref bean="MyTimesimpleTriggerBean2"/>
 				<ref bean="MyTimesimpleTriggerBean6"/>
+				<ref bean="MyTimesimpleTriggerBean8"/>
 				<!--
 				<ref bean="MyTimesimpleTriggerBean8"/>
 				<ref bean="MyTimesimpleTriggerBean7"/>-->
