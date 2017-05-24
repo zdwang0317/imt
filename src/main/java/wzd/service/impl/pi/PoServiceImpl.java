@@ -1261,9 +1261,13 @@ public class PoServiceImpl implements IPoService {
 			wids.append(",'"+str+"'");
 		}
 		try {
-			pst = conn.prepareStatement("select waferId from t_fabside_wip where (status in('ERP to do','Finish') or abnormal like '%S%') and lotid='"+lid+"' and waferid in("+wids.toString().substring(1)+")");
+			pst = conn.prepareStatement("select waferId,productId from t_fabside_wip where (status in('ERP to do','Finish') or abnormal like '%S%') and lotid='"+lid+"' and waferid in("+wids.toString().substring(1)+")");
 			rst = pst.executeQuery();
 			while(rst.next()){
+				String productId = rst.getString("productId");
+				if(UtilValidate.isNotEmpty(productId)&&productId.contains("6925")){
+					continue;
+				}
 				noPermissionWid.append(","+rst.getString("waferId"));
 			}
 		} catch (SQLException e) {

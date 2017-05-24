@@ -158,7 +158,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean4">
 		<property name="jobDetail" ref="MyTimeSpringJob4"/>
-		 <property name="cronExpression" value="0 20 9,10,11 * * ?"/>
+		 <property name="cronExpression" value="0 20 9,10,11,12 * * ?"/>
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean5">
 		<property name="jobDetail" ref="MyTimeSpringJob5"/>
@@ -166,7 +166,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean6">
 		<property name="jobDetail" ref="MyTimeSpringJob6"/>
-		<property name="cronExpression" value="0 55 9 * * ?"/>
+		<property name="cronExpression" value="0 55 9,10,11,12 * * ?"/>
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean7">
 		<property name="jobDetail" ref="MyTimeSpringJob7"/>

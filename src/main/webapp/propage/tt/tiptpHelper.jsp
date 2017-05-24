@@ -31,6 +31,16 @@
 				});
 			}
 		});
+		$('#dataResolveWipflow2').form({
+			url : '${pageContext.request.contextPath}/wipAction!dataResolveTurnkeyDetail.action',
+			success : function(r) {
+				var obj = jQuery.parseJSON(r);
+				$.messager.show({
+					title : '提示',
+					msg : obj.msg
+				});
+			}
+		});
 		$('#passCpWip').form({
 			url : '${pageContext.request.contextPath}/ttAction!passCpWip.action',
 			success : function(r) {
@@ -197,6 +207,9 @@
 	function dataResolveWipflowSubmit() {
 		$('#dataResolveWipflow').submit();
 	}
+	function dataResolveWipflowDateSubmit() {
+		$('#dataResolveWipflow2').submit();
+	}
 	function passCpWipSubmit() {
 		$('#passCpWip').submit();
 	}
@@ -266,6 +279,9 @@
 </form>
 <form id="dataResolveWipflow" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataResolveWipflowSubmit()">Wipflow INV</a>
+</form>
+<form id="dataResolveWipflow2" method="post">
+   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataResolveWipflowDateSubmit()">Wipflow Date</a>
 </form>
 <br>
 <form id="chart" method="post">

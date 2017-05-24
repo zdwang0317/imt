@@ -9,7 +9,7 @@ import wzd.service.IWipService;
 
 public class TaskOfDataResolve extends QuartzJobBean{
 	private ITtService ttService;
-	private IWipService wipService;
+	
 	
 	public ITtService getTtService() {
 		return ttService;
@@ -19,14 +19,6 @@ public class TaskOfDataResolve extends QuartzJobBean{
 		this.ttService = ttService;
 	}
 	
-
-	public IWipService getWipService() {
-		return wipService;
-	}
-
-	public void setWipService(IWipService wipService) {
-		this.wipService = wipService;
-	}
 	@Override
 	protected void executeInternal(JobExecutionContext arg0)
 			throws JobExecutionException {
@@ -34,7 +26,5 @@ public class TaskOfDataResolve extends QuartzJobBean{
 		System.out.println("come date resolve");
 		ttService.dataResolve();
 		ttService.PassDataResolveToChart();
-		wipService.dataResolveForTurnkeyDetailFlowdate();
-		
 	}
 }

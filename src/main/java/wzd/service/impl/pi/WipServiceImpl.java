@@ -1735,6 +1735,7 @@ public class WipServiceImpl implements IWipService {
 		List<TtpnStage> listOfKlt = new ArrayList<TtpnStage>();
 		List<TtpnStage> listOfChipmos = new ArrayList<TtpnStage>();
 		List<TtpnStage> listOfHlmc = new ArrayList<TtpnStage>();
+		List<TtpnStage> listOfSjsemi = new ArrayList<TtpnStage>();
 		try {
 			pst3 = conn.prepareStatement("select stage,firm,tpn from z_tpn_stage order by firm,stageOrder");
 			rst3 = pst3.executeQuery();
@@ -1758,6 +1759,8 @@ public class WipServiceImpl implements IWipService {
 					listOfWh.add(obj);
 				}else if(firm.equals("HLMC")){
 					listOfHlmc.add(obj);
+				}else if(firm.equals("sjsemi")){
+					listOfSjsemi.add(obj);
 				}
 			}
 		} catch (SQLException e) {
@@ -1832,12 +1835,12 @@ public class WipServiceImpl implements IWipService {
 							tpnflow = (String)mapOfTpnNewRule.get(keyOfMap);
 						}
 					}else if ((UtilValidate.isNotEmpty(location)&&(!location.contains("TESTING"))&&(!location.contains("CP"))&&(!location.contains("SJ-CP")))||firm.equals("hlmc")) {
-						boolean checkSmicLocation = true;
+						/*boolean checkSmicLocation = true;
 						if(firm.equals("smic")&&((!location.equals("WH"))&&(!location.equals("B2"))&&(!location.equals("B1"))&&(!location.equals("S1"))&&(!location.equals("FAB7"))&&(!location.equals("FAB8")))){
 							checkSmicLocation = false;
-						}
+						}*/
 						// 如果remLayer不为空
-						if (UtilValidate.isNotEmpty(rst.getString("remlayer"))&&checkSmicLocation) {
+						if (UtilValidate.isNotEmpty(rst.getString("remlayer"))) {
 							if(UtilValidate.isNotEmpty(location)&&location.equals("WH")&&!stage.toUpperCase().equals("SUBCON")){
 								continue;
 							}
@@ -1899,7 +1902,7 @@ public class WipServiceImpl implements IWipService {
 						ifCp = "Y";
 						String firmName = null;
 						if(UtilValidate.isNotEmpty(firm)){
-							if(firm.equals("chipmos")){
+							if(firm.contains("chipmos")){
 								firmName = "CHIPMOS";
 							}else if(firm.equals("klt")){
 								firmName = "KLT";
@@ -1913,7 +1916,7 @@ public class WipServiceImpl implements IWipService {
 									}
 								}
 							}else if(firm.equals("sjsemi")){
-								firmName = "SH_TESTING";
+								firmName = "sjsemi";
 							}
 						}
 //						logger.info("firmName is "+firmName);
@@ -1956,6 +1959,15 @@ public class WipServiceImpl implements IWipService {
 											tpnflow = PiUtil.processSpecialStage("BAKE");
 										}else if(stage.contains(type4.getStage())){
 											tpnflow = type4.getTpn().getTpn();
+											break;
+										}
+									}
+								}else if(firmName.equals("sjsemi")){
+									for(TtpnStage type5 : listOfSjsemi	){
+										if(stage.toUpperCase().contains("BAK")){
+											tpnflow = PiUtil.processSpecialStage("BAKE");
+										}else if(stage.contains(type5.getStage())){
+											tpnflow = type5.getTpn().getTpn();
 											break;
 										}
 									}
@@ -2088,7 +2100,7 @@ public class WipServiceImpl implements IWipService {
 						pst2.setString(4, type);
 						pst2.addBatch();
 					}else{
-						pst.setString(1, type);
+						pst.setString(1, type.toLowerCase());
 						pst.setString(2, id);
 						int o = Integer.parseInt((String)row.get("qty"));
 						pst.setInt(3, o);
@@ -2254,7 +2266,6 @@ public class WipServiceImpl implements IWipService {
 				Map<String, Object> subMap = new HashMap<String, Object>();
 				subMap.put("id_", rst.getString("id_"));
 				subMap.put("tpnFlow", rst.getString("tpnFlow"));
-				subMap.put("flow_date", rst.getString("flow_date"));
 				dbMap.put(rst.getString("id_"),subMap);
 			}
 			pst = conn.prepareStatement("select lid,wid,tpnflow from z_wip_detail where erpdate='"+nowDate+"' and tpnflow is not null");
