@@ -227,6 +227,7 @@ public class TtServiceImpl implements ITtService {
 			while (rst.next()) {
 				returnNum++;
 				String wid = rst.getString("wid");
+				logger.info(rst.getString("lid")+"-wis is-"+wid);
 				String firm = rst.getString("firm");
 				if (UtilValidate.isNotEmpty(wid)) {
 					List<String> list = new ArrayList<String>();
@@ -238,7 +239,7 @@ public class TtServiceImpl implements ITtService {
 						list = WaferIdFormat.getWaferIdList(wid);
 					} else if (firm.contains("chipmos")) {
 						String stage = rst.getString("stage");
-						if (stage.equals("STOCK")) {
+						if (stage.equals("STOCK")||firm.equals("chipmosSH")) {
 							list = WaferIdFormat
 									.getWaferIdList(wid);
 						} else {
@@ -845,13 +846,16 @@ public class TtServiceImpl implements ITtService {
 		PreparedStatement pst = null;
 		ResultSet rst = null;
 		PreparedStatement pstForAdd = null;
+		PreparedStatement detailTimeToAdd = null;
 		PreparedStatement pstForUpdate = null;
 		Map<String,String[]> mapOfDb = new HashMap<String,String[]>();
 		Map<String,Map<String,String>> mapOfDb2 = new HashMap<String,Map<String,String>>();
 		Map<String,String> mapOfKltToday = new HashMap<String,String>();
+		Map<String,String> poNoType = new HashMap<String,String>();
 		try {
 			//准备ADD 数据
-			pstForAdd = conn.prepareStatement("insert into zz_turnkey_detail(wid,pn,lid,ipn,status,cpn,parent_lid,tpnFLow,id_,ifCp) values(?,?,?,?,?,?,?,?,?,?)");
+			pstForAdd = conn.prepareStatement("insert into zz_turnkey_detail(wid,pn,lid,ipn,status,cpn,parent_lid,tpnFLow,id_,ifCp,poNo) values(?,?,?,?,?,?,?,?,?,?,?)");
+			detailTimeToAdd = conn.prepareStatement("insert into zz_turnkey_detail_time(id_,parent_lid,lid,wid,time1,time2_flow,time3,time4,time5,time6,time2_end,type,partNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			pstForUpdate = conn.prepareStatement("update zz_turnkey_detail set ipn=?,lid=?,tpnFLow=?,pn=?,id=?,ifCp=? where id_=?");
 			//准备No-Repeat 数据
 			pst = conn.prepareStatement("select parent_lid,wid,ipn,id,lid,tpnFlow,status,pn,ifCp from zz_turnkey_detail");
@@ -871,12 +875,19 @@ public class TtServiceImpl implements ITtService {
 				newMap.put("ifCp", rst.getString("ifCp"));
 				mapOfDb2.put(rst.getString("parent_lid")+"_"+rst.getString("wid"), newMap);
 			}
+			//准备poNo type数据
+			pst = conn.prepareStatement("select productid,category from tproduct");
+			rst = pst.executeQuery();
+//			logger.info("1");
+			while(rst.next()){
+				poNoType.put(rst.getString("productid"), rst.getString("category"));
+			}
 			//准备No-Repeat 数据 结束
 			//先处理klt数据,把处理过的数据记录存入mapOfKltToday 后续如有相同数据,不处理  key为 parent_lid+"_"+wid
 //			logger.info("2");
 			Date date = new Date();
 			SimpleDateFormat sf2 = new SimpleDateFormat("yy/MM/dd");
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow,ifCp from cp_wip where erpDate = ? and firm ='klt' and qty>0 and tpnflow is not null");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,tpnFlow,ifCp,poNo from cp_wip where erpDate = ? and firm ='klt' and qty>0 and tpnflow is not null");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			conn.setAutoCommit(false);
@@ -894,6 +905,10 @@ public class TtServiceImpl implements ITtService {
 					String pn = rst.getString("pn");
 					String cpn = rst.getString("cpn");
 					String tpnFlow = rst.getString("tpnFlow");
+					String poNo = "";
+					if(UtilValidate.isNotEmpty(rst.getString("poNo"))){
+						poNo = rst.getString("poNo").replace("\"", "");
+					}
 					String ipn = "";
 					if(UtilValidate.isNotEmpty(rst.getString("ipn"))&&(!rst.getString("ipn").equals("NULL"))){
 						ipn = rst.getString("ipn");
@@ -970,15 +985,47 @@ public class TtServiceImpl implements ITtService {
 							pstForAdd.setString(8, tpnFlow);
 							pstForAdd.setString(9, parent_lid+"_"+s);
 							pstForAdd.setString(10, ifCp);
+							pstForAdd.setString(11, poNo);
 							// 把一个SQL命令加入命令列表
 							pstForAdd.addBatch();
+							
+							String t12 = " ";
+							String t13 = " ";
+							if(UtilValidate.isNotEmpty(poNo)){
+								for (Map.Entry<String, String> entry : poNoType.entrySet()) {  
+									String key = entry.getKey();
+									String value = entry.getValue();
+									if(poNo.contains(key)){
+										if(value.equals("Para_NAND")||value.equals("SPI_NAND")){
+											value = "NAND";
+										}
+										t12 = value;
+										t13 = key;
+										break;
+									}
+								}  
+							}
+							detailTimeToAdd.setString(1, parent_lid+"_"+s);
+							detailTimeToAdd.setString(2, parent_lid);
+							detailTimeToAdd.setString(3, lid);
+							detailTimeToAdd.setString(4, s);
+							detailTimeToAdd.setString(5, "N");
+							detailTimeToAdd.setString(6, "N");
+							detailTimeToAdd.setString(7, "N");
+							detailTimeToAdd.setString(8, "N");
+							detailTimeToAdd.setString(9, "N");
+							detailTimeToAdd.setString(10, "N");
+							detailTimeToAdd.setString(11, "N");
+							detailTimeToAdd.setString(12, t12);
+							detailTimeToAdd.setString(13, t13);
+							detailTimeToAdd.addBatch();
 						}
 					}
 				}
 			}
 			logger.info("3");
 			//非KLT WIP
-			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,stage,tpnFlow,ifCp from cp_wip where erpDate = ? and firm !='klt' and tpnflow is not null");
+			pst = conn.prepareStatement("select wid,lid,pn,cpn,firm,ipn,stage,tpnFlow,ifCp,poNo from cp_wip where erpDate = ? and firm !='klt' and tpnflow is not null");
 			pst.setString(1, sf2.format(date));
 			rst = pst.executeQuery();
 			while(rst.next()){
@@ -998,6 +1045,10 @@ public class TtServiceImpl implements ITtService {
 					String ipn = "";
 					if(UtilValidate.isNotEmpty(rst.getString("ipn"))&&(!rst.getString("ipn").equals("NULL"))){
 						ipn = rst.getString("ipn");
+					}
+					String poNo = "";
+					if(UtilValidate.isNotEmpty(rst.getString("poNo"))){
+						poNo = rst.getString("poNo");
 					}
 					String parent_lid = lid.split("\\.")[0];
 					if (firm.equals("smic") ) {
@@ -1087,9 +1138,38 @@ public class TtServiceImpl implements ITtService {
 								pstForAdd.setString(8, tpnFlow);
 								pstForAdd.setString(9, parent_lid+"_"+s);
 								pstForAdd.setString(10, ifCp);
+								pstForAdd.setString(11, poNo);
 								// 把一个SQL命令加入命令列表
 								pstForAdd.addBatch();
 //								logger.info("batch after");
+								String t12 = " ";
+								String t13 = " ";
+								if(UtilValidate.isNotEmpty(poNo)){
+									for (Map.Entry<String, String> entry : poNoType.entrySet()) {  
+										String key = entry.getKey();
+										String value = entry.getValue();
+										if(value.equals("Para_NAND")||value.equals("SPI_NAND")){
+											value = "NAND";
+										}
+										t12 = value;
+										t13 = key;
+										break;
+									}  
+								}
+								detailTimeToAdd.setString(1, parent_lid+"_"+s);
+								detailTimeToAdd.setString(2, parent_lid);
+								detailTimeToAdd.setString(3, lid);
+								detailTimeToAdd.setString(4, s);
+								detailTimeToAdd.setString(5, "N");
+								detailTimeToAdd.setString(6, "N");
+								detailTimeToAdd.setString(7, "N");
+								detailTimeToAdd.setString(8, "N");
+								detailTimeToAdd.setString(9, "N");
+								detailTimeToAdd.setString(10, "N");
+								detailTimeToAdd.setString(11, "N");
+								detailTimeToAdd.setString(12, t12);
+								detailTimeToAdd.setString(13, t13);
+								detailTimeToAdd.addBatch();
 							}
 						}
 					}
@@ -1099,6 +1179,7 @@ public class TtServiceImpl implements ITtService {
 			int[] rowsOne =pstForUpdate.executeBatch();
 			logger.info("Data Resolve To Table of zz_turnkey_detail Execute Create Start");
 			int[] rowsTwo = pstForAdd.executeBatch();
+			detailTimeToAdd.executeBatch();
 			logger.info("Data Resolve To Table of zz_turnkey_detail, UpdateRows is "+rowsOne.length);
 			logger.info("Data Resolve To Table of zz_turnkey_detail, AddRows is "+rowsTwo.length);
 			conn.commit();
@@ -1110,6 +1191,7 @@ public class TtServiceImpl implements ITtService {
 			ConnUtil.close(rst, pst);
 			ConnUtil.close(null, pstForUpdate);
 			ConnUtil.close(null, pstForAdd);
+			ConnUtil.close(null, detailTimeToAdd);
 			ConnUtil.closeConn(conn);
 		}
 		logger.info("Data Resolve To Table of zz_turnkey_detail End!");
@@ -1351,7 +1433,7 @@ public class TtServiceImpl implements ITtService {
 			// 查询PI系统中CP可出货记录
 //			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where ((status in('Inkless map available','OP ship','OP to do') and abnormal='M') or (status in('Inkless map available','OP ship') and abnormal<>'M' and abnormal not like '%T%') or (status ='ERP to do') or (status ='Mapping to do')) and ipn is null and lotid is not null";
 //			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where status ='ERP to do' and ipn is null and lotid is not null";
-			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real,erpProgramTime,kgdRemarks from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
+			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real,erpProgramTime,kgdRemarks,probeCount,ifInk,abnormal,comment from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
 			String sqlOfQty = "select count(*) qty from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
 			// 更新Pi系统
 			List<String> updateWipId = new ArrayList<String>();
@@ -1367,8 +1449,8 @@ public class TtServiceImpl implements ITtService {
 				String insertSql = "insert into tc_cpi_file"
 						+ "(tc_cpi01,tc_cpi02,tc_cpi03,tc_cpi05,tc_cpi06,tc_cpi07,"
 						+ "tc_cpi10,tc_cpi11,tc_cpi09,tc_cpi12,tc_cpi04,tc_cpi08,tc_cpi13,"
-						+ "tc_cpi14,tc_cpi15,tc_cpi16,tc_cpi17,tc_cpi18) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+						+ "tc_cpi14,tc_cpi15,tc_cpi16,tc_cpi17,tc_cpi23,tc_cpi20,tc_cpi21,tc_cpi22) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				while (rst2.next()) {
 					updateWipId.add(rst2.getString("id"));
 					Map<String,Object> newMap = new HashMap<String,Object>();
@@ -1448,6 +1530,10 @@ public class TtServiceImpl implements ITtService {
 						kgdRemarks = " ";
 					}
 					newMap.put("kgdRemarks", kgdRemarks);
+					newMap.put("probeCount", rst2.getString("probeCount"));
+					newMap.put("ifInk", rst2.getString("ifInk"));
+					newMap.put("abnormal", rst2.getString("abnormal"));
+					newMap.put("comment", rst2.getString("comment"));
 					listOfMap.add(newMap);
 					returnNum++;
 				}
@@ -1485,6 +1571,9 @@ public class TtServiceImpl implements ITtService {
 							pst2.setString(16, (String)submap.get("tpnId"));
 							pst2.setString(17, (String)submap.get("erpProgram"));
 							pst2.setString(18, (String)submap.get("kgdRemarks"));
+							pst2.setString(19, (String)submap.get("abnormal"));
+							pst2.setString(20, (String)submap.get("ifInk"));
+							pst2.setString(21, (String)submap.get("probeCount"));
 							pst2.addBatch();
 						}
 						pst2.executeBatch();

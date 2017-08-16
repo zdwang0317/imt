@@ -1042,7 +1042,7 @@ public class WipServiceImpl implements IWipService {
 		ResultSet rst = null;
 		ConnUtil connUtil = new ConnUtil();
 		Connection conn = connUtil.getMysqlConnection();
-		StringBuilder strBur1 = new StringBuilder("select sum(a.qty) q,id_,a.lid,a.wid,a.ipn,a.cpn,a.pn from zz_turnkey_detail a " +
+		StringBuilder strBur1 = new StringBuilder("select sum(a.qty) q,id_,a.lid,a.wid,a.ipn,a.cpn,a.pn,a.poNo from zz_turnkey_detail a " +
 				"left join t_fabside_wip b on b.id= a.id_ "+
 				"where 1=1 and a.status = 'CREATED' and b.abnormal not like '%Q' and b.abnormal not like '%srcap%'");
 		if(UtilValidate.isNotEmpty(wip.getPn())){
@@ -1082,6 +1082,7 @@ public class WipServiceImpl implements IWipService {
 				u.setIpn(rst.getString("ipn"));
 				u.setCpn(rst.getString("cpn"));
 				u.setPn(rst.getString("pn"));
+				u.setPoNo(rst.getString("poNo"));
 				nl.add(u);
 				totalNum++;
 			}
@@ -1295,26 +1296,81 @@ public class WipServiceImpl implements IWipService {
 	@Override
 	public void dataClean() {
 		// TODO Auto-generated method stub
-		logger.info("Data Clean Start!");
+		logger.info("Data Clean And Update Time Start!");
 		Date date = new Date();
 		SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd");
 		String erpDate = sf.format(date);
 		ConnUtil conn = new ConnUtil();
 		Connection connOfMysql = conn.getMysqlConnection();
+		Connection connOfTiptop = conn.getOracleConnection();
 		PreparedStatement pst = null;
+		PreparedStatement pst_tiptop = null;
+		ResultSet rst = null;
 		int rows = 0;
+		int rows_ = 0;
+		int rows_1 = 0;
+		int rows_2 = 0;
+		int rows_3 = 0;
 		try {
-			pst = connOfMysql.prepareStatement("delete from z_wip_detail where erpdate=?");
-			pst.setString(1, erpDate);
+			connOfMysql.setAutoCommit(false);
+			/*pst = connOfMysql.prepareStatement("delete from z_wip_detail where erpdate=?");
+			pst.setString(1, erpDate);*/
+			pst = connOfMysql.prepareStatement("TRUNCATE TABLE z_wip_detail");
 			rows= pst.executeUpdate();
+			pst = connOfMysql.prepareStatement("update zz_turnkey_detail_time a,(select a.id_,b.waferstartdate time1 from zz_turnkey_detail_time a"+ 
+" left join t_fabside_wip b on b.id=a.id_"+
+" where time1 ='N' and waferstartdate is not null) b set a.time1=b.time1 where a.id_=b.id_");
+			rows_ = pst.executeUpdate();
+			pst = connOfMysql.prepareStatement("update zz_turnkey_detail_time a,(select a.id_,a.time2_end,b.tpnflow from zz_turnkey_detail_time a"+
+					" left join zz_turnkey_detail b on b.id_=a.id_"+
+					" WHERE time3 ='N' AND time2_flow!=tpnflow) b"+
+					" set a.time2_end=curdate(),a.time2_flow=b.tpnflow"+
+					" where time3='N' and a.id_=b.id_ and b.tpnflow!='INV2'");
+			rows_1 = pst.executeUpdate();
+			pst = connOfMysql.prepareStatement("update zz_turnkey_detail_time a,(select a.id_,b.tpnflow from zz_turnkey_detail_time a"+
+					" left join zz_turnkey_detail b on b.id_=a.id_"+
+					" WHERE time4='N' and time5='N' and b.tpnflow='INV2') b"+
+					" set a.time4=curdate()"+
+					" where  time4='N' and time5='N' and b.tpnflow='INV2' and a.id_=b.id_");
+			rows_2 = pst.executeUpdate();
+			String sql = "select tc_cpj15||'_'||tc_cpj16 id_,to_char(tc_cpj09,'yyyy-MM-dd') time5,substr(tc_cpj02,4,1) db from dsbj.tc_cpj_file where tc_cpj08='Y' and tc_cpj09=to_date('"+erpDate+"','yy/MM/dd')"+
+					" union all"+
+					" select tc_cpj15||'_'||tc_cpj16 id_,to_char(tc_cpj09,'yyyy-MM-dd') time5,substr(tc_cpj02,4,1) db from dshk.tc_cpj_file where tc_cpj08='Y' and tc_cpj09=to_date('"+erpDate+"','yy/MM/dd')"+
+					" union all"+
+					" select tc_cpj15||'_'||tc_cpj16 id_,to_char(tc_cpj09,'yyyy-MM-dd') time5,substr(tc_cpj02,4,1) db from dshf.tc_cpj_file where tc_cpj08='Y' and tc_cpj09=to_date('"+erpDate+"','yy/MM/dd')"+
+					" union all"+
+					" select tc_cpj15||'_'||tc_cpj16 id_,to_char(tc_cpj09,'yyyy-MM-dd') time5,substr(tc_cpj02,4,1) db from dssh.tc_cpj_file where tc_cpj08='Y' and tc_cpj09=to_date('"+erpDate+"','yy/MM/dd')";
+			pst = connOfMysql.prepareStatement("update zz_turnkey_detail_time set time5=?,time6=? where id_=?");
+			pst_tiptop = connOfTiptop.prepareStatement(sql);
+			rst = pst_tiptop.executeQuery();
+			while(rst.next()){
+				String db = rst.getString("db");
+				pst.setString(1, rst.getString("time5"));
+				if(db.equals("M")){
+					pst.setString(2, "Y");
+				}else{
+					pst.setString(2, "N");
+				}
+				pst.setString(3, rst.getString("id_"));
+				pst.addBatch();
+			}
+			int[] qty = pst.executeBatch();
+			rows_3 = qty.length;
+			connOfMysql.commit();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			ConnUtil.closePst(pst);
+			ConnUtil.close(rst, pst_tiptop);
 			ConnUtil.closeConn(connOfMysql);
+			ConnUtil.closeConn(connOfTiptop);
 		}
 		logger.info("Data Clean End!"+rows);
+		logger.info("Update Time1 End!"+rows_);
+		logger.info("Update Time2 End!"+rows_1);
+		logger.info("Update Time4 End!"+rows_2);
+		logger.info("Update Time5 End!"+rows_3);
 	}
 	@Override
 	public void CopyDataOfWipToDbOfHistoryDaily() {
@@ -2089,10 +2145,11 @@ public class WipServiceImpl implements IWipService {
 				if(UtilValidate.isNotEmpty(id)){
 					String type = (String)row.get("type");
 					String cp = (String)row.get("cp");
+					System.out.println(cp+type);
 					if(UtilValidate.isEmpty(cp)){
 						cp="";
 					}
-					String qty = (String)mapOfTpnNewRule.get(id+type);
+					String qty = (String)mapOfTpnNewRule.get(id+type.toLowerCase());
 					if(UtilValidate.isNotEmpty(qty)){
 						pst2.setInt(1, Integer.parseInt((String)row.get("qty")));
 						pst2.setString(2, cp);
@@ -2307,4 +2364,169 @@ public class WipServiceImpl implements IWipService {
         long between_days=(time2-time1)/(1000*3600*24);  
        return Integer.parseInt(String.valueOf(between_days));  
     }
+	
+	public static void main(String[] args) {
+		System.out.println("come in");
+		Date date = new Date();
+		SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd");
+		String erpDate = sf.format(date);
+		ConnUtil conn = new ConnUtil();
+		Connection connOfMysql = conn.getMysqlConnection();
+		Connection connOfTiptop = conn.getOracleConnection();
+		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
+		PreparedStatement pst_tiptop = null;
+		ResultSet rst = null;
+		try {
+			connOfMysql.setAutoCommit(false);
+			pst2 = connOfMysql.prepareStatement("select id_ from zz_turnkey_detail_time where time6='N'");
+			String sql = "select id from(select idd04||'_'||idd05 id from dsbj.sfb_file a"+
+					" left join dsbj.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dsbj.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dsbj.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dsbj.sfp_file f on sfp01=sfq01"+
+					" left join dsbj.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)"+
+					" union all"+
+					" select id from(select idd04||'_'||idd05 id from dshk.sfb_file a"+
+					" left join dshk.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dshk.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dshk.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dshk.sfp_file f on sfp01=sfq01"+
+					" left join dshk.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)"+
+					" union all"+
+					" select id from(select idd04||'_'||idd05 id from dssh.sfb_file a"+
+					" left join dssh.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dssh.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dssh.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dssh.sfp_file f on sfp01=sfq01"+
+					" left join dssh.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)"+
+					" union all"+
+					" select id from(select idd04||'_'||idd05 id from dshf.sfb_file a"+
+					" left join dshf.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dshf.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dshf.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dshf.sfp_file f on sfp01=sfq01"+
+					" left join dshf.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)";
+			pst = connOfMysql.prepareStatement("update zz_turnkey_detail_time set time6='Y' where id_=?");
+			pst_tiptop = connOfTiptop.prepareStatement(sql);
+			rst = pst_tiptop.executeQuery();
+			Map<String,String> tiptopMap = new HashMap<String,String>();
+			while(rst.next()){
+				String id = rst.getString("id");
+				String[] ids = id.split("_");
+				if(ids[0].contains(".")){
+					id = ids[0].substring(0, ids[0].indexOf("."));
+				}
+				tiptopMap.put(id, "Y");
+			}
+			rst = pst2.executeQuery();
+			while(rst.next()){
+				String id_ = rst.getString("id_");
+				String a = tiptopMap.get(id_);
+				if(UtilValidate.isNotEmpty(a)){
+					pst.setString(1, id_);
+					pst.addBatch();
+				}
+			}
+			int[] qty = pst.executeBatch();
+			System.out.println(qty.length);
+			connOfMysql.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			ConnUtil.closePst(pst);
+			ConnUtil.closePst(pst2);
+			ConnUtil.close(rst, pst_tiptop);
+			ConnUtil.closeConn(connOfMysql);
+			ConnUtil.closeConn(connOfTiptop);
+		}
+	}
+	@Override
+	public void fillTime6Value() {
+		// TODO Auto-generated method stub
+		logger.info("Fill Time6 start!");
+		Date date = new Date();
+		SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd");
+		String erpDate = sf.format(date);
+		ConnUtil conn = new ConnUtil();
+		Connection connOfMysql = conn.getMysqlConnection();
+		Connection connOfTiptop = conn.getOracleConnection();
+		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
+		PreparedStatement pst_tiptop = null;
+		ResultSet rst = null;
+		try {
+			connOfMysql.setAutoCommit(false);
+			pst2 = connOfMysql.prepareStatement("select id_ from zz_turnkey_detail_time where time6='N'");
+			String sql = "select id from(select idd04||'_'||idd05 id from dsbj.sfb_file a"+
+					" left join dsbj.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dsbj.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dsbj.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dsbj.sfp_file f on sfp01=sfq01"+
+					" left join dsbj.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb81=to_date('"+erpDate+"','yy/MM/dd') and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)"+
+					" union all"+
+					" select id from(select idd04||'_'||idd05 id from dshk.sfb_file a"+
+					" left join dshk.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dshk.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dshk.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dshk.sfp_file f on sfp01=sfq01"+
+					" left join dshk.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb81=to_date('"+erpDate+"','yy/MM/dd') and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)"+
+					" union all"+
+					" select id from(select idd04||'_'||idd05 id from dssh.sfb_file a"+
+					" left join dssh.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dssh.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dssh.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dssh.sfp_file f on sfp01=sfq01"+
+					" left join dssh.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb81=to_date('"+erpDate+"','yy/MM/dd') and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)"+
+					" union all"+
+					" select id from(select idd04||'_'||idd05 id from dshf.sfb_file a"+
+					" left join dshf.sfbi_file b on b.sfbi01=a.sfb01"+
+					" left join dshf.sfai_file c on c.sfai01=a.sfb01"+
+					" left join dshf.sfq_file e on e.sfq02=a.sfb01"+
+					" left join dshf.sfp_file f on sfp01=sfq01"+
+					" left join dshf.idd_file d on d.idd01=c.sfai03 and d.idd04=c.sfaiicd03 and idd10=e.sfq01"+
+					" where sfb02=7 and sfb81=to_date('"+erpDate+"','yy/MM/dd') and sfb87='Y' and sfbiicd09 in('02','03','04') and sfpconf='Y'  and idd04 is not null group by idd04,idd05)";
+			pst = connOfMysql.prepareStatement("update zz_turnkey_detail_time set time6='Y' where id_=?");
+			pst_tiptop = connOfTiptop.prepareStatement(sql);
+			rst = pst_tiptop.executeQuery();
+			Map<String,String> tiptopMap = new HashMap<String,String>();
+			while(rst.next()){
+				String id = rst.getString("id");
+				String[] ids = id.split("_");
+				if(ids[0].contains(".")){
+					id = ids[0].substring(0, ids[0].indexOf("."));
+				}
+				tiptopMap.put(id, "Y");
+			}
+			rst = pst2.executeQuery();
+			while(rst.next()){
+				String id_ = rst.getString("id_");
+				String a = tiptopMap.get(id_);
+				if(UtilValidate.isNotEmpty(a)){
+					pst.setString(1, id_);
+					pst.addBatch();
+				}
+			}
+			int[] qty = pst.executeBatch();
+			connOfMysql.commit();
+			logger.info("Fill Time6 end!"+qty.length);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			ConnUtil.closePst(pst);
+			ConnUtil.closePst(pst2);
+			ConnUtil.close(rst, pst_tiptop);
+			ConnUtil.closeConn(connOfMysql);
+			ConnUtil.closeConn(connOfTiptop);
+		}
+	}
 }

@@ -150,15 +150,15 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean2">
 		<property name="jobDetail" ref="MyTimeSpringJob2"/>
-		 <property name="cronExpression" value="0 35 9,10,11 * * ?"/> 
+		 <property name="cronExpression" value="0 20 9,10,11 * * ?"/> 
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean3">
 		<property name="jobDetail" ref="MyTimeSpringJob3"/>
-		 <property name="cronExpression" value="0 45 9 * * ?"/>
+		 <property name="cronExpression" value="0 25 9 * * ?"/>
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean4">
 		<property name="jobDetail" ref="MyTimeSpringJob4"/>
-		 <property name="cronExpression" value="0 20 9,10,11,12 * * ?"/>
+		 <property name="cronExpression" value="0 10 9,10,11,12 * * ?"/>
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean5">
 		<property name="jobDetail" ref="MyTimeSpringJob5"/>
@@ -166,7 +166,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean6">
 		<property name="jobDetail" ref="MyTimeSpringJob6"/>
-		<property name="cronExpression" value="0 55 9,10,11,12 * * ?"/>
+		<property name="cronExpression" value="0 30 9,10,11,12 * * ?"/>
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean7">
 		<property name="jobDetail" ref="MyTimeSpringJob7"/>
@@ -178,36 +178,36 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	</bean>
 	<bean class="org.springframework.scheduling.quartz.CronTriggerBean" id="MyTimesimpleTriggerBean9">
 		<property name="jobDetail" ref="MyTimeSpringJob9"/>
-		<property name="cronExpression" value="0 30 9,10,11 * * ?"/>
+		<property name="cronExpression" value="0 15 9,10,11,12 * * ?"/>
 	</bean>
 		  
 	<!-- ****************启动定时任务***************** -->
 	<!--
-		 MyTimesimpleTriggerBean  向cxmt003传数据
-		 MyTimesimpleTriggerBean2  原始数据分解
-		 MyTimesimpleTriggerBean3  向cxmt001传数据
-		 MyTimesimpleTriggerBean4  生成ProductNo与Tpnflow  
-		 MyTimesimpleTriggerBean6  原始数据分解唯一wip,供po使用
-		 MyTimesimpleTriggerBean9  向cp_wip_history传入当日WIP数据
-		 
+		 step1 MyTimesimpleTriggerBean4  生成ProductNo与Tpnflow   
+		 step2 MyTimesimpleTriggerBean9  向cp_wip_history传入当日WIP数据
+		 step2 MyTimesimpleTriggerBean2  原始数据分解
+		 step3 MyTimesimpleTriggerBean6  原始数据分解唯一wip,供po使用
+		 always MyTimesimpleTriggerBean  向cxmt003传数据
+		 MyTimesimpleTriggerBean5 更新t_fabside_wip 的productId
+		 MyTimesimpleTriggerBean8 删除当日z_wip_detail 赋值wip_time1-6值
 		 
 		 MyTimesimpleTriggerBean7 erp工单IPN传入PI
 		 MyTimesimpleTriggerBean8  数据清理(z_wip_detail)
 		 MyTimesimpleTriggerBean5  更新Pi中的ProductNo
+		 MyTimesimpleTriggerBean3  向cxmt001传数据
 	 -->
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="MyTimesimpleTriggerBean" />
-				<ref bean="MyTimesimpleTriggerBean3"/>
+				<!-- <ref bean="MyTimesimpleTriggerBean" />
 				<ref bean="MyTimesimpleTriggerBean4"/>
 				<ref bean="MyTimesimpleTriggerBean5"/>
 				<ref bean="MyTimesimpleTriggerBean9"/>
 				<ref bean="MyTimesimpleTriggerBean2"/>
 				<ref bean="MyTimesimpleTriggerBean6"/>
-				<ref bean="MyTimesimpleTriggerBean8"/>
+				<ref bean="MyTimesimpleTriggerBean8"/> -->
 				<!--
-				<ref bean="MyTimesimpleTriggerBean8"/>
+				<ref bean="MyTimesimpleTriggerBean3"/>
 				<ref bean="MyTimesimpleTriggerBean7"/>-->
 				<!-- <ref bean="MyTimesimpleTriggerBean111"/> -->
 			</list>

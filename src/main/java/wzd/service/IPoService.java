@@ -31,4 +31,5 @@ public interface IPoService {
 	String createNandProductOrderAndValidateIpn(OptionContent optionContent);
 	DataGrid getNewRuleHeader(OptionContent paramOptionContent);
 	DataGrid getNewRuleValue(OptionContent paramOptionContent);
+	List<Map<String,String>> passOptionsByStrNewVersion(String ipn_ipn);
 }

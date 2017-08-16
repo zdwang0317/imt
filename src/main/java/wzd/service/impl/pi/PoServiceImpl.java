@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -1133,7 +1134,7 @@ public class PoServiceImpl implements IPoService {
 		List<ToptionContent> k7 = new ArrayList<ToptionContent>();
 		List<ToptionContent> pl = new ArrayList<ToptionContent>();
 		try {
-			pst = conn.prepareStatement("select id,application,testingPID,productSeries,density,testSite,testTool from ttpn where Id like '"+ipn_ipn+"%' and status='Active' ");
+			pst = conn.prepareStatement("select id,application,testingPID,productSeries,density,testSite,testTool from ttpn where Id like '"+ipn_ipn+"%' and status='Active' and isbyOtherFrozen is null");
 			rst = pst.executeQuery();
 			Map<String,String> m3 = new HashMap<String, String>();
 			Map<String,String> m4 = new HashMap<String, String>();
@@ -1202,6 +1203,46 @@ public class PoServiceImpl implements IPoService {
 		rt.put("pl", pl);
 		return rt;
 	}
+	
+	@Override
+	public List<Map<String,String>> passOptionsByStrNewVersion(String ipn_ipn) {
+		// TODO Auto-generated method stub
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		ResultSet rst = null;
+		List<Map<String,String>> k3 = new ArrayList<Map<String,String>>();
+		try {
+			pst = conn.prepareStatement("select id,application,testingPID,productSeries,density,testSite,testTool from ttpn where Id like '"+ipn_ipn+"%' and status='Active' and isbyOtherFrozen is null");
+			rst = pst.executeQuery();
+			while(rst.next()){
+				Map<String,String> newadd = new HashMap<String,String>();
+				String sub3 = String.valueOf(rst.getString("Id").charAt(6));
+				String sub4 = String.valueOf(rst.getString("Id").charAt(7));
+				String sub5 = String.valueOf(rst.getString("Id").charAt(8));
+				String sub6 = String.valueOf(rst.getString("Id").substring(9, 11));
+				String sub7 = String.valueOf(rst.getString("Id").charAt(11));
+				newadd.put("ipn_three", sub3);
+				newadd.put("ipn_three_name", sub3+":"+rst.getString("productSeries"));
+				newadd.put("ipn_four", sub4);
+				newadd.put("ipn_four_name", sub4+":"+rst.getString("density"));
+				newadd.put("ipn_five", sub5);
+				newadd.put("ipn_five_name", sub5+":"+rst.getString("testTool")+"-"+rst.getString("testSite"));
+				newadd.put("ipn_six", sub6);
+				newadd.put("ipn_seven", sub7);
+				newadd.put("ipn_seven_name", rst.getString("application"));
+				newadd.put("testingPID", rst.getString("testingPID"));
+				k3.add(newadd);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnUtil.close(rst, pst);
+			ConnUtil.closeConn(conn);
+		}
+		return k3;
+	}
 	@Override
 	public void completedProductOrderAndInvokeWebService(
 			TurnkeyOrder turnkeyOrder) {
@@ -1235,6 +1276,11 @@ public class PoServiceImpl implements IPoService {
 				strs.append(",'"+obj.getFid_()+"'");
 			}
 			pst = conn.prepareStatement("update zz_turnkey_detail set id=1,ipn_new ='"+turnkeyOrder.getIpn()+"',tpn='"+turnkeyOrder.getTpn()+"' where id_ in("+strs.toString().substring(1)+")");
+			pst.executeUpdate();
+			Date date = new Date();
+			SimpleDateFormat sf1 = new SimpleDateFormat("yyyy-MM-dd");
+			String nowDate = sf1.format(date);
+			pst = conn.prepareStatement("update zz_turnkey_detail_time set time3 ='"+nowDate+"' where id_ in("+strs.toString().substring(1)+")");
 			pst.executeUpdate();
 			conn.commit();
 			/*//发MAIL

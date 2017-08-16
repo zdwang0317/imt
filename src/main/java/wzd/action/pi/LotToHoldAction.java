@@ -225,40 +225,44 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 			HSSFSheet wipSheet = wb.getSheetAt(0);
 			for (int i = 4; i <= wipSheet.getLastRowNum(); i++) {
 				HSSFRow currentRow = wipSheet.getRow(i);
-				HSSFCell cell7 = currentRow.getCell(7);
-				if(null!=cell7){
-					cell7.setCellType(HSSFCell.CELL_TYPE_STRING);
-					String status = cell7.getRichStringCellValue().toString().trim();
-					if(status.equals("COMPLETED")){
-						HSSFCell cell6 = currentRow.getCell(6);
-						cell6.setCellType(HSSFCell.CELL_TYPE_STRING);
-						String tpn = cell6.getRichStringCellValue().toString().trim();
-						HSSFCell cell5 = currentRow.getCell(5);
-						cell5.setCellType(HSSFCell.CELL_TYPE_STRING);
-						String ipn = cell5.getRichStringCellValue().toString().trim();
-						HSSFCell cell = currentRow.getCell(0);
-						cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-						HSSFCell cell2 = currentRow.getCell(1);
-						cell2.setCellType(HSSFCell.CELL_TYPE_STRING);
-					    String lid = cell.getRichStringCellValue().toString().trim();
-					    String wid = cell2.getRichStringCellValue().toString().trim();
-						if(UtilValidate.isNotEmpty(tpn)&&UtilValidate.isNotEmpty(ipn)){
-							String key = ipn+"_"+tpn;
-							Map<String,String> value = new HashMap<String,String>();
-							List<Map<String,String>> list = mapOfInvokeService.get(key);
-							if(UtilValidate.isEmpty(list)){
-								list = new ArrayList<Map<String,String>>();
+				if(null!=currentRow){
+					HSSFCell cell7 = currentRow.getCell(7);
+					if(null!=cell7){
+						cell7.setCellType(HSSFCell.CELL_TYPE_STRING);
+						String status = cell7.getRichStringCellValue().toString().trim();
+						if(status.equals("COMPLETED")){
+							HSSFCell cell6 = currentRow.getCell(6);
+							cell6.setCellType(HSSFCell.CELL_TYPE_STRING);
+							String tpn = cell6.getRichStringCellValue().toString().trim();
+							HSSFCell cell5 = currentRow.getCell(5);
+							cell5.setCellType(HSSFCell.CELL_TYPE_STRING);
+							String ipn = cell5.getRichStringCellValue().toString().trim();
+							HSSFCell cell = currentRow.getCell(0);
+							cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+							HSSFCell cell2 = currentRow.getCell(1);
+							cell2.setCellType(HSSFCell.CELL_TYPE_STRING);
+						    String lid = cell.getRichStringCellValue().toString().trim();
+						    String wid = cell2.getRichStringCellValue().toString().trim();
+							if(UtilValidate.isNotEmpty(tpn)&&UtilValidate.isNotEmpty(ipn)){
+								String key = ipn+"_"+tpn;
+								Map<String,String> value = new HashMap<String,String>();
+								List<Map<String,String>> list = mapOfInvokeService.get(key);
+								if(UtilValidate.isEmpty(list)){
+									list = new ArrayList<Map<String,String>>();
+								}
+								value.put("lid", lid);
+								value.put("wid", wid);
+								list.add(value);
+								mapOfInvokeService.put(key, list);
 							}
-							value.put("lid", lid);
-							value.put("wid", wid);
-							list.add(value);
-							mapOfInvokeService.put(key, list);
-						}
-						if(UtilValidate.isNotEmpty(tpn)){
-						    if(UtilValidate.isNotEmpty(lid)){
-						    	mapOfUpdateData.put(lid+"_"+wid, tpn);
+							if(UtilValidate.isNotEmpty(tpn)){
+							    if(UtilValidate.isNotEmpty(lid)){
+							    	mapOfUpdateData.put(lid+"_"+wid, tpn);
+								}
 							}
 						}
+					}else{
+						break;
 					}
 				}else{
 					break;
@@ -266,6 +270,7 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 			}
 		}
 //		file.delete();
+		System.out.println("here");
 		Map<String,String> rows = wipService.UploadDataForUpdateTpn(mapOfUpdateData);
 		for(Map.Entry<String,List<Map<String,String>>> entry: mapOfInvokeService.entrySet()) {
 			Object[] objs = new Object[3];
@@ -296,6 +301,7 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 		Json j = new Json();
 		j.setMsg("更新完成!");
 		j.setSuccess(true);
+		fin.close();
 		super.writeJson(j);
 	}
 	
@@ -351,6 +357,7 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 		Json j = new Json();
 		j.setMsg("更新完成!更新行数："+rows);
 		j.setSuccess(true);
+		fin.close();
 		super.writeJson(j);
 	}
 	
@@ -410,6 +417,7 @@ public class LotToHoldAction extends BaseAction implements ModelDriven<LotToHold
 		Json j = new Json();
 		j.setMsg("更新完成!更新行数："+rows);
 		j.setSuccess(true);
+		fin.close();
 		super.writeJson(j);
 	}
 }

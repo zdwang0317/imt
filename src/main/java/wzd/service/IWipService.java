@@ -48,4 +48,5 @@ public interface IWipService {
 	int CreateGongHuo(List<Map<String, Object>> list);
 	void dataResolveForWipFlow();
 	void dataResolveForTurnkeyDetailFlowdate();
+	void fillTime6Value();
 }

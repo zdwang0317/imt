@@ -51,6 +51,16 @@
 				});
 			}
 		});
+		$('#dataClean').form({
+			url : '${pageContext.request.contextPath}/wipAction!dataClean.action',
+			success : function(r) {
+				var obj = jQuery.parseJSON(r);
+				$.messager.show({
+					title : '提示',
+					msg : obj.msg
+				});
+			}
+		});
 		$('#passWaferWip').form({
 			url : '${pageContext.request.contextPath}/ttAction!passWaferWip.action',
 			success : function(r) {
@@ -213,6 +223,9 @@
 	function passCpWipSubmit() {
 		$('#passCpWip').submit();
 	}
+	function dataClean() {
+		$('#dataClean').submit();
+	}
 	function passWaferWipSubmit() {
 		$('#passWaferWip').submit();
 	}
@@ -294,7 +307,10 @@
 <br>
 <form id="passCpWip" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="passCpWipSubmit()">向TIPTOP传入可出货CP</a>
-</form> 
+</form>
+<form id="dataClean" method="post">
+   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataClean()">dataClean</a>
+</form>  
 <!--<form id="passWaferWip" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="passWaferWipSubmit()">向TIPTOP传入可出货Wafer</a>
 </form>

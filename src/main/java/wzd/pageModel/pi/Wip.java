@@ -34,6 +34,7 @@ public class Wip {
 	private String erpDate;
 	private String tpnFlow;
 	private String productNo;
+	private String poNo;
 	
 	public int getPage() {
 		return page;
@@ -180,6 +181,12 @@ public class Wip {
 	}
 	public void setRemLayer(String remLayer) {
 		this.remLayer = remLayer;
+	}
+	public String getPoNo() {
+		return poNo;
+	}
+	public void setPoNo(String poNo) {
+		this.poNo = poNo;
 	}
 	
 }

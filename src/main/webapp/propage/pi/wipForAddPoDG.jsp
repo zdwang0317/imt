@@ -1,5 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <script type="text/javascript">
+var options;
 	$(function() {
 		$('#trunkey_createdUserName').val($('#session_user_name').val());
 		$('#pi_wip_turnkey_dg').datagrid({
@@ -28,6 +29,11 @@
 				title : 'Qty',
 				width : 150,
 				align : 'right'
+			}, {
+				field : 'poNo',
+				title : 'PO',
+				width : 50,
+				align : 'right'
 			} ] ],
 			onCheck : function(rowIndex,rowData){
 				//console.info("come in onCheck");
@@ -35,7 +41,7 @@
 					url : 'wipAction!datagridOfWipDetail.action',
 					queryParams : {lid: rowData.lid},
 				})
-			}
+			},
 		});
 		$('#pi_wip_turnkey_detail_dg').datagrid({
 			fit : true,
@@ -144,12 +150,18 @@
 	}
 	
 	function pi_wip_show_dialog() {
-		//$('#pi_wip_po_form').form('clear');
+		//
+		options = null;
+		
 		var rows = $('#pi_wip_turnkey_dg').datagrid('getSelections');
 		var ids = [];
+		var poNo = "";
 		if (rows.length > 0) {
 			for ( var i = 0; i < rows.length; i++) {
 				ids.push(rows[i].lid);
+				if(rows[i].poNo!=""){
+					poNo = rows[i].poNo;
+				}
 			}
 			$('#ipn_ids').val(ids.join(','));
 			if(rows[0].ipn.length==15||rows[0].ipn.length==8){
@@ -167,57 +179,35 @@
 			}else{
 				$('#ipn_ipn').val(rows[0].ipn);
 			}
-			
-			/* $.ajax({
-				url : 'wipAction!getContentOfOption.action',
-				data : {
-					ids : ids.join(',')
-				},
-				dataType : 'json',
-				success : function(d) {
-					var ipn_one = [];
-					var ipn_three = [];
-					var ipn_four = [];
-					var ipn_five = [];
-					var ipn_six = [];
-					var ipn_seven = [];
-					for(var i=0;i<d.length;i++){
-						if(d[i].type=="IPN_ONE"){
-							ipn_one.push(d[i]);
-						}
-						if(d[i].type=="IPN_THREE"){
-							ipn_three.push(d[i]);
-						}
-						if(d[i].type=="IPN_FOUR"){
-							ipn_four.push(d[i]);
-						}
-						if(d[i].type=="IPN_FIVE"){
-							ipn_five.push(d[i]);
-						}
-						if(d[i].type=="IPN_SIX"){
-							ipn_six.push(d[i]);
-						}
-						if(d[i].type=="IPN_SEVEN"){
-							ipn_seven.push(d[i]);
-						}
+			var hasV = false;
+			if(poNo!=""&&null!=poNo){
+				var ifc = poNo.substring(4,5);
+				if("C"==ifc.toUpperCase()){
+					$('#fabSite').combobox('select', 'SMIC');
+					hasV = true;
+				}else{
+					var fir = poNo.substring(0,1);
+					if("1"==fir){
+						$('#fabSite').combobox('select', 'GIGA_BJ');
+						hasV = true;
+					}else if("2"==fir){
+						$('#fabSite').combobox('select', 'GIGA_HK');
+						hasV = true;
+					}else if("3"==fir){
+						$('#fabSite').combobox('select', 'GIGA_SH');
+						hasV = true;
+					}else if("4"==fir){
+						$('#fabSite').combobox('select', 'GIGA_HF');
+						hasV = true;
 					}
-					 $('#ipn_one').combobox('loadData',ipn_one);
-					$('#ipn_three').combobox('loadData',ipn_three);
-					$('#ipn_four').combobox('loadData',ipn_four); 
-					$('#ipn_five').combobox('loadData',ipn_five); 
-					$('#ipn_six').combobox('loadData',ipn_six);
-					$('#ipn_seven').combobox('loadData',ipn_seven);
-					$('#ipn_ipn').val(rows[0].ipn);
-					$.ajax({
-						url : 'wipAction!getContentOfProd.action',
-						dataType : 'json',
-						success : function(d) {
-							$('#prod_name').combobox('loadData',d);
-						}
-					});
-					
 				}
-			}); */
+				
+			}
+			if(hasV){
+				$("#hasAuto").show();
+			}else{
+				$("#hasAuto").hide();
+			}
 			$('#pi_wip_po_dialog').dialog('open');
 		} else {
 			parent.sy.messagerAlert('提示', '请选择至少一项！', 'error');
@@ -252,7 +242,6 @@
 					var key = d.pl[i];
 					var has = false;
 					for(var k=0;k<haslist.length;k++){
-						console.info('nei~'+haslist[k]);
 						if(haslist[k]==key.name){
 							has = true;
 						}
@@ -284,6 +273,121 @@
 				} */
 			}
 		});
+	}
+	
+	function fullOfOptions_new(){
+		var ipn_ipn = $('#ipn_ipn').val();
+		$('#ipn_three').combobox('clear');
+		$('#ipn_four').combobox('clear');
+		$('#ipn_five').combobox('clear');
+		$('#ipn_six').combobox('clear');
+		$('#ipn_seven').combobox('clear');
+		$('#prod_name').combobox('clear');
+		$('#cpn_name').combobox('clear');
+		$.ajax({
+			url : 'poAction!PassOptionsByStrNew.action',
+			data : {
+				ipn_ipn : ipn_ipn
+			},
+			dataType : 'json',
+			success : function(d) {
+				$('#ipn_three').combobox('loadData',d);
+				options = d;
+			}
+		});
+	}
+	function fullOfOptions_new_filter(value,id){
+		if("ipn_three"==id){
+			$('#ipn_four').combobox('clear');
+			$('#ipn_five').combobox('clear');
+			$('#ipn_six').combobox('clear');
+			$('#ipn_seven').combobox('clear');
+			$('#prod_name').combobox('clear');
+			$('#cpn_name').combobox('clear');
+			var filllist = new Array();
+			var j = 0;
+			for(var i=0;i<options.length;i++){
+				var a = options[i];
+				if(a.ipn_three==value){
+					filllist[j] = a;
+					j++;
+				}
+			}
+			$('#ipn_four').combobox('loadData',filllist);
+			$('#ipn_five').combobox('clear');
+			$('#ipn_six').combobox('clear');
+			$('#ipn_seven').combobox('clear');
+			$('#prod_name').combobox('clear');
+			$('#cpn_name').combobox('clear');
+		}
+		if("ipn_four"==id){
+			var three = $('#ipn_three').combobox('getValue');
+			var filllist = new Array();
+			var j = 0;
+			for(var i=0;i<options.length;i++){
+				var a = options[i];
+				if(a.ipn_four==value&&a.ipn_three==three){
+					filllist[j] = a;
+					j++;
+				}
+			}
+			$('#ipn_five').combobox('loadData',filllist);
+			$('#ipn_six').combobox('clear');
+			$('#ipn_seven').combobox('clear');
+			$('#prod_name').combobox('clear');
+			$('#cpn_name').combobox('clear');
+		}
+		if("ipn_five"==id){
+			var three = $('#ipn_three').combobox('getValue');
+			var four = $('#ipn_four').combobox('getValue');
+			var filllist = new Array();
+			var j = 0;
+			for(var i=0;i<options.length;i++){
+				var a = options[i];
+				if(a.ipn_five==value&&a.ipn_three==three&&a.ipn_four==four){
+					filllist[j] = a;
+					j++;
+				}
+			}
+			$('#ipn_six').combobox('loadData',filllist);
+			$('#ipn_seven').combobox('clear');
+			$('#prod_name').combobox('clear');
+			$('#cpn_name').combobox('clear');
+		}
+		if("ipn_six"==id){
+			var three = $('#ipn_three').combobox('getValue');
+			var four = $('#ipn_four').combobox('getValue');
+			var five = $('#ipn_five').combobox('getValue');
+			var filllist = new Array();
+			var j = 0;
+			for(var i=0;i<options.length;i++){
+				var a = options[i];
+				if(a.ipn_six==value&&a.ipn_three==three&&a.ipn_four==four&&a.ipn_five==five){
+					filllist[j] = a;
+					j++;
+				}
+			}
+			$('#ipn_seven').combobox('loadData',filllist);
+			$('#prod_name').combobox('clear');
+			$('#cpn_name').combobox('clear');
+		}
+		if("ipn_seven"==id){
+			var three = $('#ipn_three').combobox('getValue');
+			var four = $('#ipn_four').combobox('getValue');
+			var five = $('#ipn_five').combobox('getValue');
+			var six = $('#ipn_six').combobox('getValue');
+			var filllist = new Array();
+			var j = 0;
+			for(var i=0;i<options.length;i++){
+				var a = options[i];
+				if(a.ipn_seven==value&&a.ipn_three==three&&a.ipn_four==four&&a.ipn_five==five&&a.ipn_six==six){
+					filllist[j] = a;
+					j++;
+				}
+			}
+			$('#prod_name').combobox('loadData',filllist);
+			$('#cpn_name').combobox('clear');
+		}
 	}
 	function assignValue(arg){
 		if(arg=='3'){
@@ -351,6 +455,8 @@
 													$('#pi_wip_turnkey_detail_dg').datagrid('load', {});
 													var obj = jQuery.parseJSON(r);
 													$('#pi_wip_po_dialog').dialog('close');
+													$('#pi_wip_po_form').form('clear');
+													$('#trunkey_createdUserName').val($('#session_user_name').val());
 													$.messager.progress('close');
 													$.messager.show({
 														title : '提示',
@@ -380,27 +486,27 @@
 			</tr>
 			<tr>
 				<td>IPN(4-9)</td>
-				<td><input id = "ipn_ipn" name="ipn_ipn" class="easyui-textbox" data-options="required:true,onChange : function(newValue,oldValue){fullOfOptions()}" style="margin-left:0px"/></td>
+				<td><input id = "ipn_ipn" name="ipn_ipn" class="easyui-textbox" data-options="required:true,onChange : function(newValue,oldValue){fullOfOptions_new()}" style="margin-left:0px"/></td>
 			</tr>
 			<tr>
 				<td>Product Series(10)</td>
-				<td><select id="ipn_three"  name="ipn_three" class="easyui-combobox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+				<td><select id="ipn_three"  name="ipn_three" class="easyui-combobox" data-options="required:true,valueField:'ipn_three',textField:'ipn_three_name',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_three,'ipn_three')}"></select></td>
 			</tr>
 			<tr>
 				<td>Density(11)</td>
-				<td><select id="ipn_four" name="ipn_four" class="easyui-combobox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+				<td><select id="ipn_four" name="ipn_four" class="easyui-combobox" data-options="required:true,valueField:'ipn_four',textField:'ipn_four_name',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_four,'ipn_four')}"></select></td>
 			</tr>
 			<tr>
 				<td>CP Tester(12)</td>
-				<td><select id="ipn_five" name="ipn_five" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+				<td><select id="ipn_five" name="ipn_five" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'ipn_five',textField:'ipn_five_name',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_five,'ipn_five')}"></select></td>
 			</tr>
 			<tr>
 				<td>CP Test flow(13-14)</td>
-				<td><select id="ipn_six" name="ipn_six" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+				<td><select id="ipn_six" name="ipn_six" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'ipn_six',textField:'ipn_six',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_six,'ipn_six')}"></select></td>
 			</tr>
 			<tr>
 				<td>Application Area(15)</td>
-				<td><select id="ipn_seven" name="ipn_seven" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+				<td><select id="ipn_seven" name="ipn_seven" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'ipn_seven',textField:'ipn_seven_name',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_seven,'ipn_seven')}"></select></td>
 			</tr>
 			<tr style="display:none">
 				<td><input name="createdUserName" id="trunkey_createdUserName" ><input name="ipn_ids" id="ipn_ids" ><input name="cancel_ids" id="cancel_ids"></td>
@@ -410,7 +516,7 @@
 			</tr> -->
 			<tr>
 				<td>Prod List</td>
-				<td><select id="prod_name" name="prod_name" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'name',width:200,onSelect:function(d){$('#cpn_name').combobox('reload','wipAction!getContentOfCpn.action?pn='+d.name)}"></select></td>
+				<td><select id="prod_name" name="prod_name" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'testingPID',textField:'testingPID',width:200,onSelect:function(d){$('#cpn_name').combobox('reload','wipAction!getContentOfCpn.action?pn='+d.testingPID)}"></select></td>
 			</tr>
 			<tr>
 				<td>CPN List</td>
@@ -422,7 +528,7 @@
 			<tr>
 				<td>Fab Id</td>
 				<td>
-					<select name="fabSite" class="easyui-combobox">
+					<select id="fabSite" name="fabSite" class="easyui-combobox">
 					 	<option value="XMC">XMC</option>
 						<option value="SMIC">SMIC</option>
 						<option value="GIGA">GIGA</option>
@@ -431,6 +537,7 @@
 						<option value="GIGA_SH">GIGA_SH</option>
 						<option value="GIGA_HF">GIGA_HF</option>
 					</select>
+					<span id="hasAuto" style="color:green">已经自动赋值</span>
 				</td>
 			</tr>
 			<tr>

@@ -59,92 +59,84 @@
 		<table class="easyui-datagrid" id="pi_wip_dg"  data-options="url : 'wipAction!datagrid.action',
 			fit : true,
 			method : 'post',
-			//fitColumns : true,
+			fitColumns : true,
+			singleSelect : true,
 			rowNumber : true,
 			border : false,
 			pagination : true,
 			pageSize : 20,
-			pageList : [ 10, 20, 30, 40, 50 ,10000],
+			pageList : [20, 30, 40, 50 ,100],
 			frozenColumns : [ [ {
 				field : 'lid',
 				title : 'Lot ID',
-				width : 100,
 			} ] ],
 			columns : [ [ {
 				field : 'pn',
 				title : 'PartNo',
-				width : 150,
 			},{
 				field : 'cpn',
 				title : 'CPN',
-				width : 150,
 			}, {
 				field : 'ipn',
 				title : 'IPN',
-				width : 150,
 			}, {
 				field : 'qty',
 				title : 'Qty',
-				width : 50,
 			}, {
 				field : 'wid',
 				title : 'Wafer Id',
-				width : 300,
+				width : 100,
 			}, {
 				field : 'startDate',
 				title : 'Recived Date',
-				width : 150,
+				formatter: function(value,row,index){
+					if(''!=value&&null!=value){
+						return value.substring(0,10);
+					}else{
+						return value;
+					}
+				}
 			}, {
 				field : 'stage',
 				title : 'Stage',
-				width : 150,
 			}, {
 				field : 'status',
 				title : 'Status',
-				width : 150,
 
 			}, {
 				field : 'foTime',
 				title : 'FoTime',
-				width : 150,
-
 			}, {
 				field : 'remLayer',
 				title : 'RemLayer',
-				width : 150,
-
 			}, {
-				field : 'holdDate',
-				title : 'HoldDate',
-				width : 150,
-
-			}, {
-				field : 'holdRemark',
-				title : 'HoldRemark',
-				width : 150,
-
-			}, {
-				field : 'location',
-				title : 'Location',
-				width : 150,
-
-			}, {
-				field : 'sendDate',
-				title : 'SendDate',
-				width : 150,
-
-			}, {
+				field : 'tpnFlow',
+				title : 'Wip FLOW',
+			} , {
 				field : 'firm',
 				title : 'Site',
-				width : 150,
 			}, {
 				field : 'productNo',
 				title : 'Product No',
-				width : 150,
-			} , {
-				field : 'tpnFlow',
-				title : 'Wip FLOW',
-				width : 150,
+			}, {
+				field : 'holdDate',
+				title : 'HoldDate',
+			}, {
+				field : 'holdRemark',
+				title : 'HoldRemark',
+			}, {
+				field : 'location',
+				title : 'Location',
+			}, {
+				field : 'sendDate',
+				title : 'SendDate',
+				formatter: function(value,row,index){
+					if(''!=value&&null!=value){
+						return value.substring(0,10);
+					}else{
+						return value;
+					}
+				}
 			}  ] ],
 			/* toolbar:[{
 				id:'excel-download',

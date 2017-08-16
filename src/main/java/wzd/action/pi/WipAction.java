@@ -133,7 +133,14 @@ public class WipAction extends BaseAction implements ModelDriven<Wip>{
 		j.setSuccess(true);
 		super.writeJson(j);
 	}
-	
+	public void dataClean() {
+		Json j = new Json();
+		wipService.dataClean();
+		j.setObj(1);
+		j.setMsg("更新");
+		j.setSuccess(true);
+		super.writeJson(j);
+	}
 	public void showHighChart(){
 		List<Series> a = wipService.getDataToCharts();
 		Json j = new Json();

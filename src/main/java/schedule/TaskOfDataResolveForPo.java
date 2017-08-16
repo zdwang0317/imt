@@ -30,6 +30,6 @@ public class TaskOfDataResolveForPo extends QuartzJobBean{
 		// TODO Auto-generated method stub
 //		System.out.println("come date resolve");
 		ttService.dataResolveForPo();
-		wipService.dataResolveForTurnkeyDetailFlowdate();
+//		wipService.dataResolveForTurnkeyDetailFlowdate();
 	}
 }

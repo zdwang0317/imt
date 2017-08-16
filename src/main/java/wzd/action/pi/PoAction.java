@@ -74,6 +74,9 @@ public class PoAction extends BaseAction
   public void PassOptionsByStr() {
     super.writeJson(this.poService.passOptionsByStr(this.optionContent.getIpn_ipn()));
   }
+  public void PassOptionsByStrNew() {
+    super.writeJson(this.poService.passOptionsByStrNewVersion(this.optionContent.getIpn_ipn()));
+  }
 
   public void PassNandOptionsByStr() {
     super.writeJson(this.poService.passNandOptions());

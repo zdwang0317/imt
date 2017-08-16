@@ -23,6 +23,7 @@ public class TaskOfDataClean extends QuartzJobBean {
 			throws JobExecutionException {
 		// TODO Auto-generated method stub
 		wipService.dataClean();
+		wipService.fillTime6Value();
 	}
 
 }

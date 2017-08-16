@@ -357,7 +357,8 @@ public class TpnService implements ITpnService{
 			Connection conn = connUtil.getMysqlConnection();
 			PreparedStatement pst = null;
 			ResultSet rst = null;
-			String sql = "select a.tpn from z_tpn_rule_item a left join z_tpn b on b.tpn=a.tpn and b.ruleTypeId='"+ruleTypeId+"' where a.ruleId='"+tpnRule.getRuleId()+"' order by b.tpnOrder";
+//			String sql = "select a.tpn from z_tpn_rule_item a left join z_tpn b on b.tpn=a.tpn and b.ruleTypeId='"+ruleTypeId+"' where a.ruleId='"+tpnRule.getRuleId()+"' order by b.tpnOrder";
+			String sql = "select tpn from z_tpn_rule_item  where ruleId='"+tpnRule.getRuleId()+"' order by remlayer desc";
 			try {
 				pst = conn.prepareStatement(sql);
 				rst = pst.executeQuery();
