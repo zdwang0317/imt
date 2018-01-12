@@ -23,7 +23,7 @@ public class TwipDetail implements java.io.Serializable{
 	private String stage;
 	private String status;
 //	private Date foTime;
-//	private String remLayer;
+	private String remLayer;
 //	private Date holdDate;
 //	private String holdRemark;
 	private String location;
@@ -177,6 +177,14 @@ public class TwipDetail implements java.io.Serializable{
 
 	public void setStage(String stage) {
 		this.stage = stage;
+	}
+
+	public String getRemLayer() {
+		return remLayer;
+	}
+
+	public void setRemLayer(String remLayer) {
+		this.remLayer = remLayer;
 	}
 
 	

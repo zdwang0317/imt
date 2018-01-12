@@ -59,7 +59,6 @@
 		<table class="easyui-datagrid" id="pi_wip_dg"  data-options="url : 'wipAction!datagrid.action',
 			fit : true,
 			method : 'post',
-			fitColumns : true,
 			singleSelect : true,
 			rowNumber : true,
 			border : false,
@@ -69,23 +68,25 @@
 			frozenColumns : [ [ {
 				field : 'lid',
 				title : 'Lot ID',
+				width : 100,
 			} ] ],
 			columns : [ [ {
 				field : 'pn',
 				title : 'PartNo',
+				width : 100,
 			},{
 				field : 'cpn',
 				title : 'CPN',
 			}, {
 				field : 'ipn',
 				title : 'IPN',
+				width : 100,
 			}, {
 				field : 'qty',
 				title : 'Qty',
 			}, {
 				field : 'wid',
 				title : 'Wafer Id',
-				width : 100,
 			}, {
 				field : 'startDate',
 				title : 'Recived Date',

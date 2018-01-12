@@ -1042,7 +1042,7 @@ public class WipServiceImpl implements IWipService {
 		ResultSet rst = null;
 		ConnUtil connUtil = new ConnUtil();
 		Connection conn = connUtil.getMysqlConnection();
-		StringBuilder strBur1 = new StringBuilder("select sum(a.qty) q,id_,a.lid,a.wid,a.ipn,a.cpn,a.pn,a.poNo from zz_turnkey_detail a " +
+		StringBuilder strBur1 = new StringBuilder("select sum(a.qty) q,id_,a.lid,a.wid,a.ipn,a.cpn,a.pn,a.poNo,a.firm from zz_turnkey_detail a " +
 				"left join t_fabside_wip b on b.id= a.id_ "+
 				"where 1=1 and a.status = 'CREATED' and b.abnormal not like '%Q' and b.abnormal not like '%srcap%'");
 		if(UtilValidate.isNotEmpty(wip.getPn())){
@@ -1083,6 +1083,7 @@ public class WipServiceImpl implements IWipService {
 				u.setCpn(rst.getString("cpn"));
 				u.setPn(rst.getString("pn"));
 				u.setPoNo(rst.getString("poNo"));
+				u.setFirm(rst.getString("firm"));
 				nl.add(u);
 				totalNum++;
 			}
@@ -1792,6 +1793,7 @@ public class WipServiceImpl implements IWipService {
 		List<TtpnStage> listOfChipmos = new ArrayList<TtpnStage>();
 		List<TtpnStage> listOfHlmc = new ArrayList<TtpnStage>();
 		List<TtpnStage> listOfSjsemi = new ArrayList<TtpnStage>();
+		List<TtpnStage> listOfLeadyo = new ArrayList<TtpnStage>();
 		try {
 			pst3 = conn.prepareStatement("select stage,firm,tpn from z_tpn_stage order by firm,stageOrder");
 			rst3 = pst3.executeQuery();
@@ -1817,6 +1819,8 @@ public class WipServiceImpl implements IWipService {
 					listOfHlmc.add(obj);
 				}else if(firm.equals("sjsemi")){
 					listOfSjsemi.add(obj);
+				}else if(firm.equals("leadyo")){
+					listOfLeadyo.add(obj);
 				}
 			}
 		} catch (SQLException e) {
@@ -1973,6 +1977,8 @@ public class WipServiceImpl implements IWipService {
 								}
 							}else if(firm.equals("sjsemi")){
 								firmName = "sjsemi";
+							}else if(firm.equals("leadyo")){
+								firmName = "leadyo";
 							}
 						}
 //						logger.info("firmName is "+firmName);
@@ -1989,7 +1995,7 @@ public class WipServiceImpl implements IWipService {
 											break;
 										}
 									}
-								}else if(firmName.equals("KLT")){
+								}else if(firmName.equals("KLT")||firmName.equals("leadyo")){
 									for(TtpnStage type2 : listOfKlt	){
 										if(stage.equals("BAKE")||stage.equals("DIEBANK")||stage.equals("DIEBANK1")){
 											tpnflow = PiUtil.processSpecialStage(stage);

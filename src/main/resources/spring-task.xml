@@ -199,13 +199,13 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<!-- <ref bean="MyTimesimpleTriggerBean" />
+				<ref bean="MyTimesimpleTriggerBean" />
 				<ref bean="MyTimesimpleTriggerBean4"/>
 				<ref bean="MyTimesimpleTriggerBean5"/>
 				<ref bean="MyTimesimpleTriggerBean9"/>
 				<ref bean="MyTimesimpleTriggerBean2"/>
 				<ref bean="MyTimesimpleTriggerBean6"/>
-				<ref bean="MyTimesimpleTriggerBean8"/> -->
+				<ref bean="MyTimesimpleTriggerBean8"/>
 				<!--
 				<ref bean="MyTimesimpleTriggerBean3"/>
 				<ref bean="MyTimesimpleTriggerBean7"/>-->

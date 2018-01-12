@@ -915,6 +915,7 @@ public class PoServiceImpl implements IPoService {
 	@Override
 	public String createProductOrderAndValidateIpn(OptionContent option) {
 		// TODO Auto-generated method stub
+		int oid = 0;
 		String serialNumber = "PO"+DateUtil.dateToString(new Date(), "yyyyMMddHHmmss");
 		String ipn = option.getIpn_one()+option.getIpn_ipn().trim()+option.getIpn_three()+option.getIpn_four()+option.getIpn_five()+option.getIpn_six()+option.getIpn_seven();
 		String tpn = option.getIpn_ipn().trim()+option.getIpn_three()+option.getIpn_four()+option.getIpn_five()+option.getIpn_six()+option.getIpn_seven();
@@ -935,7 +936,7 @@ public class PoServiceImpl implements IPoService {
 			if(UtilValidate.isNotEmpty(hasQType)){
 				return "创建失败：Wafer Type 规则不符:"+hasQType.substring(1);
 			}else{
-				int oid = save(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn);
+				oid = save(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn);
 				int seqId = 1;
 				/*List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
 				String cpTestFlow = "";
@@ -965,7 +966,7 @@ public class PoServiceImpl implements IPoService {
 				updateStatusForTurnkeyDetail(listOfTurnkeyDetail);
 			}
 		}
-		return "创建成功：工单流水号为"+serialNumber;
+		return "创建成功：工单流水号为"+serialNumber+"_"+oid+"_"+ipn+"_"+tpn;
 	}
 	@Override
 	public DataGrid datagridTpnTestFlows(TurnkeyOrder turnkeyOrder) {
@@ -1342,6 +1343,8 @@ public class PoServiceImpl implements IPoService {
 		List<Map<String,String>> k5 = new ArrayList<Map<String,String>>();
 		List<Map<String,String>> k6 = new ArrayList<Map<String,String>>();
 		List<Map<String,String>> k7 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k8 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k9 = new ArrayList<Map<String,String>>();
 		try {
 			pst = conn.prepareStatement("select key3,value,code from t_paramete where key1='Para_NAND'");
 			rst = pst.executeQuery();
@@ -1364,6 +1367,10 @@ public class PoServiceImpl implements IPoService {
 					k6.add(map);
 				}else if(key3.equals("Test Flow")){
 					k7.add(map);
+				}else if(key3.equals("Application Area")){
+					k8.add(map);
+				}else if(key3.equals("Reserved")){
+					k9.add(map);
 				}
 			}
 		} catch (SQLException e) {
@@ -1381,6 +1388,8 @@ public class PoServiceImpl implements IPoService {
 		rt.put("k5", k5);
 		rt.put("k6", k6);
 		rt.put("k7", k7);
+		rt.put("k8", k8);
+		rt.put("k9", k9);
 		return rt;
 	}
 	
@@ -1388,8 +1397,8 @@ public class PoServiceImpl implements IPoService {
 	public String createNandProductOrderAndValidateIpn(OptionContent option) {
 		// TODO Auto-generated method stub
 		String serialNumber = "PO" + DateUtil.dateToString(new Date(), "yyyyMMddHHmmss");
-	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_seven();
-	    String tpn = option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_seven();
+	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_eight()+ option.getIpn_nine();
+	    String tpn = option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() +option.getIpn_eight();
 	    int i = 1;
 	    tpn = checkIpnHasATpn(tpn);
 	    if (UtilValidate.isEmpty(tpn)) {
@@ -1455,7 +1464,19 @@ public class PoServiceImpl implements IPoService {
 	    ResultSet rst = null;
 	    List k1 = new ArrayList();
 	    try {
-	      pst = conn.prepareStatement("select key3,title from t_code where function='" + optionContent.getKey1() + "' and category='" + optionContent.getKey2() + "' and groupNo=1 order by no");
+	    	boolean special = false;
+	    	String key1 = optionContent.getKey1();
+	    	if(key1.equals("NOR_Digit5")||key1.equals("NOR_KGD6")||key1.equals("NOR_KGD8")||key1.equals("NOR_MCP")||key1.equals("NOR_Para")){
+	    		special = true;
+	    	}
+	    	if(special){
+	    		pst = conn.prepareStatement("select key3,title from t_code where category='" + optionContent.getKey1() + "' and groupNo=1 order by no");
+	    	}else{
+	    		if("Vendor Code".equals(key1)){
+	    			key1="Vendor Code&Density Table";
+	    		}
+	    		pst = conn.prepareStatement("select key3,title from t_code where function='" + key1 + "' and category='" + optionContent.getKey2() + "' and groupNo=1 order by no");
+	    	}
 	      rst = pst.executeQuery();
 	      while (rst.next()) {
 	        Map map = new HashMap();
@@ -1486,7 +1507,19 @@ public class PoServiceImpl implements IPoService {
 	    ResultSet rst = null;
 	    List k1 = new ArrayList();
 	    try {
-	      pst = conn.prepareStatement("select value,code,field1,field2,field3,field4,field5 from t_paramete where key1='" + option.getKey1() + "' and key2='" + option.getKey2() + "' and key3='" + option.getKey3() + "' order by code");
+	    	boolean special = false;
+	    	String key2 = option.getKey2();
+	    	if(key2.equals("NOR_Digit5")||key2.equals("NOR_KGD6")||key2.equals("NOR_KGD8")||key2.equals("NOR_MCP")||key2.equals("NOR_Para")){
+	    		special = true;
+	    	}
+	    	if(special){
+	    		pst = conn.prepareStatement("select value,code,field1,field2,field3,field4,field5 from t_paramete where key1='" + option.getKey2() + "' and key3='" + option.getKey3() + "' order by code");
+	    	}else{
+	    		if("Vendor Code".equals(key2)){
+	    			key2="Vendor Code&Density Table";
+	    		}
+	    		pst = conn.prepareStatement("select value,code,field1,field2,field3,field4,field5 from t_paramete where key1='" + option.getKey1() + "' and key2='" + key2 + "' and key3='" + option.getKey3() + "' order by code");
+	    	}
 	      rst = pst.executeQuery();
 	      while (rst.next()) {
 	        Map map = new HashMap();

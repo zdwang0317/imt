@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <script type="text/javascript">
 var log_ = 0;
+var log1_ = 0;
 var nand_ = 0;
 $(function() {
 	$('#MainTab').tabs({
@@ -41,6 +42,47 @@ $(function() {
         				for(var i=0;i<rows.length;i++){
         					var obj = rows[i];
         					$('#wipChart_logic').tabs('add',{
+        						id : obj.ruleId,
+        						selected: false,
+        						title: obj.ruleName,
+        						content: '<div style="padding:10px"><div id ="chart_'+obj.ruleId+'" style="height: 650px"></div></div>',
+        						closable: false
+        					}); 
+        				}
+        			}
+        		});
+        	}
+        	if(index==3&&log1_==0){
+        		log1_ = 1;        		
+        		$('#wipChart_logic1').tabs({
+        	        border:false,
+        	        fit : true,
+        	        plain : true,
+        	        cache : true,
+        	        onSelect:function(title,index){
+        	        	var selectTab = $('#wipChart_logic1').tabs('getTab',index);
+        	        	var ruleId = selectTab[0].id;
+        	        	$.ajax({
+        	    			type : 'post',
+        	    			data : 'ruleTypeId=LOGIC1&ruleId='+ruleId,
+        	    			dataType : 'json',
+        	    			url : "tpnRuleAction!showHighChartByNewRule.action",
+        	    			success : function(r) {
+        	    				generateChart('chart_'+ruleId,r.dataList,r.msg);
+        	    			}
+        	    		});
+        	        }
+        	    });
+        	    $.ajax({
+        			type : 'post',
+        			data : 'ruleTypeId=LOGIC1',
+        			dataType : 'json',
+        			url : "tpnRuleAction!getRuleHeaderFromRuleTypeId.action",
+        			success : function(r) {
+        				var rows = r.rows;
+        				for(var i=0;i<rows.length;i++){
+        					var obj = rows[i];
+        					$('#wipChart_logic1').tabs('add',{
         						id : obj.ruleId,
         						selected: false,
         						title: obj.ruleName,
@@ -230,6 +272,11 @@ function formatDataList(list){
 		<div title="NAND" style="padding:5px;">
 			<div id ="maincontainer3" style="height: 700px;width:1100">
 				<div id="wipChart_nand"></div>
+			</div>
+		</div>
+		<div title="LOGIC1" style="padding:5px;">
+			<div id ="maincontainer4" style="height: 700px;width:1100">
+				<div id="wipChart_logic1"></div>
 			</div>
 		</div>
 	</div>

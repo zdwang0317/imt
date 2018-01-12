@@ -1,7 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <script type="text/javascript">
-var index_value = ['NOR','SPI_NAND','Para_Nand','MCP','eMCP_eMMC','MCU','DRAM'];
-var key2_array = ['CP','Assy.','CPN','CP','Assy.'];
+var index_value = ['NOR','SPI_NAND','Para_Nand','MCP','eMCP_eMMC','MCU','DRAM','W_nonGiga'];
+var key2_array = ['CP','Assy.','CPN','CP','Assy.','NOR_KGD8'];
+var special_key2 = ['NOR_KGD8','NOR_KGD6','NOR_Digit5','NOR_Para','NOR_MCP'];
              
 function fillTableValue(title,index){
 	var main_index = $('#tab_main').tabs('getTabIndex',$('#tab_main').tabs('getSelected'))
@@ -13,7 +14,18 @@ function fillTableValue(title,index){
 	}else if(key1=='MCP'&&s_index==4&&(index==10||index==11)){
 		key2 = "FT";
 	}else{
-		key2 = key2_array[s_index];
+		if(s_index>4){
+			key2 = special_key2[s_index-5];
+		}else{
+			key2 = key2_array[s_index];
+		}
+	}
+	if(main_index==7){
+		if(s_index>0){
+			key2 = "Vendor Code";
+		}else{
+			key2 = "WIPN";
+		}
 	}
 	var table_id = main_index+'_'+s_index+'_'+index;
 	$('#'+main_index+'_'+s_index+'_'+index+'').datagrid({
@@ -36,6 +48,9 @@ function fillTableValue(title,index){
 function fillTableHeader(title,index){
 	var main_index = $('#tab_main').tabs('getTabIndex',$('#tab_main').tabs('getSelected'));
 	var key2 = index_value[main_index];
+	if(index>4){
+		title = special_key2[index-5];
+	}
 	$.ajax({
 		type : 'post',
 		data : 'key1='+title+'&key2='+key2,
@@ -89,6 +104,26 @@ function fillTableHeader(title,index){
 				</div>
 				<div title="FTTPN" style="padding:5px;">
 					<div id="last_0_4" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+				<div title="CPN-KGD8" style="padding:5px;">
+					<div id="last_0_5" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+				<div title="CPN-KGD6" style="padding:5px;">
+					<div id="last_0_6" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+				<div title="CPN-Digit5" style="padding:5px;">
+					<div id="last_0_7" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+				<div title="CPN-Para" style="padding:5px;">
+					<div id="last_0_8" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+				<div title="CPN-MCP" style="padding:5px;">
+					<div id="last_0_9" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
 					</div>
 				</div>
 			</div>
@@ -233,6 +268,18 @@ function fillTableHeader(title,index){
 				</div>
 				<div title="FTTPN" style="padding:5px;">
 					<div id="last_6_4" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div title="W-nonGiga" style="padding:5px;">
+			<div id="s_7" class="easyui-tabs" data-options="border: false,fit:true,plain:true,selected: false,onSelect:function(title,index){fillTableHeader(title,index)}">
+				<div title="WIPN" style="padding:5px;">
+					<div id="last_7_0" class="easyui-tabs" data-options="border: false,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
+					</div>
+				</div>
+				<div title="Vendor Code&Density Table" style="padding:5px;">
+					<div id="last_7_1" class="easyui-tabs" data-options="border: false,plain:true,selected: false,onSelect:function(title,index){fillTableValue(title,index)}">
 					</div>
 				</div>
 			</div>

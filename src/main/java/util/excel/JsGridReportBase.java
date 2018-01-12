@@ -10,8 +10,11 @@ package util.excel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -475,8 +478,10 @@ public class JsGridReportBase {
 				.concat(String.valueOf(URLEncoder.encode(sFileName, "UTF-8"))));
 		response.setHeader("Connection", "close");
 		response.setHeader("Content-Type", "application/vnd.ms-excel");
-
 		wb.write(response.getOutputStream());
+		File f= new File("d:" + sFileName);
+		OutputStream out = new FileOutputStream(f);
+		wb.write(out);
 	}
 	
 	/**

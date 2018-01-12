@@ -308,9 +308,6 @@
 <form id="passCpWip" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="passCpWipSubmit()">向TIPTOP传入可出货CP</a>
 </form>
-<form id="dataClean" method="post">
-   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataClean()">dataClean</a>
-</form>  
 <!--<form id="passWaferWip" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="passWaferWipSubmit()">向TIPTOP传入可出货Wafer</a>
 </form>

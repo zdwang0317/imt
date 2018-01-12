@@ -34,6 +34,11 @@ var options;
 				title : 'PO',
 				width : 50,
 				align : 'right'
+			}, {
+				field : 'firm',
+				title : 'Fab',
+				width : 50,
+				align : 'right'
 			} ] ],
 			onCheck : function(rowIndex,rowData){
 				//console.info("come in onCheck");
@@ -157,28 +162,65 @@ var options;
 		var ids = [];
 		var poNo = "";
 		if (rows.length > 0) {
+			var firm = "";
 			for ( var i = 0; i < rows.length; i++) {
 				ids.push(rows[i].lid);
 				if(rows[i].poNo!=""){
 					poNo = rows[i].poNo;
 				}
+				if(""==firm){
+					var f = rows[i].firm;
+					if(""!=f){
+						firm = f;
+					}
+				}
 			}
 			$('#ipn_ids').val(ids.join(','));
-			if(rows[0].ipn.length==15||rows[0].ipn.length==8){
-				if(rows[0].ipn.length==15){
-					/* $('#ipn_ipn').val(rows[0].ipn.substring(3,9)); */
-					 $('#pi_wip_po_form').form('load',{
-						 ipn_ipn:rows[0].ipn.substring(3,9),
-					 });
-				}else{
-					/* $('#ipn_ipn').val(rows[0].ipn.substring(2)); */
+			if(""!=firm){
+				var pn = rows[0].pn;
+				if(""!=pn){
+					var ipn = "";
+					if(firm=="hlmc"){
+						var ipn_ = pn.substring(0,5);
+						var ipn_2 = pn.substring(6,7);
+						if(ipn_2=="1"){
+							ipn_ = ipn_+"0";
+						}else{
+							ipn_ = ipn_+ipn_2;
+						}
+						ipn = ipn_;
+					}
+					if(firm=="xmc"||firm=="smic"){
+						var ipn_ = pn.substring(0,5);
+						if(pn.length>7){
+							ipn_ = ipn_+pn.substring(7,8);
+						}else{
+							ipn_ = ipn_+"0";
+						}
+						ipn = ipn_;
+					}
 					$('#pi_wip_po_form').form('load',{
-						 ipn_ipn:rows[0].ipn.substring(2),
+						 ipn_ipn:ipn,
 					 });
 				}
 			}else{
-				$('#ipn_ipn').val(rows[0].ipn);
+				if(rows[0].ipn.length==15||rows[0].ipn.length==8){
+					if(rows[0].ipn.length==15){
+						/* $('#ipn_ipn').val(rows[0].ipn.substring(3,9)); */
+						 $('#pi_wip_po_form').form('load',{
+							 ipn_ipn:rows[0].ipn.substring(3,9),
+						 });
+					}else{
+						/* $('#ipn_ipn').val(rows[0].ipn.substring(2)); */
+						$('#pi_wip_po_form').form('load',{
+							 ipn_ipn:rows[0].ipn.substring(2),
+						 });
+					}
+				}else{
+					$('#ipn_ipn').val(rows[0].ipn);
+				}
 			}
+			
 			var hasV = false;
 			if(poNo!=""&&null!=poNo){
 				var ifc = poNo.substring(4,5);
@@ -454,13 +496,26 @@ var options;
 													$('#pi_wip_turnkey_dg').datagrid('clearSelections');
 													$('#pi_wip_turnkey_detail_dg').datagrid('load', {});
 													var obj = jQuery.parseJSON(r);
+													var objs = obj.msg.split('_');
 													$('#pi_wip_po_dialog').dialog('close');
 													$('#pi_wip_po_form').form('clear');
 													$('#trunkey_createdUserName').val($('#session_user_name').val());
 													$.messager.progress('close');
 													$.messager.show({
 														title : '提示',
-														msg : obj.msg
+														msg : objs[0]
+													});
+													$.ajax({
+														type : 'post',
+														url : 'orderAction!completedProductOrderAndInvokeWebService.action',
+														data : {
+															id : objs[1],
+															ipn : objs[2],
+															tpn : objs[3],
+														},
+														dataType : 'json',
+														success : function(d) {
+														}
 													});
 												}
 											});

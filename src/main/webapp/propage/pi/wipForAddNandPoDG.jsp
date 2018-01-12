@@ -1,4 +1,4 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
+ <%@ page language="java" pageEncoding="UTF-8"%>
 <script type="text/javascript">
 	$(function() {
 		$('#trunkey_createdUserName').val($('#session_user_name').val());
@@ -189,6 +189,8 @@
 				$('#ipn_five').combobox('clear'); 
 				$('#ipn_six').combobox('clear');
 				$('#ipn_seven').combobox('clear');
+				$('#ipn_eight').combobox('clear');
+				$('#ipn_nine').combobox('clear');
 				/* $('#prod_name').combobox('clear'); */
 				$('#ipn_zero').combobox('loadData',d.k1);
 				$('#ipn_zero_').combobox('loadData',d.k2);
@@ -197,6 +199,8 @@
 				$('#ipn_four').combobox('loadData',d.k5); 
 				$('#ipn_five').combobox('loadData',d.k6); 
 				$('#ipn_six').combobox('loadData',d.k7);
+				$('#ipn_eight').combobox('loadData',d.k8);
+				$('#ipn_nine').combobox('loadData',d.k9);
 				/* var prodlist = new Array();
 				var haslist = new Array();
 				var j = 0;
@@ -337,12 +341,20 @@
 				<td>CP Test flow(11-12)</td>
 				<td><select id="ipn_six" name="ipn_six" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
 			</tr>
+			<tr>
+				<td>Application Area(13)</td>
+				<td><select id="ipn_eight" name="ipn_eight" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+			</tr>
+			<tr>
+				<td>Reserved(14-15)</td>
+				<td><select id="ipn_nine" name="ipn_nine" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+			</tr>
 			<!-- <tr>
 				<td>Reserve(13-15)</td>
 				<td><select id="ipn_seven" name="ipn_seven" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
 			</tr> -->
 			<tr style="display:none">
-				<td><input name="ipn_seven" value="000"><input name="createdUserName" id="trunkey_createdUserName" ><input name="ipn_ids" id="ipn_ids" ><input name="cancel_ids" id="cancel_ids"></td>
+				<td><!-- <input name="ipn_seven" value="000"> --><input name="createdUserName" id="trunkey_createdUserName" ><input name="ipn_ids" id="ipn_ids" ><input name="cancel_ids" id="cancel_ids"></td>
 			</tr>
 			<!-- <tr>
 				<td colspan="2">Prod生成规则</td>
