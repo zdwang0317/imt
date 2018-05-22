@@ -247,6 +247,28 @@ public class PoServiceImpl implements IPoService {
 		}
 		return retrunStr;
 	}
+	private String checkIpnHasATpnLatest(String tpn,String finalStatus){
+		String retrunStr = "";
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		ResultSet rst = null;
+		try {
+			pst = conn.prepareStatement("select id from ttpn where id like '%"+tpn+"%' and finalStatus='"+finalStatus+"' and status='Active' and isbyOtherFrozen is null");
+			rst = pst.executeQuery();
+			while(rst.next()){
+				retrunStr = rst.getString("id");
+				break;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnUtil.close(rst, pst);
+			ConnUtil.closeConn(conn);
+		}
+		return retrunStr;
+	}
 	
 	/*
 	 * 判断工单DETAIL ITEM 是否WAFER TYPE为Q的  如果有则无法建立工单并返回结果
@@ -923,7 +945,7 @@ public class PoServiceImpl implements IPoService {
 		if(option.getIpn_five().equals("S")){
 			i = 1;
 		}else{
-			tpn = checkIpnHasATpn(tpn);
+			tpn = checkIpnHasATpnLatest(tpn, option.getIpn_eight());
 			if(UtilValidate.isEmpty(tpn)){
 				i=0;
 			}
@@ -1214,7 +1236,7 @@ public class PoServiceImpl implements IPoService {
 		ResultSet rst = null;
 		List<Map<String,String>> k3 = new ArrayList<Map<String,String>>();
 		try {
-			pst = conn.prepareStatement("select id,application,testingPID,productSeries,density,testSite,testTool from ttpn where Id like '"+ipn_ipn+"%' and status='Active' and isbyOtherFrozen is null");
+			pst = conn.prepareStatement("select id,application,testingPID,productSeries,density,testSite,testTool,finalStatus from ttpn where Id like '"+ipn_ipn+"%' and status='Active' and isbyOtherFrozen is null");
 			rst = pst.executeQuery();
 			while(rst.next()){
 				Map<String,String> newadd = new HashMap<String,String>();
@@ -1233,6 +1255,7 @@ public class PoServiceImpl implements IPoService {
 				newadd.put("ipn_seven", sub7);
 				newadd.put("ipn_seven_name", rst.getString("application"));
 				newadd.put("testingPID", rst.getString("testingPID"));
+				newadd.put("ipn_status", rst.getString("finalStatus"));
 				k3.add(newadd);
 			}
 		} catch (SQLException e) {
@@ -1345,6 +1368,7 @@ public class PoServiceImpl implements IPoService {
 		List<Map<String,String>> k7 = new ArrayList<Map<String,String>>();
 		List<Map<String,String>> k8 = new ArrayList<Map<String,String>>();
 		List<Map<String,String>> k9 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k10 = new ArrayList<Map<String,String>>();
 		try {
 			pst = conn.prepareStatement("select key3,value,code from t_paramete where key1='Para_NAND'");
 			rst = pst.executeQuery();
@@ -1371,6 +1395,8 @@ public class PoServiceImpl implements IPoService {
 					k8.add(map);
 				}else if(key3.equals("Reserved")){
 					k9.add(map);
+				}else if(key3.equals("Reliability")){
+					k10.add(map);
 				}
 			}
 		} catch (SQLException e) {
@@ -1390,6 +1416,7 @@ public class PoServiceImpl implements IPoService {
 		rt.put("k7", k7);
 		rt.put("k8", k8);
 		rt.put("k9", k9);
+		rt.put("k10", k10);
 		return rt;
 	}
 	
@@ -1397,7 +1424,7 @@ public class PoServiceImpl implements IPoService {
 	public String createNandProductOrderAndValidateIpn(OptionContent option) {
 		// TODO Auto-generated method stub
 		String serialNumber = "PO" + DateUtil.dateToString(new Date(), "yyyyMMddHHmmss");
-	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_eight()+ option.getIpn_nine();
+	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_eight()+ option.getIpn_nine()+ option.getIpn_ten();
 	    String tpn = option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() +option.getIpn_eight();
 	    int i = 1;
 	    tpn = checkIpnHasATpn(tpn);
@@ -1524,7 +1551,7 @@ public class PoServiceImpl implements IPoService {
 	      while (rst.next()) {
 	        Map map = new HashMap();
 	        map.put("name", rst.getString("code"));
-	        map.put("description", rst.getString("value"));
+	        map.put("description", rst.getString("value").replace("&", "&amp;"));
 	        map.put("field1", rst.getString("field1"));
 	        map.put("field2", rst.getString("field2"));
 	        map.put("field3", rst.getString("field3"));

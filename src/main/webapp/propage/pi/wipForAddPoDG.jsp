@@ -277,6 +277,7 @@ var options;
 				$('#ipn_five').combobox('loadData',d.k5); 
 				$('#ipn_six').combobox('loadData',d.k6);
 				$('#ipn_seven').combobox('loadData',d.k7);
+				$('#ipn_status').combobox('loadData',d.k7);
 				var prodlist = new Array();
 				var haslist = new Array();
 				var j = 0;
@@ -427,6 +428,9 @@ var options;
 					j++;
 				}
 			}
+			$('#ipn_status').combobox('clear');
+			$('#prod_name').combobox('clear');
+			$('#ipn_status').combobox('loadData',filllist);
 			$('#prod_name').combobox('loadData',filllist);
 			$('#cpn_name').combobox('clear');
 		}
@@ -475,7 +479,7 @@ var options;
 	<div id="pi_wip_po_dialog" class="easyui-dialog" data-options="title: '工单参数生成规则',
 								width: 400,
 								closed: true,
-								height: 400,
+								height: 425,
 								cache: false,
 								modal: true,
 								buttons : [ {
@@ -562,6 +566,10 @@ var options;
 			<tr>
 				<td>Application Area(15)</td>
 				<td><select id="ipn_seven" name="ipn_seven" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'ipn_seven',textField:'ipn_seven_name',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_seven,'ipn_seven')}"></select></td>
+			</tr>
+			<tr>
+				<td>Final Status</td>
+				<td><select id="ipn_status" name="ipn_eight" class="easyui-combobox easyui-validatebox" data-options="editable:false,required:true,valueField:'ipn_status',textField:'ipn_status',width:200,onSelect: function(rec){fullOfOptions_new_filter(rec.ipn_status,'ipn_status')}"></select></td>
 			</tr>
 			<tr style="display:none">
 				<td><input name="createdUserName" id="trunkey_createdUserName" ><input name="ipn_ids" id="ipn_ids" ><input name="cancel_ids" id="cancel_ids"></td>

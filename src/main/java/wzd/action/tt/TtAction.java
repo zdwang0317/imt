@@ -95,7 +95,7 @@ public class TtAction extends BaseAction implements ModelDriven<Tt> {
 		Json j = new Json();
 		int updateRows = ttService.updateGooddie(tt);
 		j.setObj(updateRows);
-		j.setMsg("更新行数：" + updateRows);
+		j.setMsg("更新完成");
 		j.setSuccess(true);
 		super.writeJson(j);
 	}

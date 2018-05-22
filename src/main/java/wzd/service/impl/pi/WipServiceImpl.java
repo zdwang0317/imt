@@ -1512,6 +1512,7 @@ public class WipServiceImpl implements IWipService {
 		try {
 			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sqlOfUpdate);
+			int e = 0;
 			for(Map.Entry<String, String> entry: mapOfUpdateData.entrySet()) {
 				boolean canUpdate = true;
 				boolean hasFabSide = false;
@@ -1544,16 +1545,19 @@ public class WipServiceImpl implements IWipService {
 				}else{
 					returnKey.put(lid+"_"+lidAndWid[1], "Y");
 				}
+				e++;
+				if(e>300){
+					logger.info("execute update tpn start!");
+					int[] eb = pst.executeBatch();
+					logger.info("execute update tpn commit!"+eb);
+					e = 0;
+				}
+				
 			}
-			//logger.info(String.format(sqlOfUpdate, preparePlaceHolders(ids.size())));
 			logger.info("execute update tpn start!");
 			int[] eb = pst.executeBatch();
-			for(int i:eb){
-				if(i>0){
-					rs++;
-				}
-			}
-			logger.info("execute update tpn commit!");
+			logger.info("execute update tpn commit!"+eb);
+			//logger.info(String.format(sqlOfUpdate, preparePlaceHolders(ids.size())));
 			conn.commit();
 			logger.info("execute update tpn end!");
 		} catch (SQLException e) {
@@ -1852,8 +1856,13 @@ public class WipServiceImpl implements IWipService {
 			pst2 = connOfPi.prepareStatement("update cp_wip set productNo=?,tpnFlow=?,ifCp=? where id =?");
 			String ifCp = "N";
 			while(rst.next()){
+				logger.info("AnalysisProductNoForSqlByNewRule id ="+rst.getString("id"));
 				ifCp = "N";
 				String tpnflow = null;
+				String wid = rst.getString("wid");
+				if(UtilValidate.isEmpty(wid)){
+					continue;
+				}
 				String stage = rst.getString("stage");
 				String location = rst.getString("location");
 				String firm = rst.getString("firm");
@@ -2047,6 +2056,7 @@ public class WipServiceImpl implements IWipService {
 //					logger.info("id:"+id+"_p:"+productNo+"_t:"+tpnflow);
 					pst2.addBatch();
 					returnNum++;
+					logger.info("AnalysisProductNoForSqlByNewRule id ="+rst.getString("id")+"~~~end");
 				}
 			}
 			logger.info("execute batch!");

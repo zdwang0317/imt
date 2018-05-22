@@ -2,6 +2,7 @@ package wzd.model.pi;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -24,7 +25,7 @@ public class TwipDetail implements java.io.Serializable{
 	private String status;
 //	private Date foTime;
 	private String remLayer;
-//	private Date holdDate;
+	private Date holdDate;
 //	private String holdRemark;
 	private String location;
 	private Timestamp sendDate;
@@ -33,6 +34,7 @@ public class TwipDetail implements java.io.Serializable{
 	private String erpDate;
 	private String tpnFlow;
 	private String productNo;
+	private String id_;
 
 	/** default constructor */
 	public TwipDetail() {
@@ -185,6 +187,22 @@ public class TwipDetail implements java.io.Serializable{
 
 	public void setRemLayer(String remLayer) {
 		this.remLayer = remLayer;
+	}
+
+	public Date getHoldDate() {
+		return holdDate;
+	}
+
+	public void setHoldDate(Date holdDate) {
+		this.holdDate = holdDate;
+	}
+
+	public String getId_() {
+		return id_;
+	}
+
+	public void setId_(String id_) {
+		this.id_ = id_;
 	}
 
 	

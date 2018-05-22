@@ -13,7 +13,7 @@
 			$('#pi_wip_download_lid').val($('#pi_wip_searchForm_lid').val());
 			$('#pi_wip_download_tpnFlow').val($('#pi_wip_searchForm_tpnFlow').val());
 			$('#pi_wip_download_erpDate').val($("form[id='pi_wip_searchForm'] input[name='erpDate']").val());
-			$('#pi_wip_download_site').val($('#pi_wip_searchForm_site').val());
+			$('#pi_wip_download_site').val($("form[id='pi_wip_searchForm'] input[name='firm']").val());
 			$('#pi_wip_download_cpn').val($('#pi_wip_searchForm_cpn').val());
 			$('#pi_wip_download_ipn').val($('#pi_wip_searchForm_ipn').val());
 			$('#pi_wip_download_stage').val($('#pi_wip_searchForm_stage').val());
@@ -204,13 +204,14 @@
 									<option></option>
 									<option value="chipmos">chipmos</option>
 									<option value="chipmosSH">chipmosSH</option>
-									<option value="csmc">csmc</option>
+									<!-- <option value="csmc">csmc</option> -->
 									<option value="klt">klt</option> 
 									<option value="smic">smic</option>
 									<option value="xmc">xmc</option>
 									<option value="hlmc">hlmc</option>
 									<option value="umc">umc</option>
 									<option value="sjsemi">sjsemi</option>
+									<option value="leadyo">leadyo</option>
 								</select>
 							</td>
 							<td colspan="7"></td>

@@ -1,4 +1,6 @@
 package wzd.service.impl.tt;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -222,12 +226,13 @@ public class TtServiceImpl implements ITtService {
 			// pst.setString(1, "13/08/25");
 			rst = pst.executeQuery();
 			conn.setAutoCommit(false);
-			pst = conn.prepareStatement("insert into z_wip_detail(pid,wid,erpDate,pn,firm,lid,location,sendDate,ipn,status,cpn,productNo,tpnFlow,stage,wipStatus,ifCp,startDate,remLayer) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			pst = conn.prepareStatement("insert into z_wip_detail(pid,wid,erpDate,pn,firm,lid,location,sendDate,ipn,status,cpn,productNo,tpnFlow,stage,wipStatus,ifCp,startDate,remLayer,holdDate,id_) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			int i = 0;
 			while (rst.next()) {
 				returnNum++;
 				String wid = rst.getString("wid");
-				logger.info(rst.getString("lid")+"-wis is-"+wid);
+				String lid = rst.getString("lid");
+//				logger.info(rst.getString("lid")+"-wis is-"+wid);
 				String firm = rst.getString("firm");
 				if (UtilValidate.isNotEmpty(wid)) {
 					List<String> list = new ArrayList<String>();
@@ -297,8 +302,19 @@ public class TtServiceImpl implements ITtService {
 						pst.setString(14, rst.getString("stage"));
 						pst.setString(15, rst.getString("status"));
 						pst.setString(16, rst.getString("ifCp"));
-						pst.setString(17, rst.getDate("startDate").toString());
+						Date sd = rst.getDate("startDate");
+						if(null!=sd){
+							pst.setString(17, rst.getDate("startDate").toString());
+						}else{
+							pst.setString(17," ");
+						}
 						pst.setString(18, rst.getString("remLayer"));
+						pst.setDate(19, rst.getDate("holddate"));
+						String parent_lid = lid;
+						if(lid.contains(".")){
+							parent_lid = lid.split("\\.")[0];
+						}
+						pst.setString(20, parent_lid+"_"+s);
 						// 把一个SQL命令加入命令列表
 						pst.addBatch();
 					}
@@ -683,7 +699,25 @@ public class TtServiceImpl implements ITtService {
 	@Override
 	public int updateGooddie(Tt tt) {
 //		logger.info("Update Gooddie Start!");
-		int returnNum = 0;
+		String targetEendPoint = "http://192.168.15.24:8080/productInformation/services/WebService";
+        org.apache.axis.client.Service service =  new  org.apache.axis.client.Service();   
+        org.apache.axis.client.Call call;
+		try {
+			call = (org.apache.axis.client.Call) service.createCall();
+			call.setOperationName( new  javax.xml.namespace.QName(targetEendPoint,  "sendWaferInfo" ));   
+			call.setTargetEndpointAddress( new  java.net.URL(targetEendPoint));
+			call.invoke( new  Object[]{tt.getDb()});
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*int returnNum = 0;
 		ConnUtil connUtil = new ConnUtil();
 		PreparedStatement pst = null;
 		ResultSet rst = null;
@@ -692,9 +726,9 @@ public class TtServiceImpl implements ITtService {
 		Connection connOfPi = connUtil.getMysqlConnection();
 		Connection conn = connUtil.getOracleConnection(tt.getDb(),tt.getDb());
 		try {
-			/*
+			
 			 * search cp have been ship to in tiptop sys
-			 */
+			 
 			String sqlOfTiptop = "select tc_cpj01,tc_cpj15,tc_cpj16,tc_cpj18 from tc_cpj_file where tc_cpj08='N'";
 			if(tt.getMode().equals("1")){
 				sqlOfTiptop = sqlOfTiptop+" and tc_cpj18=0";
@@ -712,9 +746,9 @@ public class TtServiceImpl implements ITtService {
 			}
 			pst = conn.prepareStatement(sqlOfTiptop);
 			rst = pst.executeQuery();
-			/*
+			
 			 * search gooddie in pi sys
-			 */
+			 
 			String sqlOfGooddie = "";
 			String tableName = tt.getLotId();
 			if(tableName.equals("old")){
@@ -724,9 +758,9 @@ public class TtServiceImpl implements ITtService {
 			}
 //			String sqlOfGooddie = "select lotid,waferid,gooddieqty from t_fabside_gooddie_info where lotid=? and waferid=? order by uploadtype desc,uploadtime desc limit 0,1";
 			
-			/*
+			
 			 * update cp record in tiptop sys
-			 */
+			 
 			String updateSql = "update tc_cpj_file set tc_cpj18=? where tc_cpj01=? and tc_cpj15 = ? and tc_cpj16=?";
 			pst2 = conn.prepareStatement(updateSql);
 			conn.setAutoCommit(false);
@@ -766,9 +800,9 @@ public class TtServiceImpl implements ITtService {
 			ConnUtil.closeConn(connOfPi);
 			ConnUtil.close(rst2, pst2);
 			ConnUtil.closeConn(conn);
-		}
+		}*/
 //		logger.info("Update Gooddie End!");
-		return returnNum;
+		return 1;
 	}
 
 	@Override
@@ -1093,7 +1127,7 @@ public class TtServiceImpl implements ITtService {
 						if(UtilValidate.isNotEmpty(wid)){
 							list = WaferIdFormat.getWaferIdFromHlmc(wid);
 						}
-					}else if (firm.contains("sjsemi")) {
+					}else if (firm.contains("sjsemi")||firm.equals("leadyo")) {
 						list = WaferIdFormat.getWaferIdList(wid);
 					}
 					for (String s : list) {
@@ -1493,7 +1527,7 @@ public class TtServiceImpl implements ITtService {
 					String firm = " ";
 					//查询yield
 					String yield = " ";
-					String sqlOfYield = "select lotid,waferid,yield from t_fabside_yield where lotid=? and waferid= ? and stage='CP2' and lotid is not null and lotid!=' ' order by starttime desc limit 0,1";
+					String sqlOfYield = "select lotid,waferid,yield from t_fabside_yield where lotid=? and waferid= ? and stage='CP4' and lotid is not null and lotid!=' ' order by starttime desc limit 0,1";
 					pst4 = connOfPi.prepareStatement(sqlOfYield);
 					String lotid = rst2.getString("lotid");
 					if(lotid.contains(".")){

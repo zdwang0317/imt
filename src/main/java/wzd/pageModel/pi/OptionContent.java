@@ -11,6 +11,7 @@ public class OptionContent {
 	private String ipn_seven;
 	private String ipn_eight;
 	private String ipn_nine;
+	private String ipn_ten;
 	private String ipn_ids;
 	private String prod_name;
 	private String cpn_name;
@@ -155,6 +156,12 @@ public class OptionContent {
 	}
 	public void setIpn_nine(String ipn_nine) {
 		this.ipn_nine = ipn_nine;
+	}
+	public String getIpn_ten() {
+		return ipn_ten;
+	}
+	public void setIpn_ten(String ipn_ten) {
+		this.ipn_ten = ipn_ten;
 	}
 	
 	

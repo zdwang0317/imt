@@ -42,6 +42,7 @@ function fillTableValue(title,index){
     	          {field:'field5',title:'field5',width:100},
         ]],
         onLoadSuccess:function(data){
+        	console.info(data);
         }
     });
 }

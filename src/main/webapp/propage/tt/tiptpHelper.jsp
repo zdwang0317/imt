@@ -266,7 +266,7 @@
 </script>
 <br>
 <div id="ttHelper" style="padding:10px;">
-<form id="outputWipCompare" method="post">
+<!-- <form id="outputWipCompare" method="post">
 	<p>Date <input type="text" name="erpDate">like 15/02/22</p>
 	<p>Old Date <input type="text" name="location">like 15/02/21</p>
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="outputWipCompareSubmit()">Output Compare</a>
@@ -278,8 +278,8 @@
 <form id="workOrderHelper" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="workOrderHelperSubmit()">Work Order Helper</a>
 </form>
-<br>
- <form id="dataResolveForPo" method="post">
+<br> -->
+<form id="dataResolveForPo" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#dataResolveForPo').submit();">分解WIP For Po数据</a>
 </form>
 <br>
@@ -288,26 +288,26 @@
 </form>
 <br> 
 <form id="dataResolve" method="post">
-   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataResolveSubmit()">分解WIP数据(每日第一步)</a>
+   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataResolveSubmit()">2.分解WIP数据</a>
 </form>
-<form id="dataResolveWipflow" method="post">
+<!-- <form id="dataResolveWipflow" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataResolveWipflowSubmit()">Wipflow INV</a>
-</form>
-<form id="dataResolveWipflow2" method="post">
+</form> -->
+<!-- <form id="dataResolveWipflow2" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="dataResolveWipflowDateSubmit()">Wipflow Date</a>
-</form>
+</form> -->
 <br>
 <form id="chart" method="post">
-   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="chart()">Chart</a>
+   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="chart()">3.Chart</a>
 </form>
 <br>
  <form id="analysisProductNo" method="post">
-   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#analysisProductNo').submit();">分析数据</a>
+   	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#analysisProductNo').submit();">1.分析数据</a>
 </form>
 <br>
-<form id="passCpWip" method="post">
+<!-- <form id="passCpWip" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="passCpWipSubmit()">向TIPTOP传入可出货CP</a>
-</form>
+</form> -->
 <!--<form id="passWaferWip" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="passWaferWipSubmit()">向TIPTOP传入可出货Wafer</a>
 </form>
@@ -326,7 +326,7 @@
 </div>
 <div id="ttHelper2" style="padding:10px;">
 	<form id="updateGooddie">
-		<table>
+		<!-- <table>
 			<tr><td>单号：</td><td><input name="tc_cpj01" style="width:200px"/>(多条用","分割)</td></tr>
 			<tr><td>营运中心：</td><td><input name="db" type="radio" value="dsbj" checked="checked">北京<input name="db" type="radio" value="dshk">香港<input name="db" type="radio" value="dssh">上海格易<input name="db" type="radio" value="dshf">合肥格易</td></tr>
 			<tr><td>更新方式：</td><td><input name="mode" type="radio" value="1" checked="checked">gooddie等于0<input name="mode" type="radio" value="2">gooddie不等于0<input name="mode" type="radio" value="3">所有</td></tr>
@@ -334,11 +334,17 @@
 			<tr><td align="right" colspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" onclick="updateGooddieSubmit()">更新</a></tr>
 			<tr><td colspan="2">注:1.打开的cxmt004为非编辑状态</td>
 			<tr><td colspan="2">2.请确认cxmt004中的单号为非入库状态才会更新Gooddie</td>
+		</table> -->
+		<table>
+			<tr><td>营运中心：</td><td><input name="db" type="radio" value="dsbj" checked="checked">北京<input name="db" type="radio" value="dshk">香港<input name="db" type="radio" value="dssh">上海格易<input name="db" type="radio" value="dshf">合肥格易</td></tr>
+			<tr><td align="right" colspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" onclick="updateGooddieSubmit()">更新</a></tr>
+			<tr><td colspan="2">注:1.打开的cxmt004为非编辑状态</td>
+			<tr><td colspan="2">2.请确认cxmt004中的单号为非入库状态才会更新Gooddie</td>
 		</table>
 	</form>
 </div>
 
-<div id="ttHelper3" style="padding:10px;">
+<!-- <div id="ttHelper3" style="padding:10px;">
 <form id="deleteRepetitiveData" method="post">
    	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="deleteRepetitiveDataSubmit()">删除cxmt003中重复数据</a>
 </form>
@@ -351,4 +357,4 @@
 		</table>
 	</form>
 </div>
-
+ -->
