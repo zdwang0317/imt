@@ -18,9 +18,12 @@ var wipForAddPoDGItem = 0;
 			              {field : 'serialNumber',title : '工单单号',width : 150,},
 			              {field : 'ipn',title : 'IPN',width : 150,},
 			              {field : 'tpn',title : 'TPN',width : 150,},
-			              {field : 'fabSite',title : 'Fab Site',width : 100,},
-			              {field : 'createdUserName',title : '所有人',width : 150,},
-			              {field : 'status',title : '状态',width : 137,}] ],
+			              {field : 'fabSite',title : 'Fab Site',width : 80,},
+			              {field : 'field1',title : 'Tran. WO',width : 80,},
+			              {field : 'field2',title : 'Stage',width : 80,},
+			              {field : 'field3',title : 'B or A',width : 100,},
+			              {field : 'createdUserName',title : '所有人',width : 80,},
+			              {field : 'status',title : '状态',width : 80,}] ],
 			toolbar: '#pi_po_dg_toolbar',
 			onSelect : function(rowIndex,rowData){
 				//判断单据如果为本人则可以进行删除审核等操作
@@ -207,10 +210,9 @@ var wipForAddPoDGItem = 0;
 	}
 	
 	function pi_po_download(){
-		console.info("come in3");
 		var row = $('#pi_po_dg').datagrid('getSelected');
 		$('#pi_po_download').form('submit', {
-			url: 'orderAction!exportToExcel.action?id='+row.id+'&serialNumber='+row.serialNumber+'&fabSite='+row.fabSite,
+			url: 'orderAction!exportToExcel.action?id='+row.id+'&serialNumber='+row.serialNumber+'&fabSite='+row.fabSite+'&field1='+row.field1+'&field2='+row.field2+'&field3='+row.field3,
 		});
 	}
 	

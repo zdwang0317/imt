@@ -268,7 +268,7 @@
 	<div id="pi_wip_po_dialog" class="easyui-dialog" data-options="title: '工单参数生成规则',
 								width: 400,
 								closed: true,
-								height: 400,
+								height: 525,
 								cache: false,
 								modal: true,
 								buttons : [ {
@@ -380,7 +380,7 @@
 			<tr>
 				<td>Fab Id</td>
 				<td>
-					<select name="fabSite" class="easyui-combobox">
+					<select name="fabSite" class="easyui-combobox" data-options="width:80">
 					 	<option value="XMC">XMC</option>
 						<option value="SMIC">SMIC</option>
 						<option value="GIGA">GIGA</option>
@@ -388,6 +388,42 @@
 						<option value="GIGA_BJ">GIGA_BJ</option>
 						<option value="GIGA_SH">GIGA_SH</option>
 						<option value="GIGA_HF">GIGA_HF</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Tran. WO</td>
+				<td>
+					<select name="field1" class="easyui-combobox" data-options="width:80">
+					 	<option value="Y">Y</option>
+						<option value="N">N</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Stage</td>
+				<td>
+					<select name="field2" class="easyui-combobox" data-options="width:80">
+						<option value=""></option>
+					 	<option value="CP1">CP1</option>
+						<option value="CP2">CP2</option>
+						<option value="CP3">CP3</option>
+						<option value="CP4">CP4</option>
+						<option value="CP5">CP5</option>
+						<option value="CP6">CP6</option>
+						<option value="CP7">CP7</option>
+						<option value="CP8">CP8</option>
+						<option value="CP9">CP9</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>B or A</td>
+				<td>
+					<select name="field3" class="easyui-combobox" data-options="width:80">
+						<option value=""></option>
+					 	<option value="Before">Before</option>
+						<option value="After">After</option>
 					</select>
 				</td>
 			</tr>

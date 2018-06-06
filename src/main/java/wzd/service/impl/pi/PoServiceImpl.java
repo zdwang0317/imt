@@ -206,6 +206,25 @@ public class PoServiceImpl implements IPoService {
 		turnkeyOrder.save(u);
 		return u.getId();
 	}
+	
+	private int save_(String serialNumber,String ipn,String cpn,String createdName,String fabSite,String tpn,String field1,String field2,String field3) {
+		TturnkeyOrder u = new TturnkeyOrder();
+		u.setSerialNumber(serialNumber);
+		u.setIpn(ipn);
+		u.setCpn(cpn);
+		u.setFabSite(fabSite);
+//		u.setType("TURNKEY");
+		u.setStatus("CREATED");
+		u.setCreatedUserName(createdName);
+		u.setField1(field1);
+		u.setField2(field2);
+		u.setField3(field3);
+		if(UtilValidate.isNotEmpty(tpn)){
+			u.setTpn(tpn);
+		}
+		turnkeyOrder.save(u);
+		return u.getId();
+	}
 	/*
 	 * 获得添加的wafer list  调用此方法的需synchronized 以防多人同时对同lot 下的同wafer 进行操作
 	 */
@@ -958,7 +977,7 @@ public class PoServiceImpl implements IPoService {
 			if(UtilValidate.isNotEmpty(hasQType)){
 				return "创建失败：Wafer Type 规则不符:"+hasQType.substring(1);
 			}else{
-				oid = save(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn);
+				oid = save_(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn,option.getField1(),option.getField2(),option.getField3());
 				int seqId = 1;
 				/*List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
 				String cpTestFlow = "";
@@ -1441,8 +1460,8 @@ public class PoServiceImpl implements IPoService {
 			if (UtilValidate.isNotEmpty(hasQType)) {
 				return "创建失败：Wafer Type 规则不符:" + hasQType.substring(1);
 			}
-			int oid = save(serialNumber, ipn, option.getCpn_name(),
-					option.getCreatedUserName(), option.getFabSite(), tpn);
+			int oid = save_(serialNumber, ipn, option.getCpn_name(),
+					option.getCreatedUserName(), option.getFabSite(), tpn,option.getField1(),option.getField2(),option.getField3());
 			int seqId = 1;
 			String cpTestFlow = "";
 			String cpSite = null;

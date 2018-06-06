@@ -80,14 +80,17 @@ public class OrderAction extends BaseAction implements ModelDriven<TurnkeyOrder>
 			response.setHeader("Connection", "close");
 			response.setHeader("Content-Type", "application/vnd.ms-excel");
 			String title = "Work Order";
-	        String[] hearders = new String[] {"Fab Site","CP Site", "Prod", "IPN(W)", "CPN","IPN(CP)","Lot","Qty","Wafer No.","CP Test flow","Remark"};//表头数组
-	        String[] fields = new String[] {"fabSite","cpSite", "pn_new", "ipn", "cpn_new","ipn_new","lid","qty","wid","cpTestFlow","remark"};//People对象属性数组
+	        String[] hearders = new String[] {"Fab Site","CP Site", "Prod", "IPN(W)", "CPN","IPN(CP)","Lot","Qty","Wafer No.","CP Test flow","Tran. WO (Y/N)","Stage","Before/After","Remark"};//表头数组
+	        String[] fields = new String[] {"fabSite","cpSite", "pn_new", "ipn", "cpn_new","ipn_new","lid","qty","wid","cpTestFlow","field1","field2","field3","remark"};//People对象属性数组
 	        List<TurnkeyOrderItem> newList = new ArrayList<TurnkeyOrderItem>();
 	        for(TurnkeyOrderItem item:list){
 	        	item.setFabSite(turnkeyOrder.getFabSite());
+	        	item.setField1(turnkeyOrder.getField1());
+	        	item.setField2(turnkeyOrder.getField2());
+	        	item.setField3(turnkeyOrder.getField3());
 	        	newList.add(item);
 	        }
-	        TableData td = ExcelUtils.createTableData(list, ExcelUtils.createTableHeader(hearders),fields);
+	        TableData td = ExcelUtils.createTableData(newList, ExcelUtils.createTableHeader(hearders),fields);
 	        JsGridReportBase report = new JsGridReportBase(request, response);
 	        report.exportToExcel("WorkOrder_"+turnkeyOrder.getSerialNumber(), turnkeyOrder.getSerialNumber(), td,"单号:");
 			//wb.write(response.getOutputStream());

@@ -479,8 +479,9 @@ var options;
 	<div id="pi_wip_po_dialog" class="easyui-dialog" data-options="title: '工单参数生成规则',
 								width: 400,
 								closed: true,
-								height: 425,
+								height: 525,
 								cache: false,
+								border :'thin',
 								modal: true,
 								buttons : [ {
 									text : '生成工单',
@@ -545,7 +546,7 @@ var options;
 			</tr>
 			<tr>
 				<td>IPN(4-9)</td>
-				<td><input id = "ipn_ipn" name="ipn_ipn" class="easyui-textbox" data-options="required:true,onChange : function(newValue,oldValue){fullOfOptions_new()}" style="margin-left:0px"/></td>
+				<td><input id = "ipn_ipn" name="ipn_ipn" class="easyui-textbox" data-options="width:200,required:true,onChange : function(newValue,oldValue){fullOfOptions_new()}" style="margin-left:0px"/></td>
 			</tr>
 			<tr>
 				<td>Product Series(10)</td>
@@ -591,7 +592,7 @@ var options;
 			<tr>
 				<td>Fab Id</td>
 				<td>
-					<select id="fabSite" name="fabSite" class="easyui-combobox">
+					<select id="fabSite" name="fabSite" class="easyui-combobox" data-options="width:80">
 					 	<option value="XMC">XMC</option>
 						<option value="SMIC">SMIC</option>
 						<option value="GIGA">GIGA</option>
@@ -601,6 +602,42 @@ var options;
 						<option value="GIGA_HF">GIGA_HF</option>
 					</select>
 					<span id="hasAuto" style="color:green">已经自动赋值</span>
+				</td>
+			</tr>
+			<tr>
+				<td>Tran. WO</td>
+				<td>
+					<select name="field1" class="easyui-combobox" data-options="width:80">
+					 	<option value="Y">Y</option>
+						<option value="N">N</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Stage</td>
+				<td>
+					<select name="field2" class="easyui-combobox" data-options="width:80">
+						<option value=""></option>
+					 	<option value="CP1">CP1</option>
+						<option value="CP2">CP2</option>
+						<option value="CP3">CP3</option>
+						<option value="CP4">CP4</option>
+						<option value="CP5">CP5</option>
+						<option value="CP6">CP6</option>
+						<option value="CP7">CP7</option>
+						<option value="CP8">CP8</option>
+						<option value="CP9">CP9</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>B or A</td>
+				<td>
+					<select name="field3" class="easyui-combobox" data-options="width:80">
+						<option value=""></option>
+					 	<option value="Before">Before</option>
+						<option value="After">After</option>
+					</select>
 				</td>
 			</tr>
 			<tr>
