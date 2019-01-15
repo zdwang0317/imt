@@ -122,6 +122,14 @@ public class OrderAction extends BaseAction implements ModelDriven<TurnkeyOrder>
 		super.writeJson(j);
 	}
 	
+	public void huanyuanPoItemFromIdAndSeqId(){
+		String result = poService.huanyuanPoItemFromIdAndSeqId(turnkeyOrder);
+		Json j = new Json();
+		j.setMsg(result);
+		j.setSuccess(true);
+		super.writeJson(j);
+	}
+	
 	public void deletePoItemFromIdAndSeqIdByChange(){
 		poService.deletePoItemFromIdAndSeqIdByChange(turnkeyOrder);
 		Json j = new Json();

@@ -12,6 +12,8 @@ public class OptionContent {
 	private String ipn_eight;
 	private String ipn_nine;
 	private String ipn_ten;
+	private String ipn_11;
+	private String ipn_12;
 	private String ipn_ids;
 	private String prod_name;
 	private String cpn_name;
@@ -27,6 +29,7 @@ public class OptionContent {
 	private String field1;
 	private String field2;
 	private String field3;
+	private String type;
 	
 	public String getIpn_one() {
 		return ipn_one;
@@ -183,6 +186,24 @@ public class OptionContent {
 	}
 	public void setField3(String field3) {
 		this.field3 = field3;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getIpn_11() {
+		return ipn_11;
+	}
+	public void setIpn_11(String ipn_11) {
+		this.ipn_11 = ipn_11;
+	}
+	public String getIpn_12() {
+		return ipn_12;
+	}
+	public void setIpn_12(String ipn_12) {
+		this.ipn_12 = ipn_12;
 	}
 	
 	

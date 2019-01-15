@@ -38,6 +38,7 @@ public class Twip implements java.io.Serializable{
 	private String ifCp;
 	private String field1;
 	private String field2;
+	private String field3;
 	// Constructors
 
 	/** default constructor */
@@ -255,6 +256,14 @@ public class Twip implements java.io.Serializable{
 
 	public void setField2(String field2) {
 		this.field2 = field2;
+	}
+
+	public String getField3() {
+		return field3;
+	}
+
+	public void setField3(String field3) {
+		this.field3 = field3;
 	}
 	
 	

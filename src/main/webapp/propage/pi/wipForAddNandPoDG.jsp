@@ -202,6 +202,8 @@
 				$('#ipn_eight').combobox('loadData',d.k8);
 				$('#ipn_nine').combobox('loadData',d.k9);
 				$('#ipn_ten').combobox('loadData',d.k10);
+				$('#ipn_11').combobox('loadData',d.k11);
+				$('#ipn_12').combobox('loadData',d.k12);
 				/* var prodlist = new Array();
 				var haslist = new Array();
 				var j = 0;
@@ -347,12 +349,20 @@
 				<td><select id="ipn_eight" name="ipn_eight" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
 			</tr>
 			<tr>
-				<td>Reserved(14)</td>
-				<td><select id="ipn_nine" name="ipn_nine" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+				<td>ECC(14)</td>
+				<td><select id="ipn_11" name="ipn_11" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
 			</tr>
 			<tr>
 				<td>Reliability(15)</td>
 				<td><select id="ipn_ten" name="ipn_ten" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+			</tr>
+			<tr>
+				<td>Function(16)</td>
+				<td><select id="ipn_12" name="ipn_12" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
+			</tr>
+			<tr>
+				<td>Reserved(17-18)</td>
+				<td><select id="ipn_nine" name="ipn_nine" class="easyui-combobox easyui-validatebox" data-options="required:true,valueField:'name',textField:'description',width:200"></select></td>
 			</tr>
 			<!-- <tr>
 				<td>Reserve(13-15)</td>

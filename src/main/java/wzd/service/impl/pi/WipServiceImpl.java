@@ -1860,13 +1860,13 @@ public class WipServiceImpl implements IWipService {
 				ifCp = "N";
 				String tpnflow = null;
 				String wid = rst.getString("wid");
-				if(UtilValidate.isEmpty(wid)){
-					continue;
-				}
 				String stage = rst.getString("stage");
 				String location = rst.getString("location");
 				String firm = rst.getString("firm");
 				String remLayer = rst.getString("remLayer");
+				if(UtilValidate.isEmpty(wid)||UtilValidate.isEmpty(stage)){
+					continue;
+				}
 				//下面的wid为cp_wip表的 需要改
 				String productNo = "";//mapOfPn.get(rst.getString("lid")+rst.getString("wid"));
 				if(UtilValidate.isEmpty(productNo)){

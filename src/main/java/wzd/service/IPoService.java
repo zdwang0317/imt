@@ -32,4 +32,5 @@ public interface IPoService {
 	DataGrid getNewRuleHeader(OptionContent paramOptionContent);
 	DataGrid getNewRuleValue(OptionContent paramOptionContent);
 	List<Map<String,String>> passOptionsByStrNewVersion(String ipn_ipn);
+	String huanyuanPoItemFromIdAndSeqId(TurnkeyOrder turnkeyOrder);
 }

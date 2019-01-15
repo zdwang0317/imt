@@ -1,4 +1,5 @@
 package wzd.service.impl.tt;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -213,7 +214,7 @@ public class TtServiceImpl implements ITtService {
 		SimpleDateFormat sf2 = new SimpleDateFormat("yy/MM/dd");
 		Connection conn = connUtil.getMysqlConnection();
 		
-		String sql = "select * from cp_wip where qty>0 and erpDate = ? and resolved is null and id not in(select id from cp_wip where erpdate=? and status='TRAN' and firm='csmc')";
+		String sql = "select * from cp_wip where (field3='sheet0' or field3 is null) and qty>0 and erpDate = ? and resolved is null and id not in(select id from cp_wip where erpdate=? and status='TRAN' and firm='csmc')";
 		try {
 			pst = conn.prepareStatement("select a.productNo,a.lid,a.wid from z_wip_detail a left join z_tpn b on b.tpn = a.tpnflow where tpnflow in('PAS1','PAD','PAS2','UV','WAT','QC','INV1') group by lid,wid order by tpnorder desc");
 			rst = pst.executeQuery();
@@ -315,6 +316,11 @@ public class TtServiceImpl implements ITtService {
 							parent_lid = lid.split("\\.")[0];
 						}
 						pst.setString(20, parent_lid+"_"+s);
+						/*String f3 = rst.getString("field3");
+						if(UtilValidate.isEmpty(f3)){
+							f3 = "sheet0";
+						}
+						pst.setString(21, f3);*/
 						// 把一个SQL命令加入命令列表
 						pst.addBatch();
 					}
@@ -1497,7 +1503,7 @@ public class TtServiceImpl implements ITtService {
 			// 查询PI系统中CP可出货记录
 //			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where ((status in('Inkless map available','OP ship','OP to do') and abnormal='M') or (status in('Inkless map available','OP ship') and abnormal<>'M' and abnormal not like '%T%') or (status ='ERP to do') or (status ='Mapping to do')) and ipn is null and lotid is not null";
 //			String sql = "select id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real from t_fabside_wip where status ='ERP to do' and ipn is null and lotid is not null";
-			String sql = "select b.firm,b.field1,a.id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real,erpProgramTime,kgdRemarks,probeCount,ifInk,abnormal,comment "
+			String sql = "select b.firm,b.field1,a.id,waferid,lotid,grade,productId,filePath,tpnId,erpProgram,ipn_real,erpProgramTime,kgdRemarks,probeCount,ifInk,abnormal,comment,testerId,totalTestTime "
 					+ " from t_fabside_wip a left join zz_turnkey_detail b on b.id_=a.id"
 					+ " where a.status in('ERP to do','Mapping to do') and a.ipn is null and lotid is not null";
 			String sqlOfQty = "select count(*) qty from t_fabside_wip where status in('ERP to do','Mapping to do') and ipn is null and lotid is not null";
@@ -1515,8 +1521,8 @@ public class TtServiceImpl implements ITtService {
 				String insertSql = "insert into tc_cpi_file"
 						+ "(tc_cpi01,tc_cpi02,tc_cpi03,tc_cpi05,tc_cpi06,tc_cpi07,"
 						+ "tc_cpi10,tc_cpi11,tc_cpi09,tc_cpi12,tc_cpi04,tc_cpi08,tc_cpi13,"
-						+ "tc_cpi14,tc_cpi15,tc_cpi16,tc_cpi17,tc_cpi23,tc_cpi20,tc_cpi21,tc_cpi22,tc_cpi24) "
-						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+						+ "tc_cpi14,tc_cpi15,tc_cpi16,tc_cpi17,tc_cpi23,tc_cpi20,tc_cpi21,tc_cpi22,tc_cpi24,tc_cpi25,tc_cpi26) "
+						+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				while (rst2.next()) {
 					updateWipId.add(rst2.getString("id"));
 					Map<String,Object> newMap = new HashMap<String,Object>();
@@ -1525,6 +1531,7 @@ public class TtServiceImpl implements ITtService {
 					String ipn = rst2.getString("ipn_real");
 					String cpn = " ";
 					String firm = " ";
+					String testerId = " ";
 					//查询yield
 					String yield = " ";
 					String sqlOfYield = "select lotid,waferid,yield from t_fabside_yield where lotid=? and waferid= ? and stage='CP4' and lotid is not null and lotid!=' ' order by starttime desc limit 0,1";
@@ -1577,10 +1584,19 @@ public class TtServiceImpl implements ITtService {
 					newMap.put("ifInk", rst2.getString("ifInk"));
 					newMap.put("abnormal", rst2.getString("abnormal"));
 					newMap.put("comment", rst2.getString("comment"));
-					if(UtilValidate.isEmpty(rst2.getString("firm"))){
+					if(UtilValidate.isNotEmpty(rst2.getString("firm"))){
 						firm = rst2.getString("firm");
 					}
 					newMap.put("firm", firm);
+					if(UtilValidate.isNotEmpty(rst2.getString("testerId"))){
+						testerId = rst2.getString("testerId");
+					}
+					newMap.put("testerId", testerId);
+					if(null==rst2.getBigDecimal("totalTestTime")){
+						newMap.put("totalTestTime", new BigDecimal(0));
+					}else{
+						newMap.put("totalTestTime", rst2.getBigDecimal("totalTestTime"));
+					}
 					listOfMap.add(newMap);
 					returnNum++;
 				}
@@ -1622,6 +1638,8 @@ public class TtServiceImpl implements ITtService {
 							pst2.setString(20, (String)submap.get("ifInk"));
 							pst2.setString(21, (String)submap.get("probeCount"));
 							pst2.setString(22, (String)submap.get("firm"));
+							pst2.setString(23, (String)submap.get("testerId"));
+							pst2.setBigDecimal(24, (BigDecimal)submap.get("totalTestTime"));
 							pst2.addBatch();
 						}
 						pst2.executeBatch();
@@ -1634,7 +1652,10 @@ public class TtServiceImpl implements ITtService {
 						strs.append(",'" + str + "'");
 					}
 					connOfPi.setAutoCommit(false);
-					pst2 = connOfPi.prepareStatement("update t_fabside_wip set ipn='Y' where id in ("+ strs.toString().substring(1) + ")");
+					Date day=new Date();    
+					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+					String time_ = "Y"+df.format(day);
+					pst2 = connOfPi.prepareStatement("update t_fabside_wip set ipn='"+time_+"' where id in ("+ strs.toString().substring(1) + ")");
 					pst2.executeUpdate();
 					connOfPi.commit();
 				}

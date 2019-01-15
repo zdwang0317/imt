@@ -641,6 +641,15 @@ var options;
 				</td>
 			</tr>
 			<tr>
+				<td>转厂工单</td>
+				<td>
+					<select name="type" class="easyui-combobox" data-options="width:80">
+					 	<option value="Normal">N</option>
+						<option value="Transfer">Y</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
 				<td colspan="2" style="color:red">注:如12-14为STR,则其它参数可手动录入,不验证TPN</td>
 			</tr>
 		</table>

@@ -174,6 +174,14 @@ var wipForAddPoDGItem = 0;
 						handler : function() {
 							pi_po_item_update();
 						}
+					}, '-', {
+						id:'turnkey_order_item_huanyuan',
+						disabled:true,
+						text : '转厂',
+						iconCls : 'icon-back',
+						handler : function() {
+							pi_po_item_huanyuan();
+						}
 					}],
 					onLoadSuccess : function(){
 						if(rowData.createdUserName==loginName){
@@ -196,6 +204,7 @@ var wipForAddPoDGItem = 0;
 						if(rowData.createdUserName==loginName){
 							if(rowData.status!='CANCELED'){
 								$('#turnkey_order_item_delete').linkbutton('enable');
+								$('#turnkey_order_item_huanyuan').linkbutton('enable');
 							}
 						}
 					}
@@ -283,6 +292,32 @@ var wipForAddPoDGItem = 0;
 						success:function(d){
 							var json = $.parseJSON(d);
 							$('#pi_po_item_dg').datagrid('reload');
+							$('#pi_po_item_dg').datagrid('unselectAll');
+							$('#turnkey_order_item_delete').linkbutton('disable');
+							$.messager.show({
+								title : '提示',
+								msg : json.msg
+							});
+						}
+					});
+				}
+			});
+		} else {
+			parent.sy.messagerAlert('提示', '请勾选要删除的记录！', 'error');
+		}
+	}
+	
+	function pi_po_item_huanyuan(){
+		var mainrow = $('#pi_po_dg').datagrid('getSelected');
+		var row = $('#pi_po_item_dg').datagrid('getSelected');
+		if (row) {
+			parent.sy.messagerConfirm('请确认', '您要转厂当前项?', function(r) {
+				if(r){
+					$('#pi_po_delete').form('submit', {
+						url: 'orderAction!huanyuanPoItemFromIdAndSeqId.action?serialNumber='+mainrow.serialNumber+'&id='+row.id+'&seqId='+row.seqId+'&status='+mainrow.status,
+						dataType : 'json',
+						success:function(d){
+							var json = $.parseJSON(d);
 							$('#pi_po_item_dg').datagrid('unselectAll');
 							$('#turnkey_order_item_delete').linkbutton('disable');
 							$.messager.show({

@@ -207,13 +207,13 @@ public class PoServiceImpl implements IPoService {
 		return u.getId();
 	}
 	
-	private int save_(String serialNumber,String ipn,String cpn,String createdName,String fabSite,String tpn,String field1,String field2,String field3) {
+	private int save_(String serialNumber,String ipn,String cpn,String createdName,String fabSite,String tpn,String field1,String field2,String field3,String type) {
 		TturnkeyOrder u = new TturnkeyOrder();
 		u.setSerialNumber(serialNumber);
 		u.setIpn(ipn);
 		u.setCpn(cpn);
 		u.setFabSite(fabSite);
-//		u.setType("TURNKEY");
+		u.setType(type);
 		u.setStatus("CREATED");
 		u.setCreatedUserName(createdName);
 		u.setField1(field1);
@@ -292,7 +292,7 @@ public class PoServiceImpl implements IPoService {
 	/*
 	 * 判断工单DETAIL ITEM 是否WAFER TYPE为Q的  如果有则无法建立工单并返回结果
 	 */
-	private String getStatusOfWaferType(List<TturnkeyDetail> listOfTurnkeyDetail,String ipnOne){
+	private String getStatusOfWaferType(List<TturnkeyDetail> listOfTurnkeyDetail,String ipnOne,String orderType){
 		String returnStr = "";
 		//验证WAFER TYPE 是否为Q
 		Set<String> setOfLotId = new HashSet<String>();
@@ -307,15 +307,23 @@ public class PoServiceImpl implements IPoService {
 		PreparedStatement pst = null;
 		ResultSet rst = null;
 		Connection conn = connUtil.getMysqlConnection();
-		String sql = "select id,abnormal from t_fabside_wip where lotId in ("+strBur.substring(1)+")";
+		String sql = "select id,abnormal,status from t_fabside_wip where lotId in ("+strBur.substring(1)+")";
 		try {
 			pst = conn.prepareStatement(sql);
 			rst = pst.executeQuery();
 			Map<String,String> mapOfWaferType = new HashMap<String,String>();
+			boolean statusIsOk = true;
 			while(rst.next()){
+				if(orderType.equals("Y")){
+					if(!rst.getString("Id").equals("System to do")){
+						statusIsOk = false;
+						returnStr = "创建失败：转厂工单wafer状态为非System to do";
+						break;
+					}
+				}
 				mapOfWaferType.put(rst.getString("Id"), rst.getString("abnormal"));
 			}
-			if(mapOfWaferType.size()>0){
+			if(mapOfWaferType.size()>0&&statusIsOk){
 				for(TturnkeyDetail t:listOfTurnkeyDetail){
 					String waferTypeOfWip = mapOfWaferType.get(t.getParent_lid()+"_"+t.getWid());
 					if(UtilValidate.isNotEmpty(waferTypeOfWip)){
@@ -329,7 +337,11 @@ public class PoServiceImpl implements IPoService {
 						}
 					}
 				}
+				if(UtilValidate.isNotEmpty(returnStr)){
+					returnStr = "创建失败：Wafer Type 规则不符:"+returnStr.substring(1);
+				}
 			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -973,11 +985,11 @@ public class PoServiceImpl implements IPoService {
 			return "创建失败：末找到匹配的TPN";
 		}else if (i==1){
 			List<TturnkeyDetail> listOfTurnkeyDetail = getListFromIds(option.getIpn_ids(),option.getCancel_ids());
-			String hasQType = getStatusOfWaferType(listOfTurnkeyDetail,option.getIpn_one());
+			String hasQType = getStatusOfWaferType(listOfTurnkeyDetail,option.getIpn_one(),option.getType());
 			if(UtilValidate.isNotEmpty(hasQType)){
 				return "创建失败：Wafer Type 规则不符:"+hasQType.substring(1);
 			}else{
-				oid = save_(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn,option.getField1(),option.getField2(),option.getField3());
+				oid = save_(serialNumber,ipn,option.getCpn_name(),option.getCreatedUserName(),option.getFabSite(),tpn,option.getField1(),option.getField2(),option.getField3(),option.getType());
 				int seqId = 1;
 				/*List<ToptionContent> listOfOptionContent = optionContentDao.find("from ToptionContent t where t.name='"+option.getIpn_six()+"' and t.type like 'IPN_%'");
 				String cpTestFlow = "";
@@ -1354,9 +1366,9 @@ public class PoServiceImpl implements IPoService {
 			rst = pst.executeQuery();
 			while(rst.next()){
 				String productId = rst.getString("productId");
-				if(UtilValidate.isNotEmpty(productId)&&productId.contains("6925")){
+				/*if(UtilValidate.isNotEmpty(productId)&&productId.contains("6925")){
 					continue;
-				}
+				}*/
 				noPermissionWid.append(","+rst.getString("waferId"));
 			}
 		} catch (SQLException e) {
@@ -1388,6 +1400,8 @@ public class PoServiceImpl implements IPoService {
 		List<Map<String,String>> k8 = new ArrayList<Map<String,String>>();
 		List<Map<String,String>> k9 = new ArrayList<Map<String,String>>();
 		List<Map<String,String>> k10 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k11 = new ArrayList<Map<String,String>>();
+		List<Map<String,String>> k12 = new ArrayList<Map<String,String>>();
 		try {
 			pst = conn.prepareStatement("select key3,value,code from t_paramete where key1='Para_NAND'");
 			rst = pst.executeQuery();
@@ -1416,6 +1430,10 @@ public class PoServiceImpl implements IPoService {
 					k9.add(map);
 				}else if(key3.equals("Reliability")){
 					k10.add(map);
+				}else if(key3.equals("ECC")){
+					k11.add(map);
+				}else if(key3.equals("Function Mode")){
+					k12.add(map);
 				}
 			}
 		} catch (SQLException e) {
@@ -1436,6 +1454,8 @@ public class PoServiceImpl implements IPoService {
 		rt.put("k8", k8);
 		rt.put("k9", k9);
 		rt.put("k10", k10);
+		rt.put("k11", k11);
+		rt.put("k12", k12);
 		return rt;
 	}
 	
@@ -1443,25 +1463,29 @@ public class PoServiceImpl implements IPoService {
 	public String createNandProductOrderAndValidateIpn(OptionContent option) {
 		// TODO Auto-generated method stub
 		String serialNumber = "PO" + DateUtil.dateToString(new Date(), "yyyyMMddHHmmss");
-	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_eight()+ option.getIpn_nine()+ option.getIpn_ten();
+	    String ipn = option.getIpn_one() + option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() + option.getIpn_eight()+ option.getIpn_11()+ option.getIpn_ten()+ option.getIpn_12()+ option.getIpn_nine();
 	    String tpn = option.getIpn_zero() + option.getIpn_zero_() + option.getIpn_zero__() + option.getIpn_three() + option.getIpn_four() + option.getIpn_five() + option.getIpn_six() +option.getIpn_eight();
 	    int i = 1;
-	    tpn = checkIpnHasATpn(tpn);
-	    if (UtilValidate.isEmpty(tpn)) {
-	      i = 0;
-	    }
+	    if(option.getIpn_five().equals("S")){
+			i = 1;
+		}else{
+			tpn = checkIpnHasATpn(tpn);
+		    if (UtilValidate.isEmpty(tpn)) {
+		      i = 0;
+		    }
+		}
 	    if (i == 0)
 	      return "创建失败：末找到匹配的TPN";
 	    if (i == 1) {
 			List listOfTurnkeyDetail = getListFromIds(option.getIpn_ids(),
 					option.getCancel_ids());
 			String hasQType = getStatusOfWaferType(listOfTurnkeyDetail,
-					option.getIpn_one());
+					option.getIpn_one(),"N");
 			if (UtilValidate.isNotEmpty(hasQType)) {
 				return "创建失败：Wafer Type 规则不符:" + hasQType.substring(1);
 			}
 			int oid = save_(serialNumber, ipn, option.getCpn_name(),
-					option.getCreatedUserName(), option.getFabSite(), tpn,option.getField1(),option.getField2(),option.getField3());
+					option.getCreatedUserName(), option.getFabSite(), tpn,option.getField1(),option.getField2(),option.getField3(),"NAND");
 			int seqId = 1;
 			String cpTestFlow = "";
 			String cpSite = null;
@@ -1610,6 +1634,44 @@ public class PoServiceImpl implements IPoService {
 	      ConnUtil.closeConn(conn);
 	    }
 	    return returnValue;
+	}
+	@Override
+	public String huanyuanPoItemFromIdAndSeqId(TurnkeyOrder turnkeyOrder) {
+		// TODO Auto-generated method stub
+		StringBuilder returnStr = new StringBuilder();
+		List<TturnkeyOrderItemDetail> listOfItemDetail = turnkeyOrderItemDetail.find("from TturnkeyOrderItemDetail t where id='"+turnkeyOrder.getId()+"' and seqId = '"+turnkeyOrder.getSeqId()+"'");
+		StringBuilder strs = new StringBuilder();
+		Map<String,List<String>> checkMap = new HashMap<String,List<String>>();
+		for(TturnkeyOrderItemDetail obj: listOfItemDetail){
+			String lid = WaferIdFormat.getMainLot(obj.getLid());
+			List<String> listOfWid = checkMap.get(lid);
+			String wid = obj.getWid();
+			if(UtilValidate.isEmpty(listOfWid)){
+				listOfWid = new ArrayList<String>();
+			}
+			listOfWid.add(wid);
+			checkMap.put(lid, listOfWid);
+		}
+		for(TturnkeyOrderItemDetail obj: listOfItemDetail){
+			strs.append(",'"+obj.getFid_()+"'");
+		}
+		ConnUtil connUtil = new ConnUtil();
+		Connection conn = connUtil.getMysqlConnection();
+		PreparedStatement pst = null;
+		try {
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("update zz_turnkey_detail set status='CREATED' where id_ in("+strs.substring(1)+")");
+			pst.executeUpdate();
+			conn.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnUtil.close(null, pst);
+			ConnUtil.closeConn(conn);
+		}
+		returnStr.append("还原成功!");
+		return returnStr.toString();
 	}
 	
 	

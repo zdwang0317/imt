@@ -266,7 +266,7 @@ public class TpnService implements ITpnService{
 	public DataGrid getRuleHeaderFromRuleTypeId(TpnRule tpnRule) {
 		// TODO Auto-generated method stub
 		DataGrid dg = new DataGrid();
-		String hql = "from TtpnRuleHeader t where 1=1 and t.ruleTypeId='"+tpnRule.getRuleTypeId()+"'";
+		String hql = "from TtpnRuleHeader t where 1=1 and t.status='Y' and t.ruleTypeId='"+tpnRule.getRuleTypeId()+"'";
 		List<TtpnRuleHeader> ruleItem = tpnRuleHeaderDao.find(hql);
 		List<TpnRule> nl = new ArrayList<TpnRule>();
 		changeModel5(ruleItem, nl);
